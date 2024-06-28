@@ -16,6 +16,7 @@ equipment_details = [
 total_equipment_mass = 0
 tam = 30
 equipment = []
+equipment_names = []
 equipment = [item for item in input("Select equipment (1, 2, 3, 4) separated by a comma: ").split(',')]
 print(equipment)
 for item in equipment:
@@ -23,5 +24,9 @@ for item in equipment:
     mass_factor = ([s['mass_factor'] for s in equipment_details if s['id'] == int(item)])
     total_equipment_mass += (tam * mass_factor[0])
     print(f"Mass factor: {mass_factor}")
+    equipment_names.append([s['name'] for s in equipment_details if s['id'] == int(item)])
+
 
 print(f"Total Equipment mass: {total_equipment_mass}")
+equipment_names = ', '.join([item for items in equipment_names for item in items])
+print(equipment_names)

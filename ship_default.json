@@ -1,0 +1,44 @@
+{
+    "name": "Thyme",
+    "class": "Super Dreadnought",
+    "size": "Large",
+    "armor_stat": "5+",
+    "base_pv": 319,
+    "pv": 319,
+    "crew_quality": "Regular",
+    "tp": 1,
+    "max_tp": 2,
+    "critical": 12,
+    "max_stress": 7,
+    "armor": {
+        "outer_hull": 38,
+        "inner_hull": 15
+    },
+    "weapon": [
+        {
+            "name": "Naval Mass Driver",
+            "arc": "Front",
+            "range": "7/10/14/17",
+            "attack": 3,
+            "damage": 15,
+            "special": ["AM2", "MASS"]
+        },
+        {
+            "name": "Medium Naval AC",
+            "arc": "Right",
+            "range": "8/11/16/21",
+            "attack": 5,
+            "damage": 3,
+            "special": ["RPT"]
+        },
+        {
+            "name": "Medium Naval AC",
+            "arc": "Left",
+            "range": "8/11/16/21",
+            "attack": 5,
+            "damage": 3,
+            "special": ["RPT"]
+        }
+    ],
+    "equipment": ["Long Range Sensors"]
+}

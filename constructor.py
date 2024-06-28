@@ -36,7 +36,51 @@ equipment_details = [
     }
 ]
 
-strength_list = ['Light', 'Average', 'Heavy', 'Ultra Heavy']
+outer_strength_details = [
+    {
+        "id": 1,
+        "name": "Light",
+        "mass_factor": .2
+    },
+    {
+        "id": 2,
+        "name": "Average",
+        "mass_factor": .25
+    },
+    {
+        "id": 3,
+        "name": "Heavy",
+        "mass_factor": .3
+    },
+    {
+        "id": 4,
+        "name": "Ultra Heavy",
+        "mass_factor": .35
+    }
+]
+
+inner_strength_details = [
+    {
+        "id": 1,
+        "name": "Light",
+        "mass_factor": .05
+    },
+    {
+        "id": 2,
+        "name": "Average",
+        "mass_factor": .1
+    },
+    {
+        "id": 3,
+        "name": "Heavy",
+        "mass_factor": .15
+    },
+    {
+        "id": 4,
+        "name": "Ultra Heavy",
+        "mass_factor": .20
+    }
+]
 
 class Ship:
     def __init__(self, name, sclass, size, tam, armor_roll, mdpa): 
@@ -60,51 +104,19 @@ class Ship:
         self.total_equipment_pv = 0
 
     def outer_hull(self, outer_hull_strength):
-        #add mass check
-        match outer_hull_strength:
-            case "1":
-                self.outer_hull_mass = round(self.tam[0] * .2)
-                self.outer_hull_pv = round(self.outer_hull_mass * 3)
-                self.critical_threshold = round(self.outer_hull_mass * .3)
-                return self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
-            case "2":
-                self.outer_hull_mass = round(self.tam[0] * .25)
-                self.outer_hull_pv = round(self.outer_hull_mass * 3)
-                self.critical_threshold = round(self.outer_hull_mass * .3)
-                return self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
-            case "3":
-                self.outer_hull_mass = round(self.tam[0] * .3)
-                self.outer_hull_pv = round(self.outer_hull_mass * 3)
-                self.critical_threshold = round(self.outer_hull_mass * .3)
-                return self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
-            case "4":
-                self.outer_hull_mass = round(self.tam[0] * .35)
-                self.outer_hull_pv = round(self.outer_hull_mass * 3)
-                self.critical_threshold = round(self.outer_hull_mass * .3)
-                return self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
+        mass_factor = [s['mass_factor'] for s in outer_strength_details if s['id'] == int(outer_hull_strength)]
+        self.outer_hull_mass = round(self.tam[0] * mass_factor[0])
+        self.outer_hull_pv = round(self.outer_hull_mass * 3)
+        self.critical_threshold = round(self.outer_hull_mass * .3)
+        return self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
         
     def inner_hull(self, inner_hull_strength):
-        #add mass check
-        match inner_hull_strength:
-            case "1":
-                self.inner_hull_mass = round(self.tam[0] * .05)
-                self.inner_hull_pv = round(self.inner_hull_mass * 3)
-                return self.inner_hull_mass, self.inner_hull_pv
-            case "2":
-                self.inner_hull_mass = round(self.tam[0] * .1)
-                self.inner_hull_pv = round(self.inner_hull_mass * 3)
-                return self.inner_hull_mass, self.inner_hull_pv
-            case "3":
-                self.inner_hull_mass = round(self.tam[0] * .15)
-                self.inner_hull_pv = round(self.inner_hull_mass * 3)
-                return self.inner_hull_mass, self.inner_hull_pv
-            case "4":
-                self.inner_hull_mass = round(self.tam[0] * .2)
-                self.inner_hull_pv = round(self.inner_hull_mass * 3)
-                return self.inner_hull_mass, self.inner_hull_pv
+        mass_factor = [s['mass_factor'] for s in inner_strength_details if s['id'] == int(inner_hull_strength)]
+        self.inner_hull_mass = round(self.tam[0] * mass_factor[0])
+        self.inner_hull_pv = round(self.outer_hull_mass * 3)
+        return self.inner_hull_mass, self.inner_hull_pv
 
     def propulsion(self, thrust_points):
-        #add mass check
         self.thrust_points = thrust_points
         self.propulsion_mass = round(thrust_points * (self.tam[0] * .07))
         self.propulsion_pv = round(self.propulsion_mass * 2)
@@ -116,7 +128,6 @@ class Ship:
         ...
     
     def equipment(self, equipment_list):
-        #add mass check    
         for item in equipment_list:
             mass_factor = [s['mass_factor'] for s in equipment_details if s['id'] == int(item)]
             self.total_equipment_mass = round(ship.total_equipment_mass + (self.tam[0] * mass_factor[0]))
@@ -134,6 +145,7 @@ class Ship:
     
     def set_quality(self, crew_quality):
         self.crew_quality = crew_quality
+        self.track_base_pv()
         match self.crew_quality:
             case "Recruit": 
                 self.final_pv = round(self.total_base_pv * .8)
@@ -178,23 +190,23 @@ if __name__ == "__main__":
     ship.inner_hull(inner_hull_strength)
     print(ship.track_mass())
 
-    thrust_points = int(input(f"\nHow many thrust points? "))
+    thrust_points = int(input(f"\nThrust Points: "))
     ship.propulsion(thrust_points)
     print(ship.track_mass())
 
     equipment_list = [item for item in
-        input("\nSelect equipment (0-None, 1-Long Range Sensors, 2-Agile Thrusters, 3-Enhanced Engineering, 4-Advanced Fire Control, 5-Target Designator) separated by a comma: ").split(',')]
+        input("\nEquipment (0-None, 1-Long Range Sensors, 2-Agile Thrusters, 3-Enhanced Engineering, 4-Advanced Fire Control, 5-Target Designator) separated by a comma: ").split(',')]
     ship.equipment(equipment_list)
     print(ship.track_mass())
-
-    ship.track_mass()
-    ship.track_base_pv()
 
     crew_quality = input(f"\nCrew Quality (Recruit, Regular, Veteran): ")
     ship.set_quality(crew_quality)
 
+    ship.track_mass()
+    ship.track_base_pv()
+
     #Print Ship Stats
-    print(f"\n**Your ship**\nName: {ship.name}\nClass: {ship.sclass}\nSize: {ship.size[0]}\nTotal Availble Mass: {ship.tam[0]}\nArmor: {ship.armor_roll[0]}\nMax Damage Per Arc: {ship.mdpa[0]}")
+    print(f"\n**YOUR SHIP**\nShip Name: {ship.name}\nClass: {ship.sclass}\nSize: {ship.size[0]}\nTotal Availble Mass: {ship.tam[0]}\nArmor: {ship.armor_roll[0]}\nMax Damage Per Arc: {ship.mdpa[0]}")
     print(f"\nOuter Hull Mass: {ship.outer_hull_mass}")
     print(f"Outer Hull PV: {ship.outer_hull_pv}")
     print(f"Critical Threshold: {ship.critical_threshold}")

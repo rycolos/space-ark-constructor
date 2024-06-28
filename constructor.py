@@ -17,6 +17,12 @@ sclass_details = [
 
 equipment_details = [
     {
+        "id": 0,
+        "name": "None",
+        "mass_factor": 0,
+        "pv_factor": 0
+    },
+    {
         "id": 1,
         "name": "Long Range Sensors",
         "mass_factor": .04,
@@ -56,22 +62,22 @@ class Ship:
     def outer_hull(self, outer_hull_strength):
         #add mass check
         match outer_hull_strength:
-            case "Light":
+            case "1":
                 self.outer_hull_mass = round(self.tam[0] * .2)
                 self.outer_hull_pv = round(self.outer_hull_mass * 3)
                 self.critical_threshold = round(self.outer_hull_mass * .3)
                 return self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
-            case "Average":
+            case "2":
                 self.outer_hull_mass = round(self.tam[0] * .25)
                 self.outer_hull_pv = round(self.outer_hull_mass * 3)
                 self.critical_threshold = round(self.outer_hull_mass * .3)
                 return self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
-            case "Heavy":
+            case "3":
                 self.outer_hull_mass = round(self.tam[0] * .3)
                 self.outer_hull_pv = round(self.outer_hull_mass * 3)
                 self.critical_threshold = round(self.outer_hull_mass * .3)
                 return self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
-            case "Ultra Heavy":
+            case "4":
                 self.outer_hull_mass = round(self.tam[0] * .35)
                 self.outer_hull_pv = round(self.outer_hull_mass * 3)
                 self.critical_threshold = round(self.outer_hull_mass * .3)
@@ -80,19 +86,19 @@ class Ship:
     def inner_hull(self, inner_hull_strength):
         #add mass check
         match inner_hull_strength:
-            case "Light":
+            case "1":
                 self.inner_hull_mass = round(self.tam[0] * .05)
                 self.inner_hull_pv = round(self.inner_hull_mass * 3)
                 return self.inner_hull_mass, self.inner_hull_pv
-            case "Average":
+            case "2":
                 self.inner_hull_mass = round(self.tam[0] * .1)
                 self.inner_hull_pv = round(self.inner_hull_mass * 3)
                 return self.inner_hull_mass, self.inner_hull_pv
-            case "Heavy":
+            case "3":
                 self.inner_hull_mass = round(self.tam[0] * .15)
                 self.inner_hull_pv = round(self.inner_hull_mass * 3)
                 return self.inner_hull_mass, self.inner_hull_pv
-            case "Ultra Heavy":
+            case "4":
                 self.inner_hull_mass = round(self.tam[0] * .2)
                 self.inner_hull_pv = round(self.inner_hull_mass * 3)
                 return self.inner_hull_mass, self.inner_hull_pv
@@ -121,10 +127,10 @@ class Ship:
             self.equipment_description = ', '.join([item for items in self.equipment_names for item in items])
         return self.total_equipment_mass, self.total_equipment_pv, self.equipment_description
     
-    def fixed_cost(self):
-        self.fixed_cost_mass = round(self.tam[0] * .03)
-        self.fixed_cost_pv = round(self.fixed_cost_mass * 2)
-        return self.fixed_cost_mass, self.fixed_cost_pv
+    # def fixed_cost(self):
+    #     self.fixed_cost_mass = round(self.tam[0] * .03)
+    #     self.fixed_cost_pv = round(self.fixed_cost_mass * 2)
+    #     return self.fixed_cost_mass, self.fixed_cost_pv
     
     def set_quality(self, crew_quality):
         self.crew_quality = crew_quality
@@ -153,8 +159,8 @@ class Ship:
         return self.total_base_pv
 
 def build_base_ship():
-    name = input("Name: ")
-    sclass = input(f"\nClass: ")
+    name = input("Ship Name: ")
+    sclass = input(f"\nShip Class: ")
     size = [s['size'] for s in sclass_details if s['sclass'] == sclass]
     tam = [s['tam'] for s in sclass_details if s['sclass'] == sclass]
     armor_roll = [s['armor_roll'] for s in sclass_details if s['sclass'] == sclass]
@@ -164,11 +170,11 @@ def build_base_ship():
 if __name__ == "__main__":    
     ship = build_base_ship()
     
-    outer_hull_strength = input(f"\nOuter Hull Strength (Light, Average, Heavy, Ultra Heavy): ")
+    outer_hull_strength = input(f"\nOuter Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): ")
     ship.outer_hull(outer_hull_strength)
     print(ship.track_mass())
 
-    inner_hull_strength = input(f"\nInner Hull Strength (Light, Average, Heavy, Ultra Heavy): ")
+    inner_hull_strength = input(f"\nInner Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): ")
     ship.inner_hull(inner_hull_strength)
     print(ship.track_mass())
 
@@ -177,7 +183,7 @@ if __name__ == "__main__":
     print(ship.track_mass())
 
     equipment_list = [item for item in
-        input("\nSelect equipment (1-Long Range Sensors, 2-Agile Thrusters, 3-Enhanced Engineering, 4-Advanced Fire Control, 5-Target Designator) separated by a comma: ").split(',')]
+        input("\nSelect equipment (0-None, 1-Long Range Sensors, 2-Agile Thrusters, 3-Enhanced Engineering, 4-Advanced Fire Control, 5-Target Designator) separated by a comma: ").split(',')]
     ship.equipment(equipment_list)
     print(ship.track_mass())
 

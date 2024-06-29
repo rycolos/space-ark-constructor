@@ -124,20 +124,25 @@ class Ship:
         self.propulsion_pv = 0
         self.total_equipment_pv = 0
 
-    def outer_hull(self, outer_hull_strength: int) -> tuple:
+    def outer_hull(self, outer_hull_strength: int) -> tuple[int, int, int]:
+        """Calculate outer hull mass, PV, critical threshold"""
+
         mass_factor = [s['mass_factor'] for s in outer_strength_details if s['id'] == outer_hull_strength]
         self.outer_hull_mass = round(self.tam[0] * mass_factor[0])
         self.outer_hull_pv = round(self.outer_hull_mass * 3)
         self.critical_threshold = round(self.outer_hull_mass * .3)
         return self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
         
-    def inner_hull(self, inner_hull_strength: int) -> tuple:
+    def inner_hull(self, inner_hull_strength: int) -> tuple[int, int, int]:
+        """Calculate inner hull mass, PV"""
+
         mass_factor = [s['mass_factor'] for s in inner_strength_details if s['id'] == inner_hull_strength]
         self.inner_hull_mass = round(self.tam[0] * mass_factor[0])
         self.inner_hull_pv = round(self.outer_hull_mass * 3)
         return self.inner_hull_mass, self.inner_hull_pv
 
-    def propulsion(self, thrust_points: int) -> tuple:
+    def propulsion(self, thrust_points: int) -> tuple[int, int, int, int]:
+        """Calculate propulsion mass, pv, max_thrust"""
         self.thrust_points = thrust_points
         self.propulsion_mass = round(thrust_points * (self.tam[0] * .07))
         self.propulsion_pv = round(self.propulsion_mass * 2)
@@ -148,7 +153,8 @@ class Ship:
         #add mass check
         ...
     
-    def equipment(self, equipment_list) -> tuple:
+    def equipment(self, equipment_list: list) -> tuple[int, int, int, str]:
+        """Calculate total equipment mass, total equipment pv and generate string list of equipment names"""
         for item in equipment_list:
             mass_factor = [s['mass_factor'] for s in equipment_details if s['id'] == int(item)]
             self.total_equipment_mass = round(ship.total_equipment_mass + (self.tam[0] * mass_factor[0]))
@@ -164,7 +170,8 @@ class Ship:
     #     self.fixed_cost_pv = round(self.fixed_cost_mass * 2)
     #     return self.fixed_cost_mass, self.fixed_cost_pv
     
-    def set_quality(self, crew_quality: int):
+    def set_quality(self, crew_quality: int) -> tuple[int, int]:
+        """Calculate final PV and retrieve Max Stress"""
         self.crew_quality = crew_quality
         self.track_base_pv()
         self.pv_factor = [s['pv_factor'] for s in crew_quality_details if s['id'] == crew_quality]
@@ -173,17 +180,21 @@ class Ship:
         self.max_stress = self.max_stress[0]
         return self.final_pv, self.max_stress
 
-    def track_mass(self):
+    def track_mass(self) -> tuple[int, int, int]:
+        """Calculate current mass, mass distance from TAM, and bool for if TAM exceeded"""
         self.total_mass = self.outer_hull_mass + self.inner_hull_mass + self.propulsion_mass + self.total_equipment_mass #+ self.fixed_cost_mass
         self.mass_delta = self.tam[0] - self.total_mass
-        self.mass_exceeded = self.mass_delta < 0
-        return self.total_mass, self.mass_delta, self.mass_exceeded
+        self.tam_exceeded = self.mass_delta < 0
+        return self.total_mass, self.mass_delta, self.tam_exceeded
     
-    def track_base_pv(self):
+    def track_base_pv(self) -> int:
+        """Calculate current base PV"""
         self.total_base_pv = self.outer_hull_pv + self.inner_hull_pv + self.propulsion_pv + self.total_equipment_pv #+ self.fixed_cost_pv
         return self.total_base_pv
 
-def build_base_ship():
+def build_base_ship() -> Ship:
+    """Build base ship from name and class inputs"""
+
     name = input("Ship Name: ")
     sclass = input(f"\nShip Class: ")
     size = [s['size'] for s in sclass_details if s['sclass'] == sclass]

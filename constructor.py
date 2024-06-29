@@ -1,13 +1,13 @@
 sclass_details = [
     {
-        "sclass": "Frigate", #ship class
+        "sclass": "FRIGATE", #ship class
         "size": "Small",
         "tam": 30, #total available mass
         "armor_roll": "3+",
         "mdpa": 9 #max damage per arc
     },
     {
-        "sclass": "Destroyer",
+        "sclass": "DESTROYER",
         "size": "Small",
         "tam": 40,
         "armor_roll": "3+",
@@ -153,15 +153,15 @@ class Ship:
         #add mass check
         ...
     
-    def equipment(self, equipment_list: list) -> tuple[int, int, int, str]:
+    def equipment(self, *items) -> tuple[int, int, int, str]:
         """Calculate total equipment mass, total equipment pv and generate string list of equipment names"""
-        for item in equipment_list:
-            mass_factor = [s['mass_factor'] for s in equipment_details if s['id'] == int(item)]
+        for item in items:
+            mass_factor = [s['mass_factor'] for s in equipment_details if s['id'] == item]
             self.total_equipment_mass = round(ship.total_equipment_mass + (self.tam[0] * mass_factor[0]))
-            pv_factor = [s['pv_factor'] for s in equipment_details if s['id'] == int(item)]
+            pv_factor = [s['pv_factor'] for s in equipment_details if s['id'] == item]
             self.total_equipment_pv = round(ship.total_equipment_pv + (self.total_equipment_mass * pv_factor[0]))
             
-            self.equipment_names.append([s['name'] for s in equipment_details if s['id'] == int(item)])
+            self.equipment_names.append([s['name'] for s in equipment_details if s['id'] == item])
             self.equipment_description = ', '.join([item for items in self.equipment_names for item in items])
         return self.total_equipment_mass, self.total_equipment_pv, self.equipment_description
     
@@ -196,7 +196,7 @@ def build_base_ship() -> Ship:
     """Build base ship from name and class inputs"""
 
     name = input("Ship Name: ")
-    sclass = input(f"\nShip Class: ")
+    sclass = input(f"\nShip Class: ").upper()
     size = [s['size'] for s in sclass_details if s['sclass'] == sclass]
     tam = [s['tam'] for s in sclass_details if s['sclass'] == sclass]
     armor_roll = [s['armor_roll'] for s in sclass_details if s['sclass'] == sclass]
@@ -211,16 +211,15 @@ if __name__ == "__main__":
     print(ship.track_mass())
 
     inner_hull_strength = int(input(f"\nInner Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): "))
-    ship.inner_hull(inner_hull_strength)
+    ship.inner_hull(inner_hull_strength) 
     print(ship.track_mass())
 
     thrust_points = int(input(f"\nThrust Points: "))
     ship.propulsion(thrust_points)
     print(ship.track_mass())
 
-    equipment_list = [item for item in
-        input("\nEquipment (1-None, 2-Long Range Sensors, 3-Agile Thrusters, 4-Enhanced Engineering, 5-Advanced Fire Control, 6-Target Designator) separated by a comma: ").split(',')]
-    ship.equipment(equipment_list)
+    equipment_list = list(map(int, input("\nEquipment (1-None, 2-Long Range Sensors, 3-Agile Thrusters, 4-Enhanced Engineering, 5-Advanced Fire Control, 6-Target Designator) separated by a comma: ").split(',')))
+    ship.equipment(*equipment_list)
     print(ship.track_mass())
 
     crew_quality = int(input(f"\nCrew Quality (1-Recruit, 2-Regular, 3-Veteran): "))

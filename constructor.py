@@ -17,19 +17,19 @@ sclass_details = [
 
 equipment_details = [
     {
-        "id": 0,
+        "id": 1,
         "name": "None",
         "mass_factor": 0,
         "pv_factor": 0
     },
     {
-        "id": 1,
+        "id": 2,
         "name": "Long Range Sensors",
         "mass_factor": .04,
         "pv_factor": 9
     },
     {
-        "id": 2,
+        "id": 3,
         "name": "Agile Thrusters",
         "mass_factor": .05,
         "pv_factor": 9
@@ -82,6 +82,27 @@ inner_strength_details = [
     }
 ]
 
+crew_quality_details = [
+    {
+        "id": 1,
+        "name": "Recruit",
+        "pv_factor": .8,
+        "max_stress": 6 
+    },
+    {
+        "id": 2,
+        "name": "Regular",
+        "pv_factor": 1,
+        "max_stress": 7 
+    },
+    {
+        "id": 3,
+        "name": "Veteran",
+        "pv_factor": 1.2,
+        "max_stress": 8 
+    }
+]
+
 class Ship:
     def __init__(self, name, sclass, size, tam, armor_roll, mdpa): 
         
@@ -103,20 +124,20 @@ class Ship:
         self.propulsion_pv = 0
         self.total_equipment_pv = 0
 
-    def outer_hull(self, outer_hull_strength):
-        mass_factor = [s['mass_factor'] for s in outer_strength_details if s['id'] == int(outer_hull_strength)]
+    def outer_hull(self, outer_hull_strength: int) -> tuple:
+        mass_factor = [s['mass_factor'] for s in outer_strength_details if s['id'] == outer_hull_strength]
         self.outer_hull_mass = round(self.tam[0] * mass_factor[0])
         self.outer_hull_pv = round(self.outer_hull_mass * 3)
         self.critical_threshold = round(self.outer_hull_mass * .3)
         return self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
         
-    def inner_hull(self, inner_hull_strength):
-        mass_factor = [s['mass_factor'] for s in inner_strength_details if s['id'] == int(inner_hull_strength)]
+    def inner_hull(self, inner_hull_strength: int) -> tuple:
+        mass_factor = [s['mass_factor'] for s in inner_strength_details if s['id'] == inner_hull_strength]
         self.inner_hull_mass = round(self.tam[0] * mass_factor[0])
         self.inner_hull_pv = round(self.outer_hull_mass * 3)
         return self.inner_hull_mass, self.inner_hull_pv
 
-    def propulsion(self, thrust_points):
+    def propulsion(self, thrust_points: int) -> tuple:
         self.thrust_points = thrust_points
         self.propulsion_mass = round(thrust_points * (self.tam[0] * .07))
         self.propulsion_pv = round(self.propulsion_mass * 2)
@@ -127,7 +148,7 @@ class Ship:
         #add mass check
         ...
     
-    def equipment(self, equipment_list):
+    def equipment(self, equipment_list) -> tuple:
         for item in equipment_list:
             mass_factor = [s['mass_factor'] for s in equipment_details if s['id'] == int(item)]
             self.total_equipment_mass = round(ship.total_equipment_mass + (self.tam[0] * mass_factor[0]))
@@ -143,22 +164,14 @@ class Ship:
     #     self.fixed_cost_pv = round(self.fixed_cost_mass * 2)
     #     return self.fixed_cost_mass, self.fixed_cost_pv
     
-    def set_quality(self, crew_quality):
+    def set_quality(self, crew_quality: int):
         self.crew_quality = crew_quality
         self.track_base_pv()
-        match self.crew_quality:
-            case "Recruit": 
-                self.final_pv = round(self.total_base_pv * .8)
-                self.max_stress = 6
-                return self.final_pv, self.max_stress
-            case "Regular": 
-                self.final_pv = round(self.total_base_pv * 1)
-                self.max_stress = 7
-                return self.final_pv, self.max_stress
-            case "Veteran": 
-                self.final_pv = round(self.total_base_pv * 1.2)
-                self.max_stress = 8
-                return self.final_pv, self.max_stress
+        self.pv_factor = [s['pv_factor'] for s in crew_quality_details if s['id'] == crew_quality]
+        self.final_pv = round(self.total_base_pv * self.pv_factor[0])
+        self.max_stress = [s['max_stress'] for s in crew_quality_details if s['id'] == crew_quality]
+        self.max_stress = self.max_stress[0]
+        return self.final_pv, self.max_stress
 
     def track_mass(self):
         self.total_mass = self.outer_hull_mass + self.inner_hull_mass + self.propulsion_mass + self.total_equipment_mass #+ self.fixed_cost_mass
@@ -182,11 +195,11 @@ def build_base_ship():
 if __name__ == "__main__":    
     ship = build_base_ship()
     
-    outer_hull_strength = input(f"\nOuter Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): ")
+    outer_hull_strength = int(input(f"\nOuter Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): "))
     ship.outer_hull(outer_hull_strength)
     print(ship.track_mass())
 
-    inner_hull_strength = input(f"\nInner Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): ")
+    inner_hull_strength = int(input(f"\nInner Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): "))
     ship.inner_hull(inner_hull_strength)
     print(ship.track_mass())
 
@@ -195,11 +208,11 @@ if __name__ == "__main__":
     print(ship.track_mass())
 
     equipment_list = [item for item in
-        input("\nEquipment (0-None, 1-Long Range Sensors, 2-Agile Thrusters, 3-Enhanced Engineering, 4-Advanced Fire Control, 5-Target Designator) separated by a comma: ").split(',')]
+        input("\nEquipment (1-None, 2-Long Range Sensors, 3-Agile Thrusters, 4-Enhanced Engineering, 5-Advanced Fire Control, 6-Target Designator) separated by a comma: ").split(',')]
     ship.equipment(equipment_list)
     print(ship.track_mass())
 
-    crew_quality = input(f"\nCrew Quality (Recruit, Regular, Veteran): ")
+    crew_quality = int(input(f"\nCrew Quality (1-Recruit, 2-Regular, 3-Veteran): "))
     ship.set_quality(crew_quality)
 
     ship.track_mass()

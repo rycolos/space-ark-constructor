@@ -34,9 +34,11 @@ def equipment_args(*args):
         #print(item)
         mass_factor = [s['mass_factor'] for s in equipment_details if s['id'] == item]
         total_equipment_mass += (tam * mass_factor[0])
-        equipment_names.append([s['name'] for s in equipment_details if s['id'] == item])
-        equipment_description = ', '.join([item for items in equipment_names for item in items]) 
-    return total_equipment_mass, equipment_names, equipment_description
+        #equipment_names.append([s["name"] for s in equipment_details if s['id'] == item])
+        #equipment_description = ', '.join([item for items in equipment_names for item in items]) 
+        name = [s["name"] for s in equipment_details if s['id'] == item]
+        equipment_names.append(name[0])
+    return total_equipment_mass, equipment_names #, equipment_description
 
 #equipment_list = [int(item) for item in input("Select equipment (1, 2, 3, 4) separated by a comma: ").split(',')]
 # equipment_list = input("Select equipment (1, 2, 3, 4) separated by a comma: ")
@@ -48,11 +50,12 @@ print(f"You input: {equipment_list2}")
 print(type(equipment_list2))
 # total_equipment_mass, equipment_names, equipment_description = equipment_curr(equipment_list)
 
-total_equipment_mass, equipment_names, equipment_description = equipment_args(*equipment_list2)
+total_equipment_mass, equipment_names = equipment_args(*equipment_list2)
 #total_equipment_mass, equipment_names, equipment_description = equipment_args(1, 2)
 
 print(f"Total Equipment mass: {total_equipment_mass}")
 print(f"Equipment names: {equipment_names}")
-print(f"Equipment description: {equipment_description}")
+print(', '.join(equipment_names))
+#print(f"Equipment description: {equipment_description}")
 #print(*equipment_names)
 

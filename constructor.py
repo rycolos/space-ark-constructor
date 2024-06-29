@@ -150,7 +150,10 @@ class Ship:
         return self.thrust_points, self.propulsion_mass, self.propulsion_pv, self.max_thrust
     
     def weapons(self):
-        #add mass check
+        #per arc - arc has weapon list (by id), total damage, total mass, total pv
+            #check max damage
+        #all weapons - total mass, total pv
+            #check mass
         ...
     
     def equipment(self, *items) -> tuple[int, int, int, str]:
@@ -160,10 +163,9 @@ class Ship:
             self.total_equipment_mass = round(ship.total_equipment_mass + (self.tam[0] * mass_factor[0]))
             pv_factor = [s['pv_factor'] for s in equipment_details if s['id'] == item]
             self.total_equipment_pv = round(ship.total_equipment_pv + (self.total_equipment_mass * pv_factor[0]))
-            
-            self.equipment_names.append([s['name'] for s in equipment_details if s['id'] == item])
-            self.equipment_description = ', '.join([item for items in self.equipment_names for item in items])
-        return self.total_equipment_mass, self.total_equipment_pv, self.equipment_description
+            name = [s["name"] for s in equipment_details if s['id'] == item]
+            self.equipment_names.append(name[0])
+        return self.total_equipment_mass, self.total_equipment_pv, self.equipment_names
     
     # def fixed_cost(self):
     #     self.fixed_cost_mass = round(self.tam[0] * .03)
@@ -196,7 +198,7 @@ def build_base_ship() -> Ship:
     """Build base ship from name and class inputs"""
 
     name = input("Ship Name: ")
-    sclass = input(f"\nShip Class: ").upper()
+    sclass = input(f"\nShip Class (see docs for list): ").upper()
     size = [s['size'] for s in sclass_details if s['sclass'] == sclass]
     tam = [s['tam'] for s in sclass_details if s['sclass'] == sclass]
     armor_roll = [s['armor_roll'] for s in sclass_details if s['sclass'] == sclass]
@@ -214,7 +216,7 @@ if __name__ == "__main__":
     ship.inner_hull(inner_hull_strength) 
     print(ship.track_mass())
 
-    thrust_points = int(input(f"\nThrust Points: "))
+    thrust_points = int(input(f"\nThrust Points (number): "))
     ship.propulsion(thrust_points)
     print(ship.track_mass())
 
@@ -239,7 +241,7 @@ if __name__ == "__main__":
     print(f"Max Thrust: {ship.max_thrust}")
     print(f"Propulsion Mass: {ship.propulsion_mass}")
     print(f"Propulsion PV: {ship.propulsion_pv}")
-    print(f"\nSelected equipment: {ship.equipment_description}")
+    print(f"\nSelected equipment: {', '.join(ship.equipment_names)}")
     print(f"Total equipment mass: {ship.total_equipment_mass}")
     print(f"Total equipment PV: {ship.total_equipment_pv}")
     print(f"\nTotal Mass: {ship.total_mass}")

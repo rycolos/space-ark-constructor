@@ -90,3 +90,17 @@ class ShipClass:
         """Calculate current base PV"""
         self.total_base_pv = self.outer_hull_pv + self.inner_hull_pv + self.propulsion_pv + self.total_equipment_pv #+ self.fixed_cost_pv
         return self.total_base_pv
+    
+    def reset_all_stats(self) -> None:
+        """Reset all input and calculated stats (except for name, class, and class-contingent stats)"""
+        self.weapon_names = []
+        self.equipment_names = []
+        self.thrust_points = 0
+        self.outer_hull_mass = 0
+        self.inner_hull_mass = 0
+        self.propulsion_mass = 0
+        self.total_equipment_mass = 0
+        self.outer_hull_pv = 0
+        self.inner_hull_pv = 0
+        self.propulsion_pv = 0
+        self.total_equipment_pv = 0

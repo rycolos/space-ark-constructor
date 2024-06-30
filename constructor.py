@@ -6,54 +6,46 @@ def build_base_ship() -> ShipClass:
 
     name = input("Ship Name: ")
     sclass = input(f"\nShip Class (see docs for list): ").upper()
-    size = [s['size'] for s in sclass_details if s['sclass'] == sclass]
-    tam = [s['tam'] for s in sclass_details if s['sclass'] == sclass]
-    armor_roll = [s['armor_roll'] for s in sclass_details if s['sclass'] == sclass]
-    mdpa = [s['mdpa'] for s in sclass_details if s['sclass'] == sclass]
+    size = [s['size'] for s in build_data.sclass_details if s['sclass'] == sclass]
+    tam = [s['tam'] for s in build_data.sclass_details if s['sclass'] == sclass]
+    armor_roll = [s['armor_roll'] for s in build_data.sclass_details if s['sclass'] == sclass]
+    mdpa = [s['mdpa'] for s in build_data.sclass_details if s['sclass'] == sclass]
     return ShipClass(name, sclass, size, tam, armor_roll, mdpa)
 
 def build_outer_hull() -> None:
-    #reset
-    ship.outer_hull_mass = 0
-    ship.outer_hull_pv = 0
-
     outer_hull_strength = int(input(f"\nOuter Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): "))
     ship.outer_hull(outer_hull_strength)
     if mass_check_ui() == True:
         if input("Try again... Y/N? ").upper() == 'Y':
+            ship.outer_hull_mass = 0
+            ship.outer_hull_pv = 0
             build_outer_hull()
 
 def build_inner_hull() -> None:
-    #reset
-    ship.inner_hull_mass = 0
-    ship.inner_hull_pv = 0
-
     inner_hull_strength = int(input(f"\nInner Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): "))
     ship.inner_hull(inner_hull_strength) 
     if mass_check_ui() == True:
         if input("Try again... Y/N? ").upper() == 'Y':
+            ship.inner_hull_mass = 0
+            ship.inner_hull_pv = 0
             build_inner_hull()
 
 def build_propulsion() -> None:
-    #reset
-    ship.propulsion_mass = 0
-    ship.propulsion_pv = 0
-
     thrust_points = int(input(f"\nThrust Points (number): "))
     ship.propulsion(thrust_points)
     if mass_check_ui() == True:
         if input("Try again... Y/N? ").upper() == 'Y':
+            ship.propulsion_mass = 0
+            ship.propulsion_pv = 0
             build_propulsion()
 
 def build_equipment() -> None:
-    #reset
-    ship.total_equipment_mass = 0
-    ship.total_equipment_pv = 0
-
     equipment_list = list(map(int, input("\nEquipment (1-None, 2-Long Range Sensors, 3-Agile Thrusters, 4-Enhanced Engineering, 5-Advanced Fire Control, 6-Target Designator) separated by a comma: ").split(',')))
     ship.equipment(*equipment_list)
     if mass_check_ui() == True:
         if input("Try again... Y/N? ").upper() == 'Y':
+            ship.total_equipment_mass = 0
+            ship.total_equipment_pv = 0
             build_equipment()
 
 def build_crew_quality() -> None:

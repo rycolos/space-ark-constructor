@@ -1,4 +1,4 @@
-sclass_details = [
+sclass_details = (
     {
         "sclass": "FRIGATE",
         "size": "Small",
@@ -13,9 +13,9 @@ sclass_details = [
         "armor_roll": "3+",
         "mdpa": 12
     }
-]
+)
 
-equipment_details = [
+equipment_details = (
     {
         "id": 1,
         "name": "None",
@@ -34,9 +34,9 @@ equipment_details = [
         "mass_factor": .05,
         "pv_factor": 9
     }
-]
+)
 
-outer_strength_details = [
+outer_strength_details = (
     {
         "id": 1,
         "name": "Light",
@@ -57,9 +57,9 @@ outer_strength_details = [
         "name": "Ultra Heavy",
         "mass_factor": .35
     }
-]
+)
 
-inner_strength_details = [
+inner_strength_details = (
     {
         "id": 1,
         "name": "Light",
@@ -80,9 +80,9 @@ inner_strength_details = [
         "name": "Ultra Heavy",
         "mass_factor": .20
     }
-]
+)
 
-crew_quality_details = [
+crew_quality_details = (
     {
         "id": 1,
         "name": "Recruit",
@@ -101,4 +101,20 @@ crew_quality_details = [
         "pv_factor": 1.2,
         "max_stress": 8 
     }
-]
+)
+
+weapon_details = (
+    {
+        "name": "Light Laser",
+        "max_dmg": 2,
+        "mass": 2,
+        "pv": 6
+    },
+    {
+        "name": "Medium Laser",
+        "max_dmg": 4,
+        "mass": 4,
+        "pv": 12
+    }
+
+)

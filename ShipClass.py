@@ -52,16 +52,24 @@ class ShipClass:
         #all weapons - total mass, total pv
             #check mass
         ...
-    
+
     def equipment(self, *items) -> tuple[int, int, int, str]:
         """Calculate total equipment mass, total equipment pv and generate string list of equipment names"""
+        all_item_mass = []
+        all_item_pv = []
         for item in items:
             mass_factor = [s['mass_factor'] for s in build_data.equipment_details if s['id'] == item]
-            self.total_equipment_mass = round(self.total_equipment_mass + (self.tam[0] * mass_factor[0]))
+            item_mass = round(self.total_equipment_mass + (self.tam[0] * mass_factor[0]))
+            all_item_mass.append(item_mass)
+            
             pv_factor = [s['pv_factor'] for s in build_data.equipment_details if s['id'] == item]
-            self.total_equipment_pv = round(self.total_equipment_pv + (self.total_equipment_mass * pv_factor[0]))
+            item_pv = round(self.total_equipment_pv + (self.total_equipment_mass * pv_factor[0]))
+            all_item_pv.append(item_pv)
+            
             name = [s["name"] for s in build_data.equipment_details if s['id'] == item]
             self.equipment_names.append(name[0])
+        self.total_equipment_mass = sum(all_item_mass)
+        self.total_equipment_pv = sum(all_item_pv)
         return self.total_equipment_mass, self.total_equipment_pv, self.equipment_names
     
     # def fixed_cost(self):

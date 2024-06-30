@@ -15,8 +15,10 @@ def front_weapons(*weapons):
         for weapon in weapons:
             weapon_mass = [w["mass"] for w in build_data.weapon_details if w["name"] == weapon]
             front_arc_mass.append(weapon_mass[0])
+            
             weapon_pv = [w["pv"] for w in build_data.weapon_details if w["name"] == weapon]
             front_arc_pv.append(weapon_pv[0])
+            
             weapon_max_dmg = [w["max_dmg"] for w in build_data.weapon_details if w["name"] == weapon]
             front_arc_max_dmg.append(weapon_max_dmg[0])
         total_front_arc_mass = sum(front_arc_mass)

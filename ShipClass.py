@@ -10,6 +10,23 @@ class ShipClass:
         self.armor_roll = armor_roll
         self.mdpa = mdpa
 
+        self.front_arc_weapons_names = []
+        self.total_front_arc_mass = 0
+        self.total_front_arc_pv = 0
+        self.total_front_arc_max_dmg = 0
+        self.rear_arc_weapons_names = []
+        self.total_rear_arc_mass = 0
+        self.total_rear_arc_pv = 0
+        self.total_rear_arc_max_dmg = 0
+        self.right_arc_weapons_names = []
+        self.total_right_arc_mass = 0
+        self.total_right_arc_pv = 0
+        self.total_right_arc_max_dmg = 0
+        self.left_arc_weapons_names = []
+        self.total_left_arc_mass = 0
+        self.total_left_arc_pv = 0
+        self.total_left_arc_max_dmg = 0
+
         self.equipment_names = []
         self.thrust_points = 0
         self.outer_hull_mass = 0
@@ -46,12 +63,121 @@ class ShipClass:
         self.max_thrust = round(thrust_points * 1.5)
         return self.thrust_points, self.propulsion_mass, self.propulsion_pv, self.max_thrust
     
-    def weapons(self):
-        #per arc - arc has weapon list (by id), total damage, total mass, total pv
-            #check max damage
-        #all weapons - total mass, total pv
-            #check mass
-        ...
+    def front_arc_weapons(self, *weapons):
+        """Calculate total mass, pv, and max damage for front arc weapons"""
+        front_arc_mass = []
+        front_arc_pv = []
+        front_arc_max_dmg = []
+
+        if weapons[0] == '': #check for empty input
+            self.front_arc_weapons_names = []
+            self.total_front_arc_mass = 0
+            self.total_front_arc_pv = 0
+            self.total_front_arc_max_dmg = 0
+        else:
+            for weapon in weapons:
+                weapon_mass = [w["mass"] for w in build_data.weapon_details if w["name"] == weapon]
+                front_arc_mass.append(weapon_mass[0])
+                
+                weapon_pv = [w["pv"] for w in build_data.weapon_details if w["name"] == weapon]
+                front_arc_pv.append(weapon_pv[0])
+                
+                weapon_max_dmg = [w["max_dmg"] for w in build_data.weapon_details if w["name"] == weapon]
+                front_arc_max_dmg.append(weapon_max_dmg[0])
+
+                name = [w["name"] for w in build_data.weapon_details if w['name'] == weapon]
+                self.front_arc_weapons_names.append(name[0])
+            self.total_front_arc_mass = sum(front_arc_mass)
+            self.total_front_arc_pv = sum(front_arc_pv)
+            self.total_front_arc_max_dmg = sum(front_arc_max_dmg)
+        return self.front_arc_weapons_names, self.total_front_arc_mass, self.total_front_arc_pv, self.total_front_arc_max_dmg
+
+    def rear_arc_weapons(self, *weapons):
+        """Calculate total mass, pv, and max damage for rear arc weapons"""
+        rear_arc_mass = []
+        rear_arc_pv = []
+        rear_arc_max_dmg = []
+
+        if weapons[0] == '': #check for empty input
+            self.rear_arc_weapons_names = []
+            self.total_rear_arc_mass = 0
+            self.total_rear_arc_pv = 0
+            self.total_rear_arc_max_dmg = 0
+        else:
+            for weapon in weapons:
+                weapon_mass = [w["mass"] for w in build_data.weapon_details if w["name"] == weapon]
+                rear_arc_mass.append(weapon_mass[0])
+                
+                weapon_pv = [w["pv"] for w in build_data.weapon_details if w["name"] == weapon]
+                rear_arc_pv.append(weapon_pv[0])
+                
+                weapon_max_dmg = [w["max_dmg"] for w in build_data.weapon_details if w["name"] == weapon]
+                rear_arc_max_dmg.append(weapon_max_dmg[0])
+
+                name = [w["name"] for w in build_data.weapon_details if w['name'] == weapon]
+                self.rear_arc_weapons_names.append(name[0])
+            self.total_rear_arc_mass = sum(rear_arc_mass)
+            self.total_rear_arc_pv = sum(rear_arc_pv)
+            self.total_rear_arc_max_dmg = sum(rear_arc_max_dmg)
+        return self.rear_arc_weapons_names, self.total_rear_arc_mass, self.total_rear_arc_pv, self.total_rear_arc_max_dmg
+
+    def right_arc_weapons(self, *weapons):
+        """Calculate total mass, pv, and max damage for right arc weapons"""
+        right_arc_mass = []
+        right_arc_pv = []
+        right_arc_max_dmg = []
+
+        if weapons[0] == '': #check for empty input
+            self.right_arc_weapons_names = []
+            self.total_right_arc_mass = 0
+            self.total_right_arc_pv = 0
+            self.total_right_arc_max_dmg = 0
+        else:
+            for weapon in weapons:
+                weapon_mass = [w["mass"] for w in build_data.weapon_details if w["name"] == weapon]
+                right_arc_mass.append(weapon_mass[0])
+                
+                weapon_pv = [w["pv"] for w in build_data.weapon_details if w["name"] == weapon]
+                right_arc_pv.append(weapon_pv[0])
+                
+                weapon_max_dmg = [w["max_dmg"] for w in build_data.weapon_details if w["name"] == weapon]
+                right_arc_max_dmg.append(weapon_max_dmg[0])
+
+                name = [w["name"] for w in build_data.weapon_details if w['name'] == weapon]
+                self.right_arc_weapons_names.append(name[0])
+            self.total_right_arc_mass = sum(right_arc_mass)
+            self.total_right_arc_pv = sum(right_arc_pv)
+            self.total_right_arc_max_dmg = sum(right_arc_max_dmg)
+        return self.right_arc_weapons_names, self.total_right_arc_mass, self.total_right_arc_pv, self.total_right_arc_max_dmg
+
+    def left_arc_weapons(self, *weapons):
+        """Calculate total mass, pv, and max damage for rear arc weapons"""
+        left_arc_mass = []
+        left_arc_pv = []
+        left_arc_max_dmg = []
+
+        if weapons[0] == '': #check for empty input
+            self.left_arc_weapons_names = []
+            self.total_left_arc_mass = 0
+            self.total_left_arc_pv = 0
+            self.total_left_arc_max_dmg = 0
+        else:
+            for weapon in weapons:
+                weapon_mass = [w["mass"] for w in build_data.weapon_details if w["name"] == weapon]
+                left_arc_mass.append(weapon_mass[0])
+                
+                weapon_pv = [w["pv"] for w in build_data.weapon_details if w["name"] == weapon]
+                left_arc_pv.append(weapon_pv[0])
+                
+                weapon_max_dmg = [w["max_dmg"] for w in build_data.weapon_details if w["name"] == weapon]
+                left_arc_max_dmg.append(weapon_max_dmg[0])
+
+                name = [w["name"] for w in build_data.weapon_details if w['name'] == weapon]
+                self.left_arc_weapons_names.append(name[0])
+            self.total_left_arc_mass = sum(left_arc_mass)
+            self.total_left_arc_pv = sum(left_arc_pv)
+            self.total_left_arc_max_dmg = sum(left_arc_max_dmg)
+        return self.left_arc_weapons_names, self.total_left_arc_mass, self.total_left_arc_pv, self.total_left_arc_max_dmg
 
     def equipment(self, *items) -> tuple[int, int, int, str]:
         """Calculate total equipment mass, total equipment pv and generate string list of equipment names"""
@@ -89,14 +215,22 @@ class ShipClass:
 
     def track_mass(self) -> tuple[int, int, int]:
         """Calculate current mass, mass distance from TAM, and bool for if TAM exceeded"""
-        self.total_mass = self.outer_hull_mass + self.inner_hull_mass + self.propulsion_mass + self.total_equipment_mass #+ self.fixed_cost_mass
+        self.total_mass = (self.outer_hull_mass + self.inner_hull_mass + self.propulsion_mass + self.total_equipment_mass
+            + self.total_front_arc_mass + self.total_rear_arc_mass + self.total_right_arc_mass + self.total_left_arc_mass)
         self.mass_delta = self.tam[0] - self.total_mass
         self.tam_exceeded = self.mass_delta < 0
         return self.total_mass, self.mass_delta, self.tam_exceeded
     
+    def track_max_dmg(self, arc_max_dmg: int) -> tuple[int, int, int]:
+        """Calculate max dmg distance from MDPA, and bool for if MDPA exceeded"""
+        self.max_dmg_delta = self.mdpa[0] - arc_max_dmg
+        self.mdpa_exceeded = self.max_dmg_delta < 0
+        return arc_max_dmg, self.max_dmg_delta, self.mdpa_exceeded
+    
     def track_base_pv(self) -> int:
         """Calculate current base PV"""
-        self.total_base_pv = self.outer_hull_pv + self.inner_hull_pv + self.propulsion_pv + self.total_equipment_pv #+ self.fixed_cost_pv
+        self.total_base_pv = (self.outer_hull_pv + self.inner_hull_pv + self.propulsion_pv + self.total_equipment_pv
+            + self.total_front_arc_pv + self.total_rear_arc_pv + self.total_right_arc_pv + self.total_left_arc_pv)
         return self.total_base_pv
     
     def reset_all_stats(self) -> None:

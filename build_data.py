@@ -105,13 +105,13 @@ crew_quality_details = (
 
 weapon_details = (
     {
-        "name": "Light Laser",
+        "name": "LIGHT LASER",
         "max_dmg": 2,
         "mass": 2,
         "pv": 6
     },
     {
-        "name": "Medium Laser",
+        "name": "MEDIUM LASER",
         "max_dmg": 4,
         "mass": 4,
         "pv": 12

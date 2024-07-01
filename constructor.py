@@ -59,6 +59,7 @@ def build_weapons() -> None:
             case "1":
                 front_list = list(map(str, input("\nSelect Front Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
                 ship.front_arc_weapons(*front_list)
+                print(f"\nFront Arc Weapons: {', '.join(ship.front_arc_weapons_names)}")
                 if mass_check_ui() == True:
                     if input("Try again... Y/N? ").upper() == 'Y':
                         ship.front_arc_weapons_names = []
@@ -74,6 +75,7 @@ def build_weapons() -> None:
             case "2":
                 rear_list = list(map(str, input("Select Rear Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
                 ship.rear_arc_weapons(*rear_list)
+                print(f"\nRear Arc Weapons: {', '.join(ship.rear_arc_weapons_names)}")
                 if mass_check_ui() == True:
                     if input("Try again... Y/N? ").upper() == 'Y':
                         ship.rear_arc_weapons_names = []
@@ -89,6 +91,7 @@ def build_weapons() -> None:
             case "3":
                 right_list = list(map(str, input("Select Right Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
                 ship.right_arc_weapons(*right_list)
+                print(f"\nRight Arc Weapons: {', '.join(ship.right_arc_weapons_names)}")
                 if mass_check_ui() == True:
                     if input("Try again... Y/N? ").upper() == 'Y':
                         ship.right_arc_weapons_names = []
@@ -104,6 +107,7 @@ def build_weapons() -> None:
             case "4":
                 left_list = list(map(str, input("Select Left Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
                 ship.left_arc_weapons(*left_list)
+                print(f"\nLeft Arc Weapons: {', '.join(ship.left_arc_weapons_names)}")
                 if mass_check_ui() == True:
                     if input("Try again... Y/N? ").upper() == 'Y':
                         ship.left_arc_weapons_names = []
@@ -185,7 +189,7 @@ def show_ship() -> None:
     print(f"\nTotal Mass: {ship.total_mass}")
     print(f"Total Base PV: {ship.total_base_pv}")
     
-    print(f"\nCrew Quality: {ship.crew_quality}")
+    print(f"\nCrew Quality: {ship.crew_quality_str}")
     print(f"Max Stress: {ship.max_stress}")
     print(f"Final PV: {ship.final_pv}")
 

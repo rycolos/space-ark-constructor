@@ -1,5 +1,5 @@
 .DS_Store
-test__*
-*.json
-__pycache__/
+test__*.py
+__pycache__/*
 *.pyc
+*.json

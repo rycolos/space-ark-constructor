@@ -1,10 +1,9 @@
 import build_data
 from ShipClass import ShipClass
-
 from time import sleep
 
 def build_base_ship() -> ShipClass:
-    """Instantiate base ship from name and class inputs"""
+    """Instantiate base ship from name and ship class inputs"""
 
     name = input("Ship Name: ")
     sclass = input(f"\nShip Class (see docs for list): ").upper()
@@ -15,6 +14,7 @@ def build_base_ship() -> ShipClass:
     return ShipClass(name, sclass, size, tam, armor_roll, mdpa)
 
 def build_outer_hull() -> None:
+    """Calculate outer hull outputs from strength input"""
     outer_hull_strength = int(input(f"\nOuter Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): "))
     ship.outer_hull(outer_hull_strength)
     if mass_check_ui() == True:
@@ -24,6 +24,7 @@ def build_outer_hull() -> None:
             build_outer_hull()
 
 def build_inner_hull() -> None:
+    """Calculate inner hull outputs from strength input"""
     inner_hull_strength = int(input(f"\nInner Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): "))
     ship.inner_hull(inner_hull_strength) 
     if mass_check_ui() == True:
@@ -33,6 +34,7 @@ def build_inner_hull() -> None:
             build_inner_hull()
 
 def build_propulsion() -> None:
+    """Calculate propulsion outputs from thrust points input"""
     thrust_points = int(input(f"\nThrust Points (number): "))
     ship.propulsion(thrust_points)
     if mass_check_ui() == True:
@@ -42,6 +44,7 @@ def build_propulsion() -> None:
             build_propulsion()
 
 def build_equipment() -> None:
+    """Calculate equipment outputs from list input"""
     equipment_list = list(map(int, input("\nEquipment (1-None, 2-Long Range Sensors, 3-Agile Thrusters, 4-Enhanced Engineering, 5-Advanced Fire Control, 6-Target Designator) separated by a comma: ").split(',')))
     ship.equipment(*equipment_list)
     if mass_check_ui() == True:
@@ -51,6 +54,7 @@ def build_equipment() -> None:
             build_equipment()
 
 def build_weapons() -> None:
+    """Calculate per-arc weapon outputs from list input"""
     weapon_selection = True
     print("\nWEAPON SELECTION:")
     while weapon_selection == True:
@@ -124,10 +128,12 @@ def build_weapons() -> None:
                 weapon_selection = False
 
 def build_crew_quality() -> None:
+    """Calculate crew quality-driven outputs (final pv, max stress) from input"""
     crew_quality = int(input(f"\nCrew Quality (1-Recruit, 2-Regular, 3-Veteran): "))
     ship.set_quality(crew_quality)
 
 def mass_check_ui() -> bool:
+    """Check if total mass exceeds Total Available Mass, return bool"""
     total_mass, mass_delta, tam_exceeded = ship.track_mass()
     if tam_exceeded == True:
         print(f"Mass exceeded! Mass overage: {mass_delta}")
@@ -136,6 +142,7 @@ def mass_check_ui() -> bool:
     return tam_exceeded
 
 def max_dmg_check_ui(arc: int) -> bool:
+    """Check if total damage in given arc exceeds Max Damage Per Arc, return bool"""
     arc_max_dmg, max_dmg_delta, mdpa_exceeded = ship.track_max_dmg(arc)
     if mdpa_exceeded == True:
         print(f"Arc Max Damage exceeded! Max Damage overage: {max_dmg_delta}")
@@ -144,6 +151,7 @@ def max_dmg_check_ui(arc: int) -> bool:
     return mdpa_exceeded
 
 def show_ship() -> None:
+    """Calcualte final mass and final base pv and print ship details"""
     ship.track_mass()
     ship.track_base_pv()
     print("Building ship...")
@@ -203,7 +211,3 @@ if __name__ == "__main__":
     build_weapons()
     build_crew_quality()
     show_ship()
-
-    # ship.fixed_cost()
-    # print(f"\nFixed Cost (Fuel, Crew) Mass: {ship.fixed_cost_mass}")
-    # print(f"Fixed Cost (Fuel, Crew) PV: {ship.fixed_cost_pv}")

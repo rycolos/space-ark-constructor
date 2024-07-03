@@ -20,19 +20,22 @@ equipment_details = (
         "id": 1,
         "name": "None",
         "mass_factor": 0,
-        "pv_factor": 0
+        "pv_factor": 0,
+        "description": ""
     },
     {
         "id": 2,
         "name": "Long Range Sensors",
         "mass_factor": .04,
-        "pv_factor": 9
+        "pv_factor": 9,
+        "description": "Range brackets increase by 2 hexes"
     },
     {
         "id": 3,
         "name": "Agile Thrusters",
         "mass_factor": .05,
-        "pv_factor": 9
+        "pv_factor": 9,
+        "description": "No minimum 1 hex forward move is required before making a facing change"
     }
 )
 
@@ -108,13 +111,21 @@ weapon_details = (
         "name": "LIGHT LASER",
         "max_dmg": 2,
         "mass": 2,
-        "pv": 6
+        "pv": 6,
+        "attack": 3,
+        "damage": 1,
+        "range": "8/13/18/23",
+        "special": ""
     },
     {
         "name": "MEDIUM LASER",
         "max_dmg": 4,
         "mass": 4,
-        "pv": 12
+        "pv": 12,
+        "attack": 3,
+        "damage": 2,
+        "range": "8/14/20/25",
+        "special": ""
     }
 
 )

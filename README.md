@@ -20,4 +20,4 @@ Space Ark Constructor is an in-development CLI and Web application to build ship
 ### Build data
 * Consideering moving from dicts in `build_data` to a simple sqlite or duckdb database, which could also be used for ship storage and management rather than json objects
 ### Web App
-* ...everything
+* ...everything. This is also a Flask and cloud learning project as I prep for the AWS SAA exam, so I'll design multiple architecture solutions and pick the most cost effective. 

@@ -156,7 +156,7 @@ def show_ship() -> None:
     ship.track_base_pv()
     print("Building ship...")
     sleep(1)
-    print(f"\n**YOUR SHIP**\nShip Name: {ship.name}\nClass: {ship.sclass}\nSize: {ship.size[0]}\nTotal Availble Mass: {ship.tam[0]}\nArmor: {ship.armor_roll[0]}\nMax Damage Per Arc: {ship.mdpa[0]}")
+    print(f"\n**SHIP BUILD STATS **\nShip Name: {ship.name}\nClass: {ship.sclass}\nSize: {ship.size[0]}\nTotal Availble Mass: {ship.tam[0]}\nArmor: {ship.armor_roll[0]}\nMax Damage Per Arc: {ship.mdpa[0]}")
     
     print(f"\nOuter Hull Mass: {ship.outer_hull_mass}")
     print(f"Outer Hull PV: {ship.outer_hull_pv}")

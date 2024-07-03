@@ -43,15 +43,17 @@ def build_propulsion() -> None:
             ship.propulsion_pv = 0
             build_propulsion()
 
-def build_equipment() -> None:
-    """Calculate equipment outputs from list input"""
+def build_equipment() -> list:
+    """Calculate equipment outputs from list input, returns equipment name list from equipment object"""
     equipment_list = list(map(int, input("\nEquipment (1-None, 2-Long Range Sensors, 3-Agile Thrusters, 4-Enhanced Engineering, 5-Advanced Fire Control, 6-Target Designator) separated by a comma: ").split(',')))
     ship.equipment(*equipment_list)
+    equipment_names = [i["name"] for i in ship.equipment_object["equipment"]]
     if mass_check_ui() == True:
         if input("Try again... Y/N? ").upper() == 'Y':
             ship.total_equipment_mass = 0
             ship.total_equipment_pv = 0
             build_equipment()
+    return equipment_names
 
 def build_weapons() -> None:
     """Calculate per-arc weapon outputs from list input"""
@@ -170,7 +172,7 @@ def show_ship() -> None:
     print(f"Propulsion Mass: {ship.propulsion_mass}")
     print(f"Propulsion PV: {ship.propulsion_pv}")
     
-    print(f"\nSelected Equipment: {', '.join(ship.equipment_names)}")
+    print(f"\nSelected Equipment: {', '.join(equipment_names)}")
     print(f"Total Equipment Mass: {ship.total_equipment_mass}")
     print(f"Total Equipment PV: {ship.total_equipment_pv}")
 
@@ -207,7 +209,7 @@ if __name__ == "__main__":
     build_outer_hull()
     build_inner_hull()
     build_propulsion()
-    build_equipment()
+    equipment_names = build_equipment()
     build_weapons()
     build_crew_quality()
     show_ship()

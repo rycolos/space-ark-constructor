@@ -39,6 +39,12 @@ class ShipClass:
         self.inner_hull_pv = 0
         self.propulsion_pv = 0
         self.total_equipment_pv = 0
+        self.critical_threshold = 0
+        self.max_thrust = 0
+        self.max_stress = 0
+        self.final_pv = 0
+
+        self.equipment_object = {"equipment": []}
 
     def outer_hull(self, outer_hull_strength: int) -> tuple[int, int, int]:
         """Calculate outer hull mass, PV, critical threshold"""
@@ -180,25 +186,36 @@ class ShipClass:
             self.total_left_arc_pv = sum(left_arc_pv)
             self.total_left_arc_max_dmg = sum(left_arc_max_dmg)
         return self.left_arc_weapons_names, self.total_left_arc_mass, self.total_left_arc_pv, self.total_left_arc_max_dmg
-
-    def equipment(self, *items) -> tuple[int, int, int, str]:
-        """Calculate total equipment mass, total equipment pv and generate string list of equipment names"""
+    
+    def equipment(self, *items) -> tuple[dict, int, int]:
+        """Calculate total equipment mass, total equipment pv and generate equipment object"""
         all_item_mass = []
         all_item_pv = []
+        
         for item in items:
+
+            equipment_item = {"name": "", "description": "", "mass": None, "pv": None}
+
+            name = [s["name"] for s in build_data.equipment_details if s['id'] == item]
+            equipment_item["name"] = name[0]
+
+            description = [s["description"] for s in build_data.equipment_details if s['id'] == item]
+            equipment_item["description"] = description[0]
+
             mass_factor = [s['mass_factor'] for s in build_data.equipment_details if s['id'] == item]
             item_mass = math.ceil(self.total_equipment_mass + (self.tam[0] * mass_factor[0]))
+            equipment_item["mass"] = item_mass
             all_item_mass.append(item_mass)
-            
+
             pv_factor = [s['pv_factor'] for s in build_data.equipment_details if s['id'] == item]
-            item_pv = math.ceil(self.total_equipment_pv + (self.total_equipment_mass * pv_factor[0]))
+            item_pv = math.ceil(item_mass * pv_factor[0])
+            equipment_item["pv"] = item_pv
             all_item_pv.append(item_pv)
             
-            name = [s["name"] for s in build_data.equipment_details if s['id'] == item]
-            self.equipment_names.append(name[0])
+            self.equipment_object["equipment"].append(equipment_item)
         self.total_equipment_mass = sum(all_item_mass)
         self.total_equipment_pv = sum(all_item_pv)
-        return self.total_equipment_mass, self.total_equipment_pv, self.equipment_names
+        return self.equipment_object, self.total_equipment_mass, self.total_equipment_pv
     
     def set_quality(self, crew_quality: int) -> tuple[int, int]:
         """Calculate final PV and retrieve Max Stress"""

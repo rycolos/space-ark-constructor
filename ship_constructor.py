@@ -1,6 +1,7 @@
 import build_data
 from ShipClass import ShipClass
 from time import sleep
+import json
 
 def build_base_ship() -> ShipClass:
     """Instantiate base ship from name and ship class inputs"""
@@ -152,7 +153,7 @@ def max_dmg_check_ui(arc: int) -> bool:
         print(f"Current Arc Max Damage: {arc_max_dmg}. Arc Max Damage Remaining: {max_dmg_delta}")
     return mdpa_exceeded
 
-def show_ship() -> None:
+def show_ship_build_stats() -> None:
     """Calcualte final mass and final base pv and print ship details"""
     ship.track_mass()
     ship.track_base_pv()
@@ -203,6 +204,15 @@ def show_ship() -> None:
     print(f"Max Stress: {ship.max_stress}")
     print(f"Final PV: {ship.final_pv}")
 
+def show_ship_game_stats():
+    ship_game_data = {}
+    ship_game_data.update(ship.equipment_object)
+    ship_game_data.update(ship.weapons_object)
+    print(f"\n**SHIP GAME STATS **")
+    # print(json.dumps(ship.equipment_object, indent=2))
+    # print(json.dumps(ship.weapons_object, indent=2))
+    print(json.dumps(ship_game_data, indent=2))
+
 if __name__ == "__main__":    
     ship = build_base_ship()
     
@@ -212,4 +222,5 @@ if __name__ == "__main__":
     equipment_names = build_equipment()
     build_weapons()
     build_crew_quality()
-    show_ship()
+    show_ship_build_stats()
+    show_ship_game_stats()

@@ -21,7 +21,7 @@ equipment_details = (
         "name": "None",
         "mass_factor": 0,
         "pv_factor": 0,
-        "description": ""
+        "description": None
     },
     {
         "id": 2,
@@ -115,7 +115,7 @@ weapon_details = (
         "attack": 3,
         "damage": 1,
         "range": "8/13/18/23",
-        "special": ""
+        "special": None
     },
     {
         "name": "MEDIUM LASER",
@@ -125,7 +125,7 @@ weapon_details = (
         "attack": 3,
         "damage": 2,
         "range": "8/14/20/25",
-        "special": ""
+        "special": None
     }
 
 )

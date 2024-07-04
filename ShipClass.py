@@ -28,7 +28,7 @@ class ShipClass:
         self.total_left_arc_pv = 0
         self.total_left_arc_max_dmg = 0
 
-        self.crew_quality_str = ""
+        self.crew_quality_str = None
         self.equipment_names = []
         self.thrust_points = 0
         self.outer_hull_mass = 0
@@ -45,6 +45,13 @@ class ShipClass:
         self.final_pv = 0
 
         self.equipment_object = {"equipment": []}
+        self.weapons_object = {
+            "weapons": {
+                "front_arc_weapons": [],
+                "rear_arc_weapons": [],
+                "right_arc_weapons": [],
+                "left_arc_weapons": []
+            }}
 
     def outer_hull(self, outer_hull_strength: int) -> tuple[int, int, int]:
         """Calculate outer hull mass, PV, critical threshold"""
@@ -70,13 +77,12 @@ class ShipClass:
         self.propulsion_pv = math.ceil(self.propulsion_mass * 2)
         self.max_thrust = math.ceil(thrust_points * 1.5)
         return self.thrust_points, self.propulsion_mass, self.propulsion_pv, self.max_thrust
-    
-    def front_arc_weapons(self, *weapons):
-        """Calculate total mass, pv, and max damage for front arc weapons"""
-        front_arc_mass = []
-        front_arc_pv = []
-        front_arc_max_dmg = []
 
+    def front_arc_weapons(self, *weapons: list) -> tuple[list, int, int, int]:
+        """
+        Add front arc weapon lookup data to weapons dict
+        Calculate total arc mass, pv, max dmg for final ship calculations
+        """
         if weapons[0] == '': #check for empty input
             self.front_arc_weapons_names = []
             self.total_front_arc_mass = 0
@@ -84,28 +90,20 @@ class ShipClass:
             self.total_front_arc_max_dmg = 0
         else:
             for weapon in weapons:
-                weapon_mass = [w["mass"] for w in build_data.weapon_details if w["name"] == weapon]
-                front_arc_mass.append(weapon_mass[0])
-                
-                weapon_pv = [w["pv"] for w in build_data.weapon_details if w["name"] == weapon]
-                front_arc_pv.append(weapon_pv[0])
-                
-                weapon_max_dmg = [w["max_dmg"] for w in build_data.weapon_details if w["name"] == weapon]
-                front_arc_max_dmg.append(weapon_max_dmg[0])
-
-                name = [w["name"] for w in build_data.weapon_details if w['name'] == weapon]
-                self.front_arc_weapons_names.append(name[0])
-            self.total_front_arc_mass = sum(front_arc_mass)
-            self.total_front_arc_pv = sum(front_arc_pv)
-            self.total_front_arc_max_dmg = sum(front_arc_max_dmg)
+                weapon_item = [w for w in build_data.weapon_details if w["name"] == weapon]
+                self.weapons_object["weapons"]["front_arc_weapons"].append(weapon_item[0]) #create front arc weapons list
+        self.total_front_arc_mass = sum([w["mass"] for w in self.weapons_object["weapons"]["front_arc_weapons"]])
+        self.total_front_arc_pv = sum([w["pv"] for w in self.weapons_object["weapons"]["front_arc_weapons"]])
+        self.total_front_arc_max_dmg = sum([w["max_dmg"] for w in self.weapons_object["weapons"]["front_arc_weapons"]])
+        self.front_arc_weapons_names = [w["name"] for w in self.weapons_object["weapons"]["front_arc_weapons"]]
+    
         return self.front_arc_weapons_names, self.total_front_arc_mass, self.total_front_arc_pv, self.total_front_arc_max_dmg
 
-    def rear_arc_weapons(self, *weapons):
-        """Calculate total mass, pv, and max damage for rear arc weapons"""
-        rear_arc_mass = []
-        rear_arc_pv = []
-        rear_arc_max_dmg = []
-
+    def rear_arc_weapons(self, *weapons: list) -> tuple[list, int, int, int]:
+        """
+        Add rear arc weapon lookup data to weapons dict
+        Calculate total arc mass, pv, max dmg for final ship calculations
+        """
         if weapons[0] == '': #check for empty input
             self.rear_arc_weapons_names = []
             self.total_rear_arc_mass = 0
@@ -113,28 +111,19 @@ class ShipClass:
             self.total_rear_arc_max_dmg = 0
         else:
             for weapon in weapons:
-                weapon_mass = [w["mass"] for w in build_data.weapon_details if w["name"] == weapon]
-                rear_arc_mass.append(weapon_mass[0])
-                
-                weapon_pv = [w["pv"] for w in build_data.weapon_details if w["name"] == weapon]
-                rear_arc_pv.append(weapon_pv[0])
-                
-                weapon_max_dmg = [w["max_dmg"] for w in build_data.weapon_details if w["name"] == weapon]
-                rear_arc_max_dmg.append(weapon_max_dmg[0])
-
-                name = [w["name"] for w in build_data.weapon_details if w['name'] == weapon]
-                self.rear_arc_weapons_names.append(name[0])
-            self.total_rear_arc_mass = sum(rear_arc_mass)
-            self.total_rear_arc_pv = sum(rear_arc_pv)
-            self.total_rear_arc_max_dmg = sum(rear_arc_max_dmg)
+                weapon_item = [w for w in build_data.weapon_details if w["name"] == weapon]
+                self.weapons_object["weapons"]["rear_arc_weapons"].append(weapon_item[0])
+        self.total_rear_arc_mass = sum([w["mass"] for w in self.weapons_object["weapons"]["rear_arc_weapons"]])
+        self.total_rear_arc_pv = sum([w["pv"] for w in self.weapons_object["weapons"]["rear_arc_weapons"]])
+        self.total_rear_arc_max_dmg = sum([w["max_dmg"] for w in self.weapons_object["weapons"]["rear_arc_weapons"]])
+        self.rear_arc_weapons_names = [w["name"] for w in self.weapons_object["weapons"]["rear_arc_weapons"]]
         return self.rear_arc_weapons_names, self.total_rear_arc_mass, self.total_rear_arc_pv, self.total_rear_arc_max_dmg
 
-    def right_arc_weapons(self, *weapons):
-        """Calculate total mass, pv, and max damage for right arc weapons"""
-        right_arc_mass = []
-        right_arc_pv = []
-        right_arc_max_dmg = []
-
+    def right_arc_weapons(self, *weapons: list) -> tuple[list, int, int, int]:
+        """
+        Add right arc weapon lookup data to weapons dict
+        Calculate total arc mass, pv, max dmg for final ship calculations
+        """        
         if weapons[0] == '': #check for empty input
             self.right_arc_weapons_names = []
             self.total_right_arc_mass = 0
@@ -142,28 +131,19 @@ class ShipClass:
             self.total_right_arc_max_dmg = 0
         else:
             for weapon in weapons:
-                weapon_mass = [w["mass"] for w in build_data.weapon_details if w["name"] == weapon]
-                right_arc_mass.append(weapon_mass[0])
-                
-                weapon_pv = [w["pv"] for w in build_data.weapon_details if w["name"] == weapon]
-                right_arc_pv.append(weapon_pv[0])
-                
-                weapon_max_dmg = [w["max_dmg"] for w in build_data.weapon_details if w["name"] == weapon]
-                right_arc_max_dmg.append(weapon_max_dmg[0])
-
-                name = [w["name"] for w in build_data.weapon_details if w['name'] == weapon]
-                self.right_arc_weapons_names.append(name[0])
-            self.total_right_arc_mass = sum(right_arc_mass)
-            self.total_right_arc_pv = sum(right_arc_pv)
-            self.total_right_arc_max_dmg = sum(right_arc_max_dmg)
+                weapon_item = [w for w in build_data.weapon_details if w["name"] == weapon]
+                self.weapons_object["weapons"]["right_arc_weapons"].append(weapon_item[0])
+        self.total_right_arc_mass = sum([w["mass"] for w in self.weapons_object["weapons"]["right_arc_weapons"]])
+        self.total_right_arc_pv = sum([w["pv"] for w in self.weapons_object["weapons"]["right_arc_weapons"]])
+        self.total_right_arc_max_dmg = sum([w["max_dmg"] for w in self.weapons_object["weapons"]["right_arc_weapons"]])
+        self.right_arc_weapons_names = [w["name"] for w in self.weapons_object["weapons"]["right_arc_weapons"]]
         return self.right_arc_weapons_names, self.total_right_arc_mass, self.total_right_arc_pv, self.total_right_arc_max_dmg
 
-    def left_arc_weapons(self, *weapons):
-        """Calculate total mass, pv, and max damage for rear arc weapons"""
-        left_arc_mass = []
-        left_arc_pv = []
-        left_arc_max_dmg = []
-
+    def left_arc_weapons(self, *weapons: list) -> tuple[list, int, int, int]:
+        """
+        Add left arc weapon lookup data to weapons dict
+        Calculate total arc mass, pv, max dmg for final ship calculations
+        """        
         if weapons[0] == '': #check for empty input
             self.left_arc_weapons_names = []
             self.total_left_arc_mass = 0
@@ -171,24 +151,19 @@ class ShipClass:
             self.total_left_arc_max_dmg = 0
         else:
             for weapon in weapons:
-                weapon_mass = [w["mass"] for w in build_data.weapon_details if w["name"] == weapon]
-                left_arc_mass.append(weapon_mass[0])
-                
-                weapon_pv = [w["pv"] for w in build_data.weapon_details if w["name"] == weapon]
-                left_arc_pv.append(weapon_pv[0])
-                
-                weapon_max_dmg = [w["max_dmg"] for w in build_data.weapon_details if w["name"] == weapon]
-                left_arc_max_dmg.append(weapon_max_dmg[0])
-
-                name = [w["name"] for w in build_data.weapon_details if w['name'] == weapon]
-                self.left_arc_weapons_names.append(name[0])
-            self.total_left_arc_mass = sum(left_arc_mass)
-            self.total_left_arc_pv = sum(left_arc_pv)
-            self.total_left_arc_max_dmg = sum(left_arc_max_dmg)
+                weapon_item = [w for w in build_data.weapon_details if w["name"] == weapon]
+                self.weapons_object["weapons"]["left_arc_weapons"].append(weapon_item[0])
+        self.total_left_arc_mass = sum([w["mass"] for w in self.weapons_object["weapons"]["left_arc_weapons"]])
+        self.total_left_arc_pv = sum([w["pv"] for w in self.weapons_object["weapons"]["left_arc_weapons"]])
+        self.total_left_arc_max_dmg = sum([w["max_dmg"] for w in self.weapons_object["weapons"]["left_arc_weapons"]])
+        self.left_arc_weapons_names = [w["name"] for w in self.weapons_object["weapons"]["left_arc_weapons"]]
         return self.left_arc_weapons_names, self.total_left_arc_mass, self.total_left_arc_pv, self.total_left_arc_max_dmg
     
-    def equipment(self, *items) -> tuple[dict, int, int]:
-        """Calculate total equipment mass, total equipment pv and generate equipment object"""
+    def equipment(self, *items: list) -> tuple[dict, int, int]:
+        """
+        Generate equipment dict that is a list with a dict per item, adding calculated item mass and pv
+        Calculate total equipment mass, total equipment pv for final ship calculations
+        """
         all_item_mass = []
         all_item_pv = []
         

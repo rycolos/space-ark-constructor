@@ -43,22 +43,16 @@ class ShipClass:
         
         self.total_equipment_mass = 0
         self.total_equipment_pv = 0
-
+        
         self.max_stress = 0
         self.final_pv = 0
 
+        self.equipment_list = []
+        self.front_arc_weapon_list = []
+        self.rear_arc_weapon_list = []
+        self.right_arc_weapon_list = []
+        self.left_arc_weapon_list = []
         self.base_ship_object = {}
-        self.equipment_object = {"equipment": []}
-        self.weapons_object = {
-            "weapons": {
-                "front_arc_weapons": [],
-                "rear_arc_weapons": [],
-                "right_arc_weapons": [],
-                "left_arc_weapons": []
-            }}
-        self.armor_object = {}
-        self.propulsion_object = {}
-        self.crew_quality_object = {}
         
     def outer_hull(self, outer_hull_strength: int) -> tuple[int, int, int]:
         """Calculate outer hull mass, PV, critical threshold"""
@@ -91,17 +85,16 @@ class ShipClass:
         Calculate total arc mass, pv, max dmg for final ship calculations
         """
         if weapons[0] == '': #check for empty input
-            self.front_arc_weapons_names = []
             self.total_front_arc_mass = 0
             self.total_front_arc_pv = 0
             self.total_front_arc_max_dmg = 0
         else:
             for weapon in weapons:
                 weapon_item = [w for w in build_data.weapon_details if w["name"] == weapon]
-                self.weapons_object["weapons"]["front_arc_weapons"].append(weapon_item[0]) #create front arc weapons list
-        self.total_front_arc_mass = sum([w["mass"] for w in self.weapons_object["weapons"]["front_arc_weapons"]])
-        self.total_front_arc_pv = sum([w["pv"] for w in self.weapons_object["weapons"]["front_arc_weapons"]])
-        self.total_front_arc_max_dmg = sum([w["max_dmg"] for w in self.weapons_object["weapons"]["front_arc_weapons"]])
+                self.front_arc_weapon_list.append(weapon_item[0])
+        self.total_front_arc_mass = sum([w["mass"] for w in self.front_arc_weapon_list])
+        self.total_front_arc_pv = sum([w["pv"] for w in self.front_arc_weapon_list])
+        self.total_front_arc_max_dmg = sum([w["max_dmg"] for w in self.front_arc_weapon_list])
     
         return self.total_front_arc_mass, self.total_front_arc_pv, self.total_front_arc_max_dmg
 
@@ -111,17 +104,16 @@ class ShipClass:
         Calculate total arc mass, pv, max dmg for final ship calculations
         """
         if weapons[0] == '': #check for empty input
-            self.rear_arc_weapons_names = []
             self.total_rear_arc_mass = 0
             self.total_rear_arc_pv = 0
             self.total_rear_arc_max_dmg = 0
         else:
             for weapon in weapons:
                 weapon_item = [w for w in build_data.weapon_details if w["name"] == weapon]
-                self.weapons_object["weapons"]["rear_arc_weapons"].append(weapon_item[0])
-        self.total_rear_arc_mass = sum([w["mass"] for w in self.weapons_object["weapons"]["rear_arc_weapons"]])
-        self.total_rear_arc_pv = sum([w["pv"] for w in self.weapons_object["weapons"]["rear_arc_weapons"]])
-        self.total_rear_arc_max_dmg = sum([w["max_dmg"] for w in self.weapons_object["weapons"]["rear_arc_weapons"]])
+                self.rear_arc_weapon_list.append(weapon_item[0])
+        self.total_rear_arc_mass = sum([w["mass"] for w in self.rear_arc_weapon_list])
+        self.total_rear_arc_pv = sum([w["pv"] for w in self.rear_arc_weapon_list])
+        self.total_rear_arc_max_dmg = sum([w["max_dmg"] for w in self.rear_arc_weapon_list])
         return self.total_rear_arc_mass, self.total_rear_arc_pv, self.total_rear_arc_max_dmg
 
     def right_arc_weapons(self, *weapons: list) -> tuple[int, int, int]:
@@ -130,17 +122,16 @@ class ShipClass:
         Calculate total arc mass, pv, max dmg for final ship calculations
         """        
         if weapons[0] == '': #check for empty input
-            self.right_arc_weapons_names = []
             self.total_right_arc_mass = 0
             self.total_right_arc_pv = 0
             self.total_right_arc_max_dmg = 0
         else:
             for weapon in weapons:
                 weapon_item = [w for w in build_data.weapon_details if w["name"] == weapon]
-                self.weapons_object["weapons"]["right_arc_weapons"].append(weapon_item[0])
-        self.total_right_arc_mass = sum([w["mass"] for w in self.weapons_object["weapons"]["right_arc_weapons"]])
-        self.total_right_arc_pv = sum([w["pv"] for w in self.weapons_object["weapons"]["right_arc_weapons"]])
-        self.total_right_arc_max_dmg = sum([w["max_dmg"] for w in self.weapons_object["weapons"]["right_arc_weapons"]])
+                self.right_arc_weapon_list.append(weapon_item[0])
+        self.total_right_arc_mass = sum([w["mass"] for w in self.right_arc_weapon_list])
+        self.total_right_arc_pv = sum([w["pv"] for w in self.right_arc_weapon_list])
+        self.total_right_arc_max_dmg = sum([w["max_dmg"] for w in self.right_arc_weapon_list])
         return self.total_right_arc_mass, self.total_right_arc_pv, self.total_right_arc_max_dmg
 
     def left_arc_weapons(self, *weapons: list) -> tuple[int, int, int]:
@@ -149,17 +140,16 @@ class ShipClass:
         Calculate total arc mass, pv, max dmg for final ship calculations
         """        
         if weapons[0] == '': #check for empty input
-            self.left_arc_weapons_names = []
             self.total_left_arc_mass = 0
             self.total_left_arc_pv = 0
             self.total_left_arc_max_dmg = 0
         else:
             for weapon in weapons:
                 weapon_item = [w for w in build_data.weapon_details if w["name"] == weapon]
-                self.weapons_object["weapons"]["left_arc_weapons"].append(weapon_item[0])
-        self.total_left_arc_mass = sum([w["mass"] for w in self.weapons_object["weapons"]["left_arc_weapons"]])
-        self.total_left_arc_pv = sum([w["pv"] for w in self.weapons_object["weapons"]["left_arc_weapons"]])
-        self.total_left_arc_max_dmg = sum([w["max_dmg"] for w in self.weapons_object["weapons"]["left_arc_weapons"]])
+                self.left_arc_weapon_list.append(weapon_item[0])
+        self.total_left_arc_mass = sum([w["mass"] for w in self.left_arc_weapon_list])
+        self.total_left_arc_pv = sum([w["pv"] for w in self.left_arc_weapon_list])
+        self.total_left_arc_max_dmg = sum([w["max_dmg"] for w in self.left_arc_weapon_list])
         return self.total_left_arc_mass, self.total_left_arc_pv, self.total_left_arc_max_dmg
     
     def equipment(self, *items: list) -> tuple[dict, int, int]:
@@ -190,10 +180,10 @@ class ShipClass:
             equipment_item["pv"] = item_pv
             all_item_pv.append(item_pv)
             
-            self.equipment_object["equipment"].append(equipment_item)
+            self.equipment_list.append(equipment_item)
         self.total_equipment_mass = sum(all_item_mass)
         self.total_equipment_pv = sum(all_item_pv)
-        return self.equipment_object, self.total_equipment_mass, self.total_equipment_pv
+        return self.total_equipment_mass, self.total_equipment_pv
     
     def set_quality(self, crew_quality: int) -> tuple[int, int]:
         """Calculate final PV and retrieve Max Stress"""
@@ -228,16 +218,18 @@ class ShipClass:
         return self.total_base_pv
     
     def build_json_objects(self):
-        ### this should probably just be one big json definition with instance vars slotted in
-        self.base_ship_object = {
+        self.ship_json_object = {
             "name": self.name,
             "ship_class": self.sclass,
             "size": self.size,
             "TAM": self.tam,
+            "mass": self.total_mass,
             "armor_roll": self.armor_roll,
-            "MDPA": self.mdpa
-            }
-        self.armor_object = {
+            "MDPA": self.mdpa,
+            "crew_quality": self.crew_quality_str,
+            "base_pv": self.total_base_pv,
+            "final_pv": self.final_pv,
+            "max_stress": self.max_stress,
             "armor": {
                 "outer_hull": {
                     "mass": self.outer_hull_mass,
@@ -248,18 +240,20 @@ class ShipClass:
                     "pv": self.inner_hull_pv
                 },
                 "critical_threshold": self.critical_threshold
-            }}
-        self.propulsion_object = {
+                },
             "propulsion": {
                 "thrust_points": self.thrust_points,
                 "max_thrust": self.max_thrust,
                 "propulsion_mass": self.propulsion_mass,
                 "propulsion_pv": self.propulsion_pv
-            }}
-        self.crew_quality_object = {
-            "crew_quality": self.crew_quality_str,
-            "final_pv": self.final_pv,
-            "max_stress": self.max_stress
+            },
+            "equipment": self.equipment_list,
+            "weapons": {
+                "front_arc_weapons": self.front_arc_weapon_list,
+                "rear_arc_weapons": self.rear_arc_weapon_list,
+                "right_arc_weapons": self.right_arc_weapon_list,
+                "left_arc_weapons": self.left_arc_weapon_list
+            }
         }
 
     def reset_all_stats(self) -> None:

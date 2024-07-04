@@ -48,7 +48,7 @@ def build_equipment() -> list:
     """Calculate equipment outputs from list input, returns equipment name list from equipment object"""
     equipment_list = list(map(int, input("\nEquipment (1-None, 2-Long Range Sensors, 3-Agile Thrusters, 4-Enhanced Engineering, 5-Advanced Fire Control, 6-Target Designator) separated by a comma: ").split(',')))
     ship.equipment(*equipment_list)
-    equipment_names = [i["name"] for i in ship.equipment_object["equipment"]]
+    equipment_names = [i["name"] for i in ship.equipment_list]
     if mass_check_ui() == True:
         if input("Try again... Y/N? ").upper() == 'Y':
             ship.total_equipment_mass = 0
@@ -59,6 +59,10 @@ def build_equipment() -> list:
 def build_weapons() -> None:
     """Calculate per-arc weapon outputs from list input"""
     weapon_selection = True
+    front_arc_weapon_names = []
+    rear_arc_weapon_names = []
+    right_arc_weapon_names = []
+    left_arc_weapon_names = []
     print("\nWEAPON SELECTION:")
     while weapon_selection == True:
         arc = input(f"\nSelect arc (1-Front, 2-Rear, 3-Right, 4-Left) or C to continue: ").upper()
@@ -66,7 +70,7 @@ def build_weapons() -> None:
             case "1":
                 front_list = list(map(str, input("\nSelect Front Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
                 ship.front_arc_weapons(*front_list)
-                front_arc_weapon_names = [i["name"] for i in ship.weapons_object["weapons"]["front_arc_weapons"]]
+                front_arc_weapon_names = [i["name"] for i in ship.front_arc_weapon_list]
                 print(f"\nFront Arc Weapons: {', '.join(front_arc_weapon_names)}")
                 if mass_check_ui() == True:
                     if input("Try again... Y/N? ").upper() == 'Y':
@@ -83,7 +87,7 @@ def build_weapons() -> None:
             case "2":
                 rear_list = list(map(str, input("Select Rear Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
                 ship.rear_arc_weapons(*rear_list)
-                rear_arc_weapon_names = [i["name"] for i in ship.weapons_object["weapons"]["rear_arc_weapons"]]
+                rear_arc_weapon_names = [i["name"] for i in ship.rear_arc_weapon_list]
                 print(f"\nRear Arc Weapons: {', '.join(rear_arc_weapon_names)}")
                 if mass_check_ui() == True:
                     if input("Try again... Y/N? ").upper() == 'Y':
@@ -100,7 +104,7 @@ def build_weapons() -> None:
             case "3":
                 right_list = list(map(str, input("Select Right Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
                 ship.right_arc_weapons(*right_list)
-                right_arc_weapon_names = [i["name"] for i in ship.weapons_object["weapons"]["right_arc_weapons"]]
+                right_arc_weapon_names = [i["name"] for i in ship.right_arc_weapon_list]
                 print(f"\nRight Arc Weapons: {', '.join(right_arc_weapon_names)}")
                 if mass_check_ui() == True:
                     if input("Try again... Y/N? ").upper() == 'Y':
@@ -117,7 +121,7 @@ def build_weapons() -> None:
             case "4":
                 left_list = list(map(str, input("Select Left Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
                 ship.left_arc_weapons(*left_list)
-                left_arc_weapon_names = [i["name"] for i in ship.weapons_object["weapons"]["left_arc_weapons"]]
+                left_arc_weapon_names = [i["name"] for i in ship.left_arc_weapon_list]
                 print(f"\nLeft Arc Weapons: {', '.join(left_arc_weapon_names)}")
                 if mass_check_ui() == True:
                     if input("Try again... Y/N? ").upper() == 'Y':
@@ -164,7 +168,7 @@ def show_ship_build_stats() -> None:
     ship.track_base_pv()
     print("Building ship...")
     sleep(1)
-    print(f"\n**SHIP BUILD STATS **\nShip Name: {ship.name}\nClass: {ship.sclass}\nSize: {ship.size[0]}\nTotal Availble Mass: {ship.tam[0]}\nArmor: {ship.armor_roll[0]}\nMax Damage Per Arc: {ship.mdpa[0]}")
+    print(f"\n**SHIP BUILD STATS **\nShip Name: {ship.name}\nClass: {ship.sclass}\nSize: {ship.size}\nTotal Availble Mass: {ship.tam}\nArmor: {ship.armor_roll}\nMax Damage Per Arc: {ship.mdpa}")
     
     print(f"\nOuter Hull Mass: {ship.outer_hull_mass}")
     print(f"Outer Hull PV: {ship.outer_hull_pv}")
@@ -187,17 +191,17 @@ def show_ship_build_stats() -> None:
     print(f"Total Front Arc Weapon PV: {ship.total_front_arc_pv}")
     print(f"Total Front Arc Max Damage: {ship.total_front_arc_max_dmg}")
 
-    print(f"\nRear Arc Weapons: {', '.join(ship.rear_arc_weapons_names)}")
+    print(f"\nRear Arc Weapons: {', '.join(rear_arc_weapon_names)}")
     print(f"Total Rear Arc Weapon Mass: {ship.total_rear_arc_mass}")
     print(f"Total Rear Arc Weapon PV: {ship.total_rear_arc_pv}")
     print(f"Total Rear Arc Max Damage: {ship.total_rear_arc_max_dmg}")
 
-    print(f"\nRight Arc Weapons: {', '.join(ship.right_arc_weapons_names)}")
+    print(f"\nRight Arc Weapons: {', '.join(right_arc_weapon_names)}")
     print(f"Total Right Arc Weapon Mass: {ship.total_right_arc_mass}")
     print(f"Total Right Arc Weapon PV: {ship.total_right_arc_pv}")
     print(f"Total Right Arc Max Damage: {ship.total_right_arc_max_dmg}")
 
-    print(f"\nLeft Arc Weapons: {', '.join(ship.left_arc_weapons_names)}")
+    print(f"\nLeft Arc Weapons: {', '.join(left_arc_weapon_names)}")
     print(f"Total Left Arc Weapon Mass: {ship.total_left_arc_mass}")
     print(f"Total Left Arc Weapon PV: {ship.total_left_arc_pv}")
     print(f"Total Left Arc Max Damage: {ship.total_left_arc_max_dmg}")
@@ -210,26 +214,20 @@ def show_ship_build_stats() -> None:
     print(f"Final PV: {ship.final_pv}")
 
 def show_ship_game_stats():
-    ship_game_data = {}
-    ship_game_data.update(ship.base_ship_object)
-    ship_game_data.update(ship.armor_object)
-    ship_game_data.update(ship.propulsion_object)
-    ship_game_data.update(ship.equipment_object)
-    ship_game_data.update(ship.weapons_object)
-    ship_game_data.update(ship.crew_quality_object)
     print(f"\n**SHIP GAME STATS **")
-    print(json.dumps(ship_game_data, indent=2))
+    print(json.dumps(ship.ship_json_object, indent=2))
 
 if __name__ == "__main__":    
     ship = build_base_ship()
     build_outer_hull()
     build_inner_hull()
     build_propulsion()
-    # equipment_names = build_equipment()
-    # front_arc_weapon_names, rear_arc_weapon_names, right_arc_weapon_names, left_arc_weapon_names = build_weapons()
+    equipment_names = build_equipment()
+    front_arc_weapon_names, rear_arc_weapon_names, right_arc_weapon_names, left_arc_weapon_names = build_weapons()
+    #front_arc_weapon_names = build_weapons()
     build_crew_quality()
     
-    # show_ship_build_stats()
+    show_ship_build_stats()
     
     ship.build_json_objects()
     show_ship_game_stats()

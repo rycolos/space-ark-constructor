@@ -46,13 +46,14 @@ class ShipClass:
         
         self.max_stress = 0
         self.final_pv = 0
+        self.total_mass = 0
 
         self.equipment_list = []
         self.front_arc_weapon_list = []
         self.rear_arc_weapon_list = []
         self.right_arc_weapon_list = []
         self.left_arc_weapon_list = []
-        self.base_ship_object = {}
+        self.ship_json_object = {}
         
     def outer_hull(self, outer_hull_strength: int) -> tuple[int, int, int]:
         """Calculate outer hull mass, PV, critical threshold"""

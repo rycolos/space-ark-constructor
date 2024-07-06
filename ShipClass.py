@@ -259,13 +259,47 @@ class ShipClass:
 
     def reset_all_stats(self) -> None:
         """Reset all input and calculated stats (except for name, class, and class-contingent stats)"""
-        self.weapon_names = []
-        self.thrust_points = 0
-        self.outer_hull_mass = 0
-        self.inner_hull_mass = 0
+
+        self.total_front_arc_mass = 0
+        self.total_front_arc_pv = 0
+        self.total_front_arc_max_dmg = 0
+
+        self.total_rear_arc_mass = 0
+        self.total_rear_arc_pv = 0
+        self.total_rear_arc_max_dmg = 0
+
+        self.total_right_arc_mass = 0
+        self.total_right_arc_pv = 0
+        self.total_right_arc_max_dmg = 0
+
+        self.total_left_arc_mass = 0
+        self.total_left_arc_pv = 0
+        self.total_left_arc_max_dmg = 0
+
+        self.crew_quality_str = None
+        
         self.propulsion_mass = 0
-        self.total_equipment_mass = 0
-        self.outer_hull_pv = 0
-        self.inner_hull_pv = 0
         self.propulsion_pv = 0
+        self.thrust_points = 0
+        self.max_thrust = 0
+
+        self.outer_hull_mass = 0
+        self.outer_hull_pv = 0
+        self.critical_threshold = 0
+
+        self.inner_hull_mass = 0
+        self.inner_hull_pv = 0
+        
+        self.total_equipment_mass = 0
         self.total_equipment_pv = 0
+        
+        self.max_stress = 0
+        self.final_pv = 0
+        self.total_mass = 0
+
+        self.equipment_list = []
+        self.front_arc_weapon_list = []
+        self.rear_arc_weapon_list = []
+        self.right_arc_weapon_list = []
+        self.left_arc_weapon_list = []
+        self.ship_json_object = {}

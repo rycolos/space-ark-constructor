@@ -162,6 +162,12 @@ def max_dmg_check_ui(ship, arc: int) -> bool:
         print(f"Current Arc Max Damage: {arc_max_dmg}. Arc Max Damage Remaining: {max_dmg_delta}")
     return mdpa_exceeded
 
+def reset_stats(ship):
+    if input("\nReset all ship stats to class defaults? (Y/N): ").upper() == 'Y':
+        ship.reset_all_stats()
+    else:
+        pass
+
 def show_ship_build_stats(ship) -> None:
     """Calcualte final mass and final base pv and print ship details"""
     ship.track_mass()
@@ -248,7 +254,7 @@ def load_ship_base_json():
                 mdpa = loaded_ship["MDPA"]), loaded_ship
 
 def load_ship_details_json(ship, file):
-        ship.crew_quality = file["crew_quality_str"]
+        ship.crew_quality_str = file["crew_quality"]
         ship.total_base_pv = file["base_pv"]  
         ship.final_pv = file["final_pv"]
         ship.max_stress = file["max_stress"]   
@@ -270,16 +276,14 @@ def load_ship_details_json(ship, file):
 def main_menu():
     run = True
     while run == True:
-        command = input("\nCOMMAND (1-Build Ship, 2-Edit Current Ship, 3-Import Ship, 4-Exit): ")
+        command = input("\nCOMMAND (1-Build New Ship, 2-Import Ship, 3-Exit): ")
         match command:
             case "1": #build
                 ship_instance = build_base_ship()
                 build_menu(ship_instance)
-            case "2": #edit
-                build_menu(ship_instance)
-            case "3": #import
+            case "2": #import
                 import_menu()
-            case "4": #exit
+            case "3": #exit
                 exit()
 
 def build_menu(ship):
@@ -305,7 +309,7 @@ def build_menu(ship):
             case "8": #export
                 export_ship_json(ship)
             case "9": #reset
-                ...
+                reset_stats(ship)
             case "10": #main menu
                 main_menu()
 

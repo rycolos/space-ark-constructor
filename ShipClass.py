@@ -57,7 +57,6 @@ class ShipClass:
         
     def outer_hull(self, outer_hull_strength: int) -> tuple[int, int, int]:
         """Calculate outer hull mass, PV, critical threshold"""
-
         mass_factor = [s['mass_factor'] for s in build_data.outer_strength_details if s['id'] == outer_hull_strength]
         self.outer_hull_mass = math.ceil(self.tam * mass_factor[0])
         self.outer_hull_pv = math.ceil(self.outer_hull_mass * 3)

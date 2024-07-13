@@ -16,33 +16,52 @@ def build_base_ship() -> ShipClass:
 
 def build_outer_hull(ship: ShipClass) -> None:
     """Calculate outer hull outputs from strength input"""
-    outer_hull_strength = int(input(f"\nOuter Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): "))
-    ship.outer_hull(outer_hull_strength)
-    if mass_check_ui(ship) == True:
-        if input("Try again... Y/N? ").upper() == 'Y':
-            ship.outer_hull_mass = 0
-            ship.outer_hull_pv = 0
-            build_outer_hull()
+    #ohs_input = int(input(f"\nOuter Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): "))
+    while True:
+        ohs_input = input(f"\nOuter Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): ")
+        try: #if no error raised in class, continue
+            ship.outer_hull(ohs_input)
+            if mass_check_ui(ship) == True:
+                if input("Try again... Y/N? ").upper() == 'Y':
+                    ship.outer_hull_mass = 0
+                    ship.outer_hull_pv = 0
+                    build_outer_hull(ship)
+            break
+        except Exception as e:
+            print(e)
+            continue
 
 def build_inner_hull(ship: ShipClass) -> None:
     """Calculate inner hull outputs from strength input"""
-    inner_hull_strength = int(input(f"\nInner Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): "))
-    ship.inner_hull(inner_hull_strength) 
-    if mass_check_ui(ship) == True:
-        if input("Try again... Y/N? ").upper() == 'Y':
-            ship.inner_hull_mass = 0
-            ship.inner_hull_pv = 0
-            build_inner_hull()
+    while True:
+        ihs_input = input(f"\nInner Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): ")
+        try: #if no error raised in class, continue
+            ship.inner_hull(ihs_input)
+            if mass_check_ui(ship) == True:
+                if input("Try again... Y/N? ").upper() == 'Y':
+                    ship.inner_hull_mass = 0
+                    ship.inner_hull_pv = 0
+                    build_inner_hull(ship)
+            break
+        except Exception as e:
+            print(e)
+            continue
 
 def build_propulsion(ship: ShipClass) -> None:
     """Calculate propulsion outputs from thrust points input"""
-    thrust_points = int(input(f"\nThrust Points (number): "))
-    ship.propulsion(thrust_points)
-    if mass_check_ui(ship) == True:
-        if input("Try again... Y/N? ").upper() == 'Y':
-            ship.propulsion_mass = 0
-            ship.propulsion_pv = 0
-            build_propulsion()
+    while True:
+        tp_input = input(f"\nThrust Points (number): ")
+        try: #if no error raised in class, continue
+            ship.propulsion(tp_input)
+            if mass_check_ui(ship) == True:
+                if input("Try again... Y/N? ").upper() == 'Y':
+                    ship.propulsion_mass = 0
+                    ship.propulsion_pv = 0
+                    build_propulsion(ship)
+            break
+        except Exception as e:
+            print(e)
+            continue
 
 def build_equipment(ship: ShipClass) -> None:
     """Calculate equipment outputs from list input, returns equipment name list from equipment object"""
@@ -52,7 +71,7 @@ def build_equipment(ship: ShipClass) -> None:
         if input("Try again... Y/N? ").upper() == 'Y':
             ship.total_equipment_mass = 0
             ship.total_equipment_pv = 0
-            build_equipment()
+            build_equipment(ship)
 
 def build_weapons(ship: ShipClass) -> None:
     """Calculate per-arc weapon outputs from list input"""

@@ -4,6 +4,7 @@ import math
 class ShipClass:
     def __init__(self, name: str, sclass: str, size: str, tam: int, armor_roll: str, mdpa: int) -> None: 
         
+        #init
         self.name = name 
         self.sclass = sclass
         self.size = size
@@ -11,39 +12,35 @@ class ShipClass:
         self.armor_roll = armor_roll
         self.mdpa = mdpa
 
+        #inputs
+        self.outer_hull_strength = 0
+        self.inner_hull_strength = 0
+        self.thrust_points = 0
+
+        #outputs
+        self.outer_hull_mass = 0
+        self.inner_hull_mass = 0
+        self.propulsion_mass = 0
         self.total_front_arc_mass = 0
         self.total_front_arc_pv = 0
         self.total_front_arc_max_dmg = 0
-
-        self.total_rear_arc_mass = 0
         self.total_rear_arc_pv = 0
         self.total_rear_arc_max_dmg = 0
-
+        self.total_rear_arc_mass = 0
         self.total_right_arc_mass = 0
         self.total_right_arc_pv = 0
         self.total_right_arc_max_dmg = 0
-
         self.total_left_arc_mass = 0
         self.total_left_arc_pv = 0
         self.total_left_arc_max_dmg = 0
-
         self.crew_quality_str = None
-        
-        self.propulsion_mass = 0
-        self.propulsion_pv = 0
-        self.thrust_points = 0
-        self.max_thrust = 0
-
-        self.outer_hull_mass = 0
         self.outer_hull_pv = 0
         self.critical_threshold = 0
-
-        self.inner_hull_mass = 0
         self.inner_hull_pv = 0
-        
+        self.propulsion_pv = 0
+        self.max_thrust = 0
         self.total_equipment_mass = 0
         self.total_equipment_pv = 0
-        
         self.max_stress = 0
         self.final_pv = 0
         self.total_mass = 0
@@ -54,31 +51,69 @@ class ShipClass:
         self.right_arc_weapon_list = []
         self.left_arc_weapon_list = []
         self.ship_json_object = {}
-        
-    def outer_hull(self, outer_hull_strength: int) -> tuple[int, int, int]:
+
+    #OUTER HULL
+    @property
+    def outer_hull_strength(self):
+        return self._outer_hull_strength
+    
+    @outer_hull_strength.setter     #validate outer hull strength input
+    def outer_hull_strength(self, ohs_input: int):
+        try:
+            self._outer_hull_strength = int(ohs_input)
+        except ValueError:
+            raise TypeError("Error: Strength should be an integer from 1-4")
+            
+    def outer_hull(self, ohs_input: int) -> tuple[int, int, int, int]:
         """Calculate outer hull mass, PV, critical threshold"""
-        mass_factor = [s['mass_factor'] for s in build_data.outer_strength_details if s['id'] == outer_hull_strength]
+        self.outer_hull_strength = ohs_input
+        mass_factor = [s['mass_factor'] for s in build_data.outer_strength_details if s['id'] == self.outer_hull_strength]
         self.outer_hull_mass = math.ceil(self.tam * mass_factor[0])
         self.outer_hull_pv = math.ceil(self.outer_hull_mass * 3)
         self.critical_threshold = math.ceil(self.outer_hull_mass * .3)
-        return self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
-        
-    def inner_hull(self, inner_hull_strength: int) -> tuple[int, int, int]:
-        """Calculate inner hull mass, PV"""
+        return self.outer_hull_strength, self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
 
-        mass_factor = [s['mass_factor'] for s in build_data.inner_strength_details if s['id'] == inner_hull_strength]
+    #INNER HULL
+    @property
+    def inner_hull_strength(self):
+        return self._inner_hull_strength
+    
+    @inner_hull_strength.setter     #validate inner hull strength input
+    def inner_hull_strength(self, ihs_input: int):
+        try:
+            self._inner_hull_strength = int(ihs_input)
+        except ValueError:
+            raise TypeError("Error: Strength should be an integer from 1-4")
+    
+    def inner_hull(self, ihs_input: int) -> tuple[int, int, int, int]:
+        """Calculate inner hull mass, PV"""
+        self.inner_hull_strength = ihs_input
+        mass_factor = [s['mass_factor'] for s in build_data.inner_strength_details if s['id'] == self.inner_hull_strength]
         self.inner_hull_mass = math.ceil(self.tam * mass_factor[0])
         self.inner_hull_pv = math.ceil(self.outer_hull_mass * 3)
-        return self.inner_hull_mass, self.inner_hull_pv
+        return self.inner_hull_strength, self.inner_hull_mass, self.inner_hull_pv
 
-    def propulsion(self, thrust_points: int) -> tuple[int, int, int, int]:
+    #PROPULSION
+    @property
+    def thrust_points(self):
+        return self._thrust_points
+    
+    @thrust_points.setter     #validate thrust point input
+    def thrust_points(self, tp_input: int):
+        try:
+            self._thrust_points = int(tp_input)
+        except ValueError:
+            raise TypeError("Error: Thrust Points should be an integer")
+    
+    def propulsion(self, tp_input: int) -> tuple[int, int, int, int]:
         """Calculate propulsion mass, pv, max_thrust"""
-        self.thrust_points = thrust_points
-        self.propulsion_mass = math.ceil(thrust_points * (self.tam * .07))
+        self.thrust_points = tp_input
+        self.propulsion_mass = math.ceil(self.thrust_points * (self.tam * .07))
         self.propulsion_pv = math.ceil(self.propulsion_mass * 2)
-        self.max_thrust = math.ceil(thrust_points * 1.5)
+        self.max_thrust = math.ceil(self.thrust_points * 1.5)
         return self.thrust_points, self.max_thrust, self.propulsion_mass, self.propulsion_pv
 
+    #WEAPONS
     def front_arc_weapons(self, *weapons: list) -> tuple[int, int, int]:
         """
         Add front arc weapon lookup data to weapons dict
@@ -152,6 +187,7 @@ class ShipClass:
         self.total_left_arc_max_dmg = sum([w["max_dmg"] for w in self.left_arc_weapon_list])
         return self.total_left_arc_mass, self.total_left_arc_pv, self.total_left_arc_max_dmg
     
+    #EQUIPMENT
     def equipment(self, *items: list) -> tuple[dict, int, int]:
         """
         Generate equipment dict that is a list with a dict per item, adding calculated item mass and pv
@@ -185,6 +221,7 @@ class ShipClass:
         self.total_equipment_pv = sum(all_item_pv)
         return self.total_equipment_mass, self.total_equipment_pv
     
+    #CREW QUALITY
     def set_quality(self, crew_quality: int) -> tuple[int, int]:
         """Calculate final PV and retrieve Max Stress"""
         self.crew_quality = crew_quality
@@ -197,6 +234,7 @@ class ShipClass:
         self.crew_quality_str = self.crew_quality_str[0]
         return self.crew_quality_str, self.final_pv, self.max_stress
 
+    #HELPER FUNCTIONS
     def track_mass(self) -> tuple[int, int, int]:
         """Calculate current mass, mass distance from TAM, and bool for if TAM exceeded"""
         self.total_mass = (self.outer_hull_mass + self.inner_hull_mass + self.propulsion_mass + self.total_equipment_mass

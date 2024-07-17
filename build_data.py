@@ -111,6 +111,11 @@ equipment_details = (
 
 outer_strength_details = (
     {
+        "id": 0,
+        "name": None,
+        "mass_factor": 0
+    },
+    {
         "id": 1,
         "name": "Light",
         "mass_factor": .2
@@ -133,6 +138,11 @@ outer_strength_details = (
 )
 
 inner_strength_details = (
+    {
+        "id": 0,
+        "name": None,
+        "mass_factor": 0
+    },
     {
         "id": 1,
         "name": "Light",

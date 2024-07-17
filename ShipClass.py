@@ -53,16 +53,27 @@ class ShipClass:
         self.ship_json_object = {}
 
     #OUTER HULL
+    """
+    when outer_hull_strength is referenced,
+    setter will test and set private var to value,
+    `and property returns private var from public ref 
+    """
     @property
     def outer_hull_strength(self):
         return self._outer_hull_strength
     
-    @outer_hull_strength.setter     #validate outer hull strength input
+    @outer_hull_strength.setter     #validate outer hull strength input as int, 1-4
     def outer_hull_strength(self, ohs_input: int):
+        ohs_ids = [i['id'] for i in build_data.outer_strength_details]
         try:
-            self._outer_hull_strength = int(ohs_input)
+            self._outer_hull_strength = int(ohs_input) #validate integer
         except ValueError:
-            raise TypeError("Error: Strength should be an integer from 1-4")
+            raise TypeError("Error: Strength value is not an integer")
+        else:
+            try:
+                index = ohs_ids.index(int(ohs_input)) #validate valid value
+            except ValueError:
+                raise ValueError("Error: Strength value is not a valid entry") from None #avoid double exception error
             
     def outer_hull(self, ohs_input: int) -> tuple[int, int, int, int]:
         """Calculate outer hull mass, PV, critical threshold"""
@@ -80,10 +91,16 @@ class ShipClass:
     
     @inner_hull_strength.setter     #validate inner hull strength input
     def inner_hull_strength(self, ihs_input: int):
+        ihs_ids = [i['id'] for i in build_data.inner_strength_details]
         try:
-            self._inner_hull_strength = int(ihs_input)
+            self._inner_hull_strength = int(ihs_input) #validate integer
         except ValueError:
-            raise TypeError("Error: Strength should be an integer from 1-4")
+            raise TypeError("Error: Strength value is not an integer")
+        else:
+            try:
+                index = ihs_ids.index(int(ihs_input)) #validate valid value
+            except ValueError:
+                raise ValueError("Error: Strength value is not a valid entry") from None #avoid double exception error
     
     def inner_hull(self, ihs_input: int) -> tuple[int, int, int, int]:
         """Calculate inner hull mass, PV"""

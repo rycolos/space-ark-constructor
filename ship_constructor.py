@@ -65,13 +65,20 @@ def build_propulsion(ship: ShipClass) -> None:
 
 def build_equipment(ship: ShipClass) -> None:
     """Calculate equipment outputs from list input, returns equipment name list from equipment object"""
-    equipment_list = list(map(int, input("\nEquipment (1-None, 2-Long Range Sensors, 3-Agile Thrusters, 4-Enhanced Engineering, 5-Advanced Fire Control, 6-Target Designator) separated by a comma: ").split(',')))
-    ship.equipment(*equipment_list)
-    if mass_check_ui(ship) == True:
-        if input("Try again... Y/N? ").upper() == 'Y':
-            ship.total_equipment_mass = 0
-            ship.total_equipment_pv = 0
-            build_equipment(ship)
+    while True:
+        equipment_list = list(map(int, input("\nEquipment (1-None, 2-Long Range Sensors, 3-Agile Thrusters, 4-Enhanced Engineering, 5-Advanced Fire Control, 6-Target Designator) separated by a comma: ").split(',')))
+        try:
+            ship.equipment(*equipment_list)
+            if mass_check_ui(ship) == True:
+                if input("Try again... Y/N? ").upper() == 'Y':
+                    ship.total_equipment_mass = 0
+                    ship.total_equipment_pv = 0
+                    build_equipment(ship)
+            break
+        except Exception as e:
+            print(e)
+            continue
+
 
 def build_weapons(ship: ShipClass) -> None:
     """Calculate per-arc weapon outputs from list input"""

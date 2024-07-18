@@ -212,9 +212,15 @@ class ShipClass:
         """
         all_item_mass = []
         all_item_pv = []
+        equipment_ids = [i['id'] for i in build_data.equipment_details]
         
         for item in items:
+            try:
+                index = equipment_ids.index(item) #catch if item not in possible equipment IDs
+            except ValueError:
+                raise ValueError(f"Error: Item with ID {item} not in build_data") from None #avoid double exception error
 
+        for item in items:
             equipment_item = {"name": "", "description": "", "mass": None, "pv": None}
 
             name = [s["name"] for s in build_data.equipment_details if s['id'] == item]

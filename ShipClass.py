@@ -1,6 +1,24 @@
 import build_data
 import math
 
+class InvalidStrengthError(Exception):
+    """Raised when strength selection does not match possible identifier"""
+    
+    def __init__(self, value):
+        message = f"ERROR: Strength value {value} is not a valid selection."
+        super().__init__(message)
+
+class InvalidEquipmentError(Exception):
+    """Raised when equipment selection does not match possible identifiers"""
+    
+    def __init__(self, value):
+        message = f"ERROR: Equipment value {value} is not a valid selection."
+        super().__init__(message)
+
+class InvalidWeaponError(Exception):
+    """Raised when weapon selection does not match possible identifiers"""
+    pass
+
 class ShipClass:
     def __init__(self, name: str, sclass: str, size: str, tam: int, armor_roll: str, mdpa: int) -> None: 
         
@@ -68,12 +86,12 @@ class ShipClass:
         try:
             self._outer_hull_strength = int(ohs_input) #validate integer
         except ValueError:
-            raise TypeError("Error: Strength value is not an integer")
+            raise ValueError("Error: Strength value is not an integer")
         else:
             try:
-                index = ohs_ids.index(int(ohs_input)) #validate valid value
+                index = ohs_ids.index(int(ohs_input)) #if integer, validate valid value
             except ValueError:
-                raise ValueError("Error: Strength value is not a valid entry") from None #avoid double exception error
+                raise InvalidStrengthError(ohs_input)
             
     def outer_hull(self, ohs_input: int) -> tuple[int, int, int, int]:
         """Calculate outer hull mass, PV, critical threshold"""
@@ -95,12 +113,12 @@ class ShipClass:
         try:
             self._inner_hull_strength = int(ihs_input) #validate integer
         except ValueError:
-            raise TypeError("Error: Strength value is not an integer")
+            raise ValueError("Error: Strength value is not an integer")
         else:
             try:
                 index = ihs_ids.index(int(ihs_input)) #validate valid value
             except ValueError:
-                raise ValueError("Error: Strength value is not a valid entry") from None #avoid double exception error
+                raise InvalidStrengthError(ihs_input)
     
     def inner_hull(self, ihs_input: int) -> tuple[int, int, int, int]:
         """Calculate inner hull mass, PV"""
@@ -120,7 +138,7 @@ class ShipClass:
         try:
             self._thrust_points = int(tp_input)
         except ValueError:
-            raise TypeError("Error: Thrust Points should be an integer")
+            raise ValueError("Error: Thrust Points value is not an integer")
     
     def propulsion(self, tp_input: int) -> tuple[int, int, int, int]:
         """Calculate propulsion mass, pv, max_thrust"""
@@ -218,7 +236,8 @@ class ShipClass:
             try:
                 index = equipment_ids.index(item) #catch if item not in possible equipment IDs
             except ValueError:
-                raise ValueError(f"Error: Item with ID {item} not in build_data") from None #avoid double exception error
+                #raise InvalidEquipmentError(f"Error: Item with ID {item} not in build_data") from None #avoid double exception error
+                raise InvalidEquipmentError(item)
 
         for item in items:
             equipment_item = {"name": "", "description": "", "mass": None, "pv": None}

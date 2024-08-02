@@ -17,7 +17,10 @@ class InvalidEquipmentError(Exception):
 
 class InvalidWeaponError(Exception):
     """Raised when weapon selection does not match possible identifiers"""
-    pass
+    
+    def __init__(self, value):
+        message = f"ERROR: Weapon item {value} is not a valid selection."
+        super().__init__(message)
 
 class ShipClass:
     def __init__(self, name: str, sclass: str, size: str, tam: int, armor_roll: str, mdpa: int) -> None: 
@@ -230,16 +233,20 @@ class ShipClass:
         """
         all_item_mass = []
         all_item_pv = []
-        equipment_ids = [i['id'] for i in build_data.equipment_details]
-        
-        for item in items:
-            try:
-                index = equipment_ids.index(item) #catch if item not in possible equipment IDs
-            except ValueError:
-                #raise InvalidEquipmentError(f"Error: Item with ID {item} not in build_data") from None #avoid double exception error
-                raise InvalidEquipmentError(item)
+        items_int = []
 
         for item in items:
+            try:
+                items_int.append(int(item))
+            except ValueError:
+                raise ValueError(f"ERROR: Equipment entry {item} is not an integer.")
+
+        for item in items_int:
+            try:
+                index = [i['id'] for i in build_data.equipment_details].index(item) #catch if item not in possible equipment IDs
+            except ValueError:
+                raise InvalidEquipmentError(item)
+
             equipment_item = {"name": "", "description": "", "mass": None, "pv": None}
 
             name = [s["name"] for s in build_data.equipment_details if s['id'] == item]

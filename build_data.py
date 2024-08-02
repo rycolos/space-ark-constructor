@@ -188,6 +188,7 @@ crew_quality_details = (
 
 weapon_details = (
     {
+        "id": 0,
         "name": "LIGHT LASER",
         "max_dmg": 2,
         "mass": 2,
@@ -198,6 +199,7 @@ weapon_details = (
         "special": None
     },
     {
+        "id": 1,
         "name": "MEDIUM LASER",
         "max_dmg": 4,
         "mass": 4,
@@ -208,6 +210,7 @@ weapon_details = (
         "special": None
     },
     {
+        "id": 2,
         "name": "HEAVY LASER",
         "max_dmg": 6,
         "mass": 5,
@@ -218,6 +221,7 @@ weapon_details = (
         "special": None
     },
     {
+        "id": 3,
         "name": "PULSE LASER",
         "max_dmg": 8,
         "mass": 12,
@@ -228,6 +232,7 @@ weapon_details = (
         "special": "RPT"
     },
     {
+        "id": 4,
         "name": "LIGHT PPC",
         "max_dmg": 3,
         "mass": 4,
@@ -238,6 +243,7 @@ weapon_details = (
         "special": "PEN1"
     },
     {
+        "id": 5,
         "name": "MEDIUM PPC",
         "max_dmg": 6,
         "mass": 9,
@@ -248,6 +254,7 @@ weapon_details = (
         "special": "PEN2"
     },
     {
+        "id": 6,
         "name": "HEAVY PPC",
         "max_dmg": 9,
         "mass": 13,
@@ -258,6 +265,7 @@ weapon_details = (
         "special": "PEN3"
     },
     {
+        "id": 7,
         "name": "LIGHT NAVEL AUTOCANNON",
         "max_dmg": 8,
         "mass": 12,
@@ -268,6 +276,7 @@ weapon_details = (
         "special": "RPT"
     },
     {
+        "id": 8,
         "name": "MEDIUM NAVEL AUTOCANNON",
         "max_dmg": 12,
         "mass": 15,
@@ -278,6 +287,7 @@ weapon_details = (
         "special": "RPT"
     },
     {
+        "id": 9,
         "name": "HEAVY NAVEL AUTOCANNON",
         "max_dmg": 16,
         "mass": 18,
@@ -288,6 +298,7 @@ weapon_details = (
         "special": "RPT"
     },
     {
+        "id": 10,
         "name": "LIGHT GAUSS",
         "max_dmg": 12,
         "mass": 13,
@@ -298,6 +309,7 @@ weapon_details = (
         "special": "PEN2"
     },
     {
+        "id": 11,
         "name": "MEDIUM GAUSS",
         "max_dmg": 16,
         "mass": 18,
@@ -308,6 +320,7 @@ weapon_details = (
         "special": "PEN3"
     },
     {
+        "id": 12,
         "name": "HEAVY GAUSS",
         "max_dmg": 20,
         "mass": 23,
@@ -318,6 +331,7 @@ weapon_details = (
         "special": "PEN4"
     },
     {
+        "id": 13,
         "name": "NAVAL MASS DRIVER",
         "max_dmg": 28,
         "mass": 42,
@@ -328,6 +342,7 @@ weapon_details = (
         "special": "AM2, MASS"
     },
     {
+        "id": 14,
         "name": "MISSILE CLUSTER - SMALL",
         "max_dmg": 10,
         "mass": 8,
@@ -338,6 +353,7 @@ weapon_details = (
         "special": "SCT, AM4"
     },
     {
+        "id": 15,
         "name": "MISSILE CLUSTER - LARGE",
         "max_dmg": 15,
         "mass": 12,
@@ -348,6 +364,7 @@ weapon_details = (
         "special": "SCT, AM4"
     },
     {
+        "id": 16,
         "name": "MK49 GUIDED TORPEDO",
         "max_dmg": 12,
         "mass": 10,

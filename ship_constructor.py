@@ -66,7 +66,7 @@ def build_propulsion(ship: ShipClass) -> None:
 def build_equipment(ship: ShipClass) -> None:
     """Calculate equipment outputs from list input, returns equipment name list from equipment object"""
     while True:
-        equipment_list = list(map(int, input("\nEquipment (1-None, 2-Long Range Sensors, 3-Agile Thrusters, 4-Enhanced Engineering, 5-Advanced Fire Control, 6-Target Designator) separated by a comma: ").split(',')))
+        equipment_list = list(map(str, input("\nEquipment (1-None, 2-Long Range Sensors, 3-Agile Thrusters, 4-Enhanced Engineering, 5-Advanced Fire Control, 6-Target Designator) separated by a comma: ").split(',')))
         try:
             ship.equipment(*equipment_list)
             if mass_check_ui(ship) == True:

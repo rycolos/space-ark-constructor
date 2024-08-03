@@ -163,6 +163,11 @@ class ShipClass:
             self.total_front_arc_max_dmg = 0
         else:
             for weapon in weapons:
+                try:
+                    index = [i["name"] for i in build_data.weapon_details].index(weapon) #catch if item not in possible weapon names
+                except ValueError:
+                    raise InvalidWeaponError(weapon)
+                
                 weapon_item = [w for w in build_data.weapon_details if w["name"] == weapon]
                 self.front_arc_weapon_list.append(weapon_item[0])
         self.total_front_arc_mass = sum([w["mass"] for w in self.front_arc_weapon_list])
@@ -182,6 +187,11 @@ class ShipClass:
             self.total_rear_arc_max_dmg = 0
         else:
             for weapon in weapons:
+                try:
+                    index = [i["name"] for i in build_data.weapon_details].index(weapon) #catch if item not in possible weapon names
+                except ValueError:
+                    raise InvalidWeaponError(weapon)                
+                
                 weapon_item = [w for w in build_data.weapon_details if w["name"] == weapon]
                 self.rear_arc_weapon_list.append(weapon_item[0])
         self.total_rear_arc_mass = sum([w["mass"] for w in self.rear_arc_weapon_list])
@@ -200,6 +210,11 @@ class ShipClass:
             self.total_right_arc_max_dmg = 0
         else:
             for weapon in weapons:
+                try:
+                    index = [i["name"] for i in build_data.weapon_details].index(weapon) #catch if item not in possible weapon names
+                except ValueError:
+                    raise InvalidWeaponError(weapon)
+                
                 weapon_item = [w for w in build_data.weapon_details if w["name"] == weapon]
                 self.right_arc_weapon_list.append(weapon_item[0])
         self.total_right_arc_mass = sum([w["mass"] for w in self.right_arc_weapon_list])
@@ -218,6 +233,11 @@ class ShipClass:
             self.total_left_arc_max_dmg = 0
         else:
             for weapon in weapons:
+                try:
+                    index = [i["name"] for i in build_data.weapon_details].index(weapon) #catch if item not in possible weapon names
+                except ValueError:
+                    raise InvalidWeaponError(weapon)
+
                 weapon_item = [w for w in build_data.weapon_details if w["name"] == weapon]
                 self.left_arc_weapon_list.append(weapon_item[0])
         self.total_left_arc_mass = sum([w["mass"] for w in self.left_arc_weapon_list])

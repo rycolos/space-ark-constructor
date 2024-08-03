@@ -3,6 +3,8 @@ from ShipClass import ShipClass
 from time import sleep
 import json
 
+MENU_ERROR = "Invalid selection. Try again."
+
 def build_base_ship() -> ShipClass:
     """Instantiate base ship from name and ship class inputs"""
 
@@ -29,7 +31,6 @@ def build_outer_hull(ship: ShipClass) -> None:
             break
         except Exception as e:
             print(e)
-            continue
 
 def build_inner_hull(ship: ShipClass) -> None:
     """Calculate inner hull outputs from strength input"""
@@ -45,7 +46,6 @@ def build_inner_hull(ship: ShipClass) -> None:
             break
         except Exception as e:
             print(e)
-            continue
 
 def build_propulsion(ship: ShipClass) -> None:
     """Calculate propulsion outputs from thrust points input"""
@@ -61,7 +61,6 @@ def build_propulsion(ship: ShipClass) -> None:
             break
         except Exception as e:
             print(e)
-            continue
 
 def build_equipment(ship: ShipClass) -> None:
     """Calculate equipment outputs from list input, returns equipment name list from equipment object"""
@@ -77,90 +76,142 @@ def build_equipment(ship: ShipClass) -> None:
             break
         except Exception as e:
             print(e)
-            continue
-
 
 def build_weapons(ship: ShipClass) -> None:
     """Calculate per-arc weapon outputs from list input"""
-    weapon_selection = True
     front_arc_weapon_names = []
     rear_arc_weapon_names = []
     right_arc_weapon_names = []
     left_arc_weapon_names = []
+
     print("\nWEAPON SELECTION:")
-    while weapon_selection == True:
+    while True:
         arc = input(f"\nSelect arc (1-Front, 2-Rear, 3-Right, 4-Left) or C to continue: ").upper()
         match arc:
             case "1":
-                front_list = list(map(str, input("\nSelect Front Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
-                ship.front_arc_weapons(*front_list)
-                front_arc_weapon_names = [i["name"] for i in ship.front_arc_weapon_list]
-                print(f"\nFront Arc Weapons: {', '.join(front_arc_weapon_names)}")
-                if mass_check_ui(ship) == True:
-                    if input("Try again... Y/N? ").upper() == 'Y':
+                while True:
+                    front_list = list(map(str, input("\nSelect Front Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
+                    if front_list == ['']: #empty input
                         front_arc_weapon_names = []
                         ship.total_front_arc_mass = 0
                         ship.total_front_arc_pv = 0
                         ship.total_front_arc_max_dmg = 0
-                if max_dmg_check_ui(ship, ship.total_front_arc_max_dmg) == True:
-                    if input("Try again... Y/N? ").upper() == 'Y':
-                        front_arc_weapon_names = []
-                        ship.total_front_arc_mass = 0
-                        ship.total_front_arc_pv = 0
-                        ship.total_front_arc_max_dmg = 0
+                        print(f"\nFront Arc Weapons: None")
+                        break
+                    else:
+                        try:
+                            ship.front_arc_weapons(*front_list)
+                            front_arc_weapon_names = [i["name"] for i in ship.front_arc_weapon_list]
+                            print(f"\nFront Arc Weapons: {', '.join(front_arc_weapon_names)}")
+                            if mass_check_ui(ship) == True:
+                                if input("Try again... Y/N? ").upper() == 'Y':
+                                    front_arc_weapon_names = []
+                                    ship.total_front_arc_mass = 0
+                                    ship.total_front_arc_pv = 0
+                                    ship.total_front_arc_max_dmg = 0
+                            if max_dmg_check_ui(ship, ship.total_front_arc_max_dmg) == True:
+                                if input("Try again... Y/N? ").upper() == 'Y':
+                                    front_arc_weapon_names = []
+                                    ship.total_front_arc_mass = 0
+                                    ship.total_front_arc_pv = 0
+                                    ship.total_front_arc_max_dmg = 0
+                            break
+                        except Exception as e:
+                            print(e)
             case "2":
-                rear_list = list(map(str, input("Select Rear Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
-                ship.rear_arc_weapons(*rear_list)
-                rear_arc_weapon_names = [i["name"] for i in ship.rear_arc_weapon_list]
-                print(f"\nRear Arc Weapons: {', '.join(rear_arc_weapon_names)}")
-                if mass_check_ui(ship) == True:
-                    if input("Try again... Y/N? ").upper() == 'Y':
+                while True:
+                    rear_list = list(map(str, input("Select Rear Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
+                    if rear_list == ['']: #empty input
                         rear_arc_weapon_names = []
                         ship.total_rear_arc_mass = 0
                         ship.total_rear_arc_pv = 0
                         ship.total_rear_arc_max_dmg = 0
-                if max_dmg_check_ui(ship, ship.total_rear_arc_max_dmg) == True:
-                    if input("Try again... Y/N? ").upper() == 'Y':
-                        rear_arc_weapon_names = []
-                        ship.total_rear_arc_mass = 0
-                        ship.total_rear_arc_pv = 0
-                        ship.total_rear_arc_max_dmg = 0
+                        print(f"\nRear Arc Weapons: None")
+                        break
+                    else:
+                        try:
+                            ship.rear_arc_weapons(*rear_list)
+                            rear_arc_weapon_names = [i["name"] for i in ship.rear_arc_weapon_list]
+                            print(f"\nRear Arc Weapons: {', '.join(rear_arc_weapon_names)}")
+                            if mass_check_ui(ship) == True:
+                                if input("Try again... Y/N? ").upper() == 'Y':
+                                    rear_arc_weapon_names = []
+                                    ship.total_rear_arc_mass = 0
+                                    ship.total_rear_arc_pv = 0
+                                    ship.total_rear_arc_max_dmg = 0
+                            if max_dmg_check_ui(ship, ship.total_rear_arc_max_dmg) == True:
+                                if input("Try again... Y/N? ").upper() == 'Y':
+                                    rear_arc_weapon_names = []
+                                    ship.total_rear_arc_mass = 0
+                                    ship.total_rear_arc_pv = 0
+                                    ship.total_rear_arc_max_dmg = 0
+                            break
+                        except Exception as e:
+                            print(e)
             case "3":
-                right_list = list(map(str, input("Select Right Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
-                ship.right_arc_weapons(*right_list)
-                right_arc_weapon_names = [i["name"] for i in ship.right_arc_weapon_list]
-                print(f"\nRight Arc Weapons: {', '.join(right_arc_weapon_names)}")
-                if mass_check_ui(ship) == True:
-                    if input("Try again... Y/N? ").upper() == 'Y':
+                while True:
+                    right_list = list(map(str, input("Select Right Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
+                    if right_list == ['']: #empty input
                         right_arc_weapon_names = []
                         ship.total_right_arc_mass = 0
                         ship.total_right_arc_pv = 0
                         ship.total_right_arc_max_dmg = 0
-                if max_dmg_check_ui(ship, ship.total_right_arc_max_dmg) == True:
-                    if input("Try again... Y/N? ").upper() == 'Y':
-                        right_arc_weapon_names = []
-                        ship.total_right_arc_mass = 0
-                        ship.total_right_arc_pv = 0
-                        ship.total_right_arc_max_dmg = 0
-            case "4":
-                left_list = list(map(str, input("Select Left Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
-                ship.left_arc_weapons(*left_list)
-                left_arc_weapon_names = [i["name"] for i in ship.left_arc_weapon_list]
-                print(f"\nLeft Arc Weapons: {', '.join(left_arc_weapon_names)}")
-                if mass_check_ui(ship) == True:
-                    if input("Try again... Y/N? ").upper() == 'Y':
+                        print(f"\nRight Arc Weapons: None")
+                        break
+                    else:
+                        try:
+                            ship.right_arc_weapons(*right_list)
+                            right_arc_weapon_names = [i["name"] for i in ship.right_arc_weapon_list]
+                            print(f"\nRight Arc Weapons: {', '.join(right_arc_weapon_names)}")
+                            if mass_check_ui(ship) == True:
+                                if input("Try again... Y/N? ").upper() == 'Y':
+                                    right_arc_weapon_names = []
+                                    ship.total_right_arc_mass = 0
+                                    ship.total_right_arc_pv = 0
+                                    ship.total_right_arc_max_dmg = 0
+                            if max_dmg_check_ui(ship, ship.total_right_arc_max_dmg) == True:
+                                if input("Try again... Y/N? ").upper() == 'Y':
+                                    right_arc_weapon_names = []
+                                    ship.total_right_arc_mass = 0
+                                    ship.total_right_arc_pv = 0
+                                    ship.total_right_arc_max_dmg = 0
+                            break
+                        except Exception as e:
+                            print(e)
+            case "4":                
+                while True:
+                    left_list = list(map(str, input("Select Left Arc weapons as comma-separated names. Leave empty for None: ").upper().split(', ')))
+                    if left_list == ['']: #empty input
                         left_arc_weapon_names = []
                         ship.total_left_arc_mass = 0
                         ship.total_left_arc_pv = 0
                         ship.total_left_arc_max_dmg = 0
-                if max_dmg_check_ui(ship, ship.total_left_arc_max_dmg) == True:
-                    if input("Try again... Y/N? ").upper() == 'Y':
-                        left_arc_weapon_names = []
-                        ship.total_left_arc_mass = 0
-                        ship.total_left_arc_pv = 0
-                        ship.total_left_arc_max_dmg = 0
+                        print(f"\nLeft Arc Weapons: None")
+                        break
+                    else:
+                        try:
+                            ship.left_arc_weapons(*left_list)
+                            left_arc_weapon_names = [i["name"] for i in ship.left_arc_weapon_list]
+                            print(f"\nLeft Arc Weapons: {', '.join(left_arc_weapon_names)}")
+                            if mass_check_ui(ship) == True:
+                                if input("Try again... Y/N? ").upper() == 'Y':
+                                    left_arc_weapon_names = []
+                                    ship.total_left_arc_mass = 0
+                                    ship.total_left_arc_pv = 0
+                                    ship.total_left_arc_max_dmg = 0
+                            if max_dmg_check_ui(ship, ship.total_left_arc_max_dmg) == True:
+                                if input("Try again... Y/N? ").upper() == 'Y':
+                                    left_arc_weapon_names = []
+                                    ship.total_left_arc_mass = 0
+                                    ship.total_left_arc_pv = 0
+                                    ship.total_left_arc_max_dmg = 0
+                            break
+                        except Exception as e:
+                            print(e)
             case "C":
-                weapon_selection = False
+                break
+            case _: #match any other entry
+                print(MENU_ERROR)
 
 def build_crew_quality(ship: ShipClass) -> None:
     """Calculate crew quality-driven outputs (final pv, max stress) from input"""
@@ -308,6 +359,8 @@ def main_menu() -> None:
                 import_menu()
             case "3": #exit
                 exit()
+            case _: #match any other entry
+                print(MENU_ERROR)
 
 def build_menu(ship: ShipClass) -> None:
     run = True
@@ -335,6 +388,8 @@ def build_menu(ship: ShipClass) -> None:
                 reset_stats(ship)
             case "10": #main menu
                 main_menu()
+            case _: #match any other entry
+                print(MENU_ERROR)
 
 def import_menu() -> None:
     run = True
@@ -350,6 +405,8 @@ def import_menu() -> None:
                 build_menu(ship_instance)
             case "4": #main menu
                 main_menu()
+            case _: #match any other entry
+                print(MENU_ERROR)
 
 if __name__ == "__main__":
     main_menu()

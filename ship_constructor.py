@@ -298,10 +298,74 @@ def show_ship_build_stats(ship: ShipClass) -> None:
     print(f"Max Stress: {ship.max_stress}")
     print(f"Final PV: {ship.final_pv}")
 
-def show_ship_game_stats(ship: ShipClass):
-    ship.build_json_objects()
-    print(f"\n**SHIP GAME STATS **")
-    print(json.dumps(ship.ship_json_object, indent=4))
+def show_ship_game_stats(ship: ShipClass) -> None:
+    """Calcualte final mass and final base pv and print ship details"""
+    ship.track_mass()
+    ship.track_base_pv()
+    
+    print(f"\nSHIP NAME: {ship.name}\nClass: {ship.sclass.capitalize()}\nSize: {ship.size}\nArmor: {ship.armor_roll}")
+    print(f"Base PV: {ship.total_base_pv}")
+    print(f"Final PV: {ship.final_pv}")
+    print(f"Crew Quality: {ship.crew_quality_str}")
+    print(f"Max Stress: {ship.max_stress}")
+    print(f"Critical Threshold: {ship.critical_threshold}")
+    
+    print(f"\nThrust Points: {ship.thrust_points}")
+    print(f"Max Thrust: {ship.max_thrust}")
+    
+    oh_squares = ' □' * ship.outer_hull_mass
+    print(f"\nOuter Hull Mass: {oh_squares} ({ship.outer_hull_mass})")
+    ih_squares = ' □' * ship.inner_hull_mass
+    print(f"Inner Hull Mass: {ih_squares} ({ship.inner_hull_mass})")
+
+    print(f"\nEQUIPMENT: ")
+    for item in ship.equipment_list:
+        print(f"\n{item["name"]}")
+        print(f"{item["description"]}")
+
+    print(f"\nWEAPONS: ")
+    print(f"\nFront Arc:")
+    for weapon in ship.front_arc_weapon_list:
+        print(f"\nName: {weapon["name"]}")
+        print(f"Attack/Damage: {weapon["attack"]}/{weapon["damage"]}")
+        print(f"Range: {weapon["range"]}")
+        print(f"Special: {weapon["special"]}")
+    
+    print(f"\nRear Arc:")
+    for weapon in ship.rear_arc_weapon_list:
+        print(f"\nName: {weapon["name"]}")
+        print(f"Attack/Damage: {weapon["attack"]}/{weapon["damage"]}")
+        print(f"Range: {weapon["range"]}")
+        print(f"Special: {weapon["special"]}")
+    
+    print(f"\nRight Arc:")
+    for weapon in ship.right_arc_weapon_list:
+        print(f"\nName: {weapon["name"]}")
+        print(f"Attack/Damage: {weapon["attack"]}/{weapon["damage"]}")
+        print(f"Range: {weapon["range"]}")
+        print(f"Special: {weapon["special"]}")
+    
+    print(f"\nLeft Arc:")
+    for weapon in ship.left_arc_weapon_list:
+        print(f"\nName: {weapon["name"]}")
+        print(f"Attack/Damage: {weapon["attack"]}/{weapon["damage"]}")
+        print(f"Range: {weapon["range"]}")
+        print(f"Special: {weapon["special"]}")
+
+    print(f"\nCRITICAL HITS:")
+    print("""
+□ □ Engineering Hit
+□ □ Major Weapon Damage (F/RT/LT/R)
+□ Targeting Hit
+□ □ □ □ Weapon Damage (F/RT/LT/R)
+□ □ □ Crew Hit
+□ □ Side Thruster Damage
+□ □ □ □ □ Engine Room Damage
+□ □ Engines Disabled
+        """)
+
+def export_ship_txt(ship: ShipClass):
+    pass
 
 def export_ship_json(ship: ShipClass):
     ship.build_json_objects()
@@ -365,7 +429,7 @@ def main_menu() -> None:
 def build_menu(ship: ShipClass) -> None:
     run = True
     while run == True:
-        command = input("\nCOMMAND (1-Armor, 2-Propulsion, 3-Equipment, 4-Weapons, 5-Crew Quality, 6-Check Mass, 7-View, 8-Export, 9-Reset, 10-Main Menu): ")
+        command = input("\nCOMMAND (1-Armor, 2-Propulsion, 3-Equipment, 4-Weapons, 5-Crew Quality, 6-Check Mass, 7-View Build, 8-View Play, 9-Export, 10-Reset, 11-Main Menu): ")
         match command:
             case "1": #armor
                 build_outer_hull(ship)
@@ -382,11 +446,14 @@ def build_menu(ship: ShipClass) -> None:
                 mass_check_ui(ship)
             case "7": #view
                 show_ship_build_stats(ship)
-            case "8": #export
-                export_ship_json(ship)
-            case "9": #reset
+            case "8": #view
+                show_ship_game_stats(ship)
+            case "9": #export
+                #export_ship_json(ship)
+                export_menu(ship)
+            case "10": #reset
                 reset_stats(ship)
-            case "10": #main menu
+            case "11": #main menu
                 main_menu()
             case _: #match any other entry
                 print(MENU_ERROR)
@@ -403,6 +470,22 @@ def import_menu() -> None:
                 show_ship_build_stats(ship_instance)
             case "3": #edit
                 build_menu(ship_instance)
+            case "4": #main menu
+                main_menu()
+            case _: #match any other entry
+                print(MENU_ERROR)
+
+def export_menu(ship: ShipClass) -> None:
+    run = True
+    while run == True:
+        command = input("\nCOMMAND (1-Play Card, 2-JSON, 3-Build Menu, 4-Main Menu ")
+        match command:
+            case "1": #play card
+                export_ship_txt(ship)
+            case "2": #json
+                export_ship_json(ship)
+            case "3": #edit
+                build_menu(ship)
             case "4": #main menu
                 main_menu()
             case _: #match any other entry

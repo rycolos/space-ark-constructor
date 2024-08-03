@@ -6,6 +6,6 @@ def load_ship(ship_file):
     return parsed_ship
 
 if __name__ == "__main__":
-    parsed_ship = load_ship('ship_default.json')
+    parsed_ship = load_ship('Kepler.json')
     for key, value in parsed_ship.items():
         print(f"{key}: {value}")

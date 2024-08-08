@@ -298,74 +298,49 @@ def show_ship_build_stats(ship: ShipClass) -> None:
     print(f"Max Stress: {ship.max_stress}")
     print(f"Final PV: {ship.final_pv}")
 
-def show_ship_game_stats(ship: ShipClass) -> None:
+def build_ship_game_stats(ship: ShipClass) -> str:
     """Calcualte final mass and final base pv and print ship details"""
     ship.track_mass()
     ship.track_base_pv()
-    
-    print(f"\nSHIP NAME: {ship.name}\nClass: {ship.sclass.capitalize()}\nSize: {ship.size}\nArmor: {ship.armor_roll}")
-    print(f"Base PV: {ship.total_base_pv}")
-    print(f"Final PV: {ship.final_pv}")
-    print(f"Crew Quality: {ship.crew_quality_str}")
-    print(f"Max Stress: {ship.max_stress}")
-    print(f"Critical Threshold: {ship.critical_threshold}")
-    
-    print(f"\nThrust Points: {ship.thrust_points}")
-    print(f"Max Thrust: {ship.max_thrust}")
-    
-    oh_squares = ' □' * ship.outer_hull_mass
-    print(f"\nOuter Hull Mass: {oh_squares} ({ship.outer_hull_mass})")
+
+    #create a box symbol per mass point
+    oh_squares = ' □' * ship.outer_hull_mass 
     ih_squares = ' □' * ship.inner_hull_mass
-    print(f"Inner Hull Mass: {ih_squares} ({ship.inner_hull_mass})")
 
-    print(f"\nEQUIPMENT: ")
-    for item in ship.equipment_list:
-        print(f"\n{item["name"]}")
-        print(f"{item["description"]}")
-
-    print(f"\nWEAPONS: ")
-    print(f"\nFront Arc:")
-    for weapon in ship.front_arc_weapon_list:
-        print(f"\nName: {weapon["name"]}")
-        print(f"Attack/Damage: {weapon["attack"]}/{weapon["damage"]}")
-        print(f"Range: {weapon["range"]}")
-        print(f"Special: {weapon["special"]}")
-    
-    print(f"\nRear Arc:")
-    for weapon in ship.rear_arc_weapon_list:
-        print(f"\nName: {weapon["name"]}")
-        print(f"Attack/Damage: {weapon["attack"]}/{weapon["damage"]}")
-        print(f"Range: {weapon["range"]}")
-        print(f"Special: {weapon["special"]}")
-    
-    print(f"\nRight Arc:")
-    for weapon in ship.right_arc_weapon_list:
-        print(f"\nName: {weapon["name"]}")
-        print(f"Attack/Damage: {weapon["attack"]}/{weapon["damage"]}")
-        print(f"Range: {weapon["range"]}")
-        print(f"Special: {weapon["special"]}")
-    
-    print(f"\nLeft Arc:")
-    for weapon in ship.left_arc_weapon_list:
-        print(f"\nName: {weapon["name"]}")
-        print(f"Attack/Damage: {weapon["attack"]}/{weapon["damage"]}")
-        print(f"Range: {weapon["range"]}")
-        print(f"Special: {weapon["special"]}")
-
-    print(f"\nCRITICAL HITS:")
-    print("""
-□ □ Engineering Hit
-□ □ Major Weapon Damage (F/RT/LT/R)
-□ Targeting Hit
-□ □ □ □ Weapon Damage (F/RT/LT/R)
-□ □ □ Crew Hit
-□ □ Side Thruster Damage
-□ □ □ □ □ Engine Room Damage
-□ □ Engines Disabled
-        """)
+    game_card = (f"\nSHIP NAME: {ship.name}"
+                f"\nClass: {ship.sclass.capitalize()}    Size: {ship.size}    Armor: {ship.armor_roll}"
+                f"\nBase PV: {ship.total_base_pv}    Final PV: {ship.final_pv}    Crew Quality: {ship.crew_quality_str}"
+                f"\nMax Stress: {ship.max_stress}    Critical Threshold: {ship.critical_threshold}"
+                f"\nThrust Points: {ship.thrust_points}    Max Thrust: {ship.max_thrust}"
+                f"\n\nARMOR:"
+                f"\nOuter Hull Mass: {oh_squares} ({ship.outer_hull_mass})"
+                f"\nInner Hull Mass: {ih_squares} ({ship.inner_hull_mass})"
+                f"\n\nEQUIPMENT:"
+                f"\n{''.join(f'{item['name']} -- {item['description']}\n' for item in ship.equipment_list)}"
+                f"\nWEAPONS:"
+                f"\n***Front Arc***"
+                f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.front_arc_weapon_list)}"
+                f"\n***Rear Arc***"
+                f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.rear_arc_weapon_list)}"
+                f"\n***Right Arc***"
+                f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.right_arc_weapon_list)}"
+                f"\n***Left Arc***"
+                f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.left_arc_weapon_list)}"
+                f"\nCRITICAL HITS:"
+                f"\n□ □ Engineering Hit    □ □ Major Weapon Damage (F/RT/LT/R)"
+                f"\n□ Targeting Hit    □ □ □ □ Weapon Damage (F/RT/LT/R)"
+                f"\n□ □ □ Crew Hit    □ □ Side Thruster Damage"
+                f"\n□ □ □ □ □ Engine Room Damage    □ □ Engines Disabled"
+                )
+    return game_card
 
 def export_ship_txt(ship: ShipClass):
-    pass
+    game_card = build_ship_game_stats(ship)
+    if input("\nExport ship to txt file? (Y/N): ").upper() == 'Y':
+        with open(ship.name + '_export' + '.txt', 'w', encoding='utf-8') as f:
+            f.write(game_card)
+    else:
+        pass    
 
 def export_ship_json(ship: ShipClass):
     ship.build_json_objects()
@@ -447,9 +422,8 @@ def build_menu(ship: ShipClass) -> None:
             case "7": #view
                 show_ship_build_stats(ship)
             case "8": #view
-                show_ship_game_stats(ship)
+                print(build_ship_game_stats(ship))
             case "9": #export
-                #export_ship_json(ship)
                 export_menu(ship)
             case "10": #reset
                 reset_stats(ship)

@@ -354,12 +354,28 @@ class ShipClass:
                 "propulsion_mass": self.propulsion_mass,
                 "propulsion_pv": self.propulsion_pv
             },
-            "equipment": self.equipment_list,
+            "equipment": {
+                "equipment_items": self.equipment_list,
+                "total_equipment_mass": self.total_equipment_mass,
+                "total_equipment_pv": self.total_equipment_pv
+            },
             "weapons": {
                 "front_arc_weapons": self.front_arc_weapon_list,
+                "total_front_arc_mass": self.total_front_arc_mass,
+                "total_front_arc_pv": self.total_front_arc_pv,
+                "total_front_arc_max_dmg": self.total_front_arc_max_dmg,
                 "rear_arc_weapons": self.rear_arc_weapon_list,
+                "total_rear_arc_mass": self.total_rear_arc_mass,
+                "total_rear_arc_pv": self.total_rear_arc_pv,
+                "total_rear_arc_max_dmg": self.total_rear_arc_max_dmg,
                 "right_arc_weapons": self.right_arc_weapon_list,
-                "left_arc_weapons": self.left_arc_weapon_list
+                "total_right_arc_mass": self.total_right_arc_mass,
+                "total_right_arc_pv": self.total_right_arc_pv,
+                "total_right_arc_max_dmg": self.total_right_arc_max_dmg,
+                "left_arc_weapons": self.left_arc_weapon_list,
+                "total_left_arc_mass": self.total_left_arc_mass,
+                "total_left_arc_pv": self.total_left_arc_pv,
+                "total_left_arc_max_dmg": self.total_left_arc_max_dmg
             }
         }
 

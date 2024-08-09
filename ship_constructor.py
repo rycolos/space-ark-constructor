@@ -365,11 +365,25 @@ def load_ship_details_json(ship: ShipClass, file: str) -> None:
         ship.max_thrust = file["propulsion"]["max_thrust"]
         ship.propulsion_mass = file["propulsion"]["propulsion_mass"]
         ship.propulsion_pv = file["propulsion"]["propulsion_pv"]
-        ship.equipment_list = file["equipment"]
+        ship.equipment_list = file["equipment"]["equipment_items"]
+        ship.total_equipment_mass = file["equipment"]["total_equipment_mass"]
+        ship.total_equipment_pv = file["equipment"]["total_equipment_pv"]
         ship.front_arc_weapon_list = file["weapons"]["front_arc_weapons"]
+        ship.total_front_arc_mass = file["weapons"]["total_front_arc_mass"]
+        ship.total_front_arc_pv = file["weapons"]["total_front_arc_pv"]
+        ship.total_front_arc_max_dmg = file["weapons"]["total_front_arc_max_dmg"]
         ship.rear_arc_weapon_list = file["weapons"]["rear_arc_weapons"]
+        ship.total_rear_arc_mass = file["weapons"]["total_rear_arc_mass"]
+        ship.total_rear_arc_pv = file["weapons"]["total_rear_arc_pv"]
+        ship.total_rear_arc_max_dmg = file["weapons"]["total_rear_arc_max_dmg"]
         ship.right_arc_weapon_list = file["weapons"]["right_arc_weapons"]
+        ship.total_right_arc_mass = file["weapons"]["total_right_arc_mass"]
+        ship.total_right_arc_pv = file["weapons"]["total_right_arc_pv"]
+        ship.total_right_arc_max_dmg = file["weapons"]["total_right_arc_max_dmg"]
         ship.left_arc_weapon_list = file["weapons"]["left_arc_weapons"]
+        ship.total_left_arc_mass = file["weapons"]["total_left_arc_mass"]
+        ship.total_left_arc_pv = file["weapons"]["total_left_arc_pv"]
+        ship.total_left_arc_max_dmg = file["weapons"]["total_left_arc_max_dmg"]
 
 def main_menu() -> None:
     run = True
@@ -426,7 +440,7 @@ def import_menu() -> None:
                 ship_instance, json_file = import_ship_base_json()
                 load_ship_details_json(ship_instance, json_file)
             case "2": #view
-                show_ship_build_stats(ship_instance)
+                print(build_ship_build_stats(ship_instance))
             case "3": #edit
                 build_menu(ship_instance)
             case "4": #main menu

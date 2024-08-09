@@ -16,6 +16,9 @@ def build_base_ship() -> ShipClass:
     mdpa = [s['mdpa'] for s in build_data.sclass_details if s['sclass'] == sclass]
     return ShipClass(name, sclass, size[0], tam[0], armor_roll[0], mdpa[0])
 
+def rename_ship(ship: ShipClass) -> None:
+    ship.name = input(f"\nCurrent name: {ship.name}. New name? ")
+
 def build_outer_hull(ship: ShipClass) -> None:
     """Calculate outer hull outputs from strength input"""
     #ohs_input = int(input(f"\nOuter Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): "))
@@ -336,54 +339,67 @@ def export_ship_json(ship: ShipClass):
     else:
         pass
 
-def import_ship_base_json() -> ShipClass:
+def import_ship_base_json() -> None:
     if input("\nImport ship from JSON? (Y/N): ").upper() == 'Y':
-        file = input("\nFull file name in local directory: ")
-        with open(file, 'r', encoding='utf-8') as f:
-            loaded_ship_json = json.load(f)
+        while True:
+            file = input("\nFull file name in local directory: ")
+            try:
+                with open(file, 'r', encoding='utf-8') as f:
+                    loaded_ship_json = json.load(f)
+            except FileNotFoundError:
+                print("File not found. Try again.")
+            else:
+                ship_instance = load_ship_details_json(loaded_ship_json)
+                import_submenu(ship_instance)
     else:
         pass
-    return ShipClass(
-                name = loaded_ship_json["name"], 
-                sclass = loaded_ship_json["ship_class"], 
-                size = loaded_ship_json["size"], 
-                tam = loaded_ship_json["TAM"], 
-                armor_roll = loaded_ship_json["armor_roll"], 
-                mdpa = loaded_ship_json["MDPA"]), loaded_ship_json
 
-def load_ship_details_json(ship: ShipClass, file: str) -> None:
-        ship.crew_quality_str = file["crew_quality"]
-        ship.total_base_pv = file["base_pv"]  
-        ship.final_pv = file["final_pv"]
-        ship.max_stress = file["max_stress"]   
-        ship.outer_hull_mass = file["armor"]["outer_hull"]["mass"]  
-        ship.outer_hull_pv = file["armor"]["outer_hull"]["pv"]  
-        ship.inner_hull_mass = file["armor"]["inner_hull"]["mass"]  
-        ship.inner_hull_pv = file["armor"]["inner_hull"]["pv"]  
-        ship.critical_threshold = file["armor"]["critical_threshold"]  
-        ship.thrust_points = file["propulsion"]["thrust_points"]
-        ship.max_thrust = file["propulsion"]["max_thrust"]
-        ship.propulsion_mass = file["propulsion"]["propulsion_mass"]
-        ship.propulsion_pv = file["propulsion"]["propulsion_pv"]
-        ship.equipment_list = file["equipment"]["equipment_items"]
-        ship.total_equipment_mass = file["equipment"]["total_equipment_mass"]
-        ship.total_equipment_pv = file["equipment"]["total_equipment_pv"]
-        ship.front_arc_weapon_list = file["weapons"]["front_arc_weapons"]
-        ship.total_front_arc_mass = file["weapons"]["total_front_arc_mass"]
-        ship.total_front_arc_pv = file["weapons"]["total_front_arc_pv"]
-        ship.total_front_arc_max_dmg = file["weapons"]["total_front_arc_max_dmg"]
-        ship.rear_arc_weapon_list = file["weapons"]["rear_arc_weapons"]
-        ship.total_rear_arc_mass = file["weapons"]["total_rear_arc_mass"]
-        ship.total_rear_arc_pv = file["weapons"]["total_rear_arc_pv"]
-        ship.total_rear_arc_max_dmg = file["weapons"]["total_rear_arc_max_dmg"]
-        ship.right_arc_weapon_list = file["weapons"]["right_arc_weapons"]
-        ship.total_right_arc_mass = file["weapons"]["total_right_arc_mass"]
-        ship.total_right_arc_pv = file["weapons"]["total_right_arc_pv"]
-        ship.total_right_arc_max_dmg = file["weapons"]["total_right_arc_max_dmg"]
-        ship.left_arc_weapon_list = file["weapons"]["left_arc_weapons"]
-        ship.total_left_arc_mass = file["weapons"]["total_left_arc_mass"]
-        ship.total_left_arc_pv = file["weapons"]["total_left_arc_pv"]
-        ship.total_left_arc_max_dmg = file["weapons"]["total_left_arc_max_dmg"]
+def load_ship_details_json(json_file: str) -> ShipClass:
+        #initialize instance
+        ship = ShipClass(
+                name = json_file["name"], 
+                sclass = json_file["ship_class"], 
+                size = json_file["size"], 
+                tam = json_file["TAM"], 
+                armor_roll = json_file["armor_roll"], 
+                mdpa = json_file["MDPA"]
+            )
+        
+        #parse details
+        ship.crew_quality_str = json_file["crew_quality"]
+        ship.total_base_pv = json_file["base_pv"]  
+        ship.final_pv = json_file["final_pv"]
+        ship.max_stress = json_file["max_stress"]   
+        ship.outer_hull_mass = json_file["armor"]["outer_hull"]["mass"]  
+        ship.outer_hull_pv = json_file["armor"]["outer_hull"]["pv"]  
+        ship.inner_hull_mass = json_file["armor"]["inner_hull"]["mass"]  
+        ship.inner_hull_pv = json_file["armor"]["inner_hull"]["pv"]  
+        ship.critical_threshold = json_file["armor"]["critical_threshold"]  
+        ship.thrust_points = json_file["propulsion"]["thrust_points"]
+        ship.max_thrust = json_file["propulsion"]["max_thrust"]
+        ship.propulsion_mass = json_file["propulsion"]["propulsion_mass"]
+        ship.propulsion_pv = json_file["propulsion"]["propulsion_pv"]
+        ship.equipment_list = json_file["equipment"]["equipment_items"]
+        ship.total_equipment_mass = json_file["equipment"]["total_equipment_mass"]
+        ship.total_equipment_pv = json_file["equipment"]["total_equipment_pv"]
+        ship.front_arc_weapon_list = json_file["weapons"]["front_arc_weapons"]
+        ship.total_front_arc_mass = json_file["weapons"]["total_front_arc_mass"]
+        ship.total_front_arc_pv = json_file["weapons"]["total_front_arc_pv"]
+        ship.total_front_arc_max_dmg = json_file["weapons"]["total_front_arc_max_dmg"]
+        ship.rear_arc_weapon_list = json_file["weapons"]["rear_arc_weapons"]
+        ship.total_rear_arc_mass = json_file["weapons"]["total_rear_arc_mass"]
+        ship.total_rear_arc_pv = json_file["weapons"]["total_rear_arc_pv"]
+        ship.total_rear_arc_max_dmg = json_file["weapons"]["total_rear_arc_max_dmg"]
+        ship.right_arc_weapon_list = json_file["weapons"]["right_arc_weapons"]
+        ship.total_right_arc_mass = json_file["weapons"]["total_right_arc_mass"]
+        ship.total_right_arc_pv = json_file["weapons"]["total_right_arc_pv"]
+        ship.total_right_arc_max_dmg = json_file["weapons"]["total_right_arc_max_dmg"]
+        ship.left_arc_weapon_list = json_file["weapons"]["left_arc_weapons"]
+        ship.total_left_arc_mass = json_file["weapons"]["total_left_arc_mass"]
+        ship.total_left_arc_pv = json_file["weapons"]["total_left_arc_pv"]
+        ship.total_left_arc_max_dmg = json_file["weapons"]["total_left_arc_max_dmg"]
+
+        return ship
 
 def main_menu() -> None:
     run = True
@@ -403,7 +419,7 @@ def main_menu() -> None:
 def build_menu(ship: ShipClass) -> None:
     run = True
     while run == True:
-        command = input("\nCOMMAND (1-Armor, 2-Propulsion, 3-Equipment, 4-Weapons, 5-Crew Quality, 6-Check Mass, 7-View Build, 8-View Play, 9-Export, 10-Reset, 11-Main Menu): ")
+        command = input("\nCOMMAND (1-Armor, 2-Propulsion, 3-Equipment, 4-Weapons, 5-Crew Quality, 6-Check Mass, 7-View Build, 8-View Game Card, 9-Export, 10-Rename, 11-Reset, 12-Main Menu): ")
         match command:
             case "1": #armor
                 build_outer_hull(ship)
@@ -424,9 +440,11 @@ def build_menu(ship: ShipClass) -> None:
                 print(build_ship_game_stats(ship))
             case "9": #export
                 export_menu(ship)
-            case "10": #reset
+            case "10": #rename
+                rename_ship(ship)
+            case "11": #reset
                 reset_stats(ship)
-            case "11": #main menu
+            case "12": #main menu
                 main_menu()
             case _: #match any other entry
                 print(MENU_ERROR)
@@ -434,16 +452,29 @@ def build_menu(ship: ShipClass) -> None:
 def import_menu() -> None:
     run = True
     while run == True:
-        command = input("\nCOMMAND (1-File, 2-View, 3-Edit, 4-Main Menu: ")
+        command = input("\nCOMMAND (1-Import from JSON, 2-Main Menu: ")
         match command:
             case "1": #file
-                ship_instance, json_file = import_ship_base_json()
-                load_ship_details_json(ship_instance, json_file)
+                import_ship_base_json()
+            case "2": #main menu
+                main_menu()
+            case _: #match any other entry
+                print(MENU_ERROR)
+
+def import_submenu(ship: ShipClass) -> None:
+    run = True
+    while run == True:
+        command = input("\nCOMMAND (1-View Build, 2-View Game Stats, 3-Edit, 4-Import New, 5-Main Menu: ")
+        match command:
+            case "1": #view
+                print(build_ship_build_stats(ship))
             case "2": #view
-                print(build_ship_build_stats(ship_instance))
+                print(build_ship_game_stats(ship))
             case "3": #edit
-                build_menu(ship_instance)
-            case "4": #main menu
+                build_menu(ship)
+            case "4": #import menu
+                import_menu()
+            case "5": #main menu
                 main_menu()
             case _: #match any other entry
                 print(MENU_ERROR)
@@ -451,13 +482,13 @@ def import_menu() -> None:
 def export_menu(ship: ShipClass) -> None:
     run = True
     while run == True:
-        command = input("\nCOMMAND (1-Txt, 2-JSON, 3-Build Menu, 4-Main Menu ")
+        command = input("\nCOMMAND 1-Game Card (Txt), 2-Save ship (JSON), 3-Back (Build Menu), 4-Main Menu ")
         match command:
-            case "1": #play card
+            case "1": #export txt
                 export_ship_txt(ship)
-            case "2": #json
+            case "2": #export json
                 export_ship_json(ship)
-            case "3": #edit
+            case "3": #build menu
                 build_menu(ship)
             case "4": #main menu
                 main_menu()

@@ -4,6 +4,7 @@ from time import sleep
 import json
 
 MENU_ERROR = "Invalid selection. Try again."
+import_schema = {}
 
 def build_base_ship() -> ShipClass:
     """Instantiate base ship from name and ship class inputs"""
@@ -339,7 +340,7 @@ def export_ship_json(ship: ShipClass):
     else:
         pass
 
-def import_ship_base_json() -> None:
+def import_ship_json_file() -> None:
     if input("\nImport ship from JSON? (Y/N): ").upper() == 'Y':
         while True:
             file = input("\nFull file name in local directory: ")
@@ -347,10 +348,18 @@ def import_ship_base_json() -> None:
                 with open(file, 'r', encoding='utf-8') as f:
                     loaded_ship_json = json.load(f)
             except FileNotFoundError:
-                print("File not found. Try again.")
+                if input("File not found. Try again... Y/N? ").upper() == 'N':
+                    break
+            except json.decoder.JSONDecodeError:
+                if input("Invalid JSON. Try again... Y/N? ").upper() == 'N':
+                    break
             else:
-                ship_instance = load_ship_details_json(loaded_ship_json)
-                import_submenu(ship_instance)
+                try: #temporary error handling
+                    ship_instance = load_ship_details_json(loaded_ship_json)
+                    import_submenu(ship_instance)
+                except Exception as e:
+                    if input(f"Unable to import. ERROR: {e}\nTry again... Y/N? ").upper() == 'N':
+                        break
     else:
         pass
 
@@ -455,7 +464,7 @@ def import_menu() -> None:
         command = input("\nCOMMAND (1-Import from JSON, 2-Main Menu: ")
         match command:
             case "1": #file
-                import_ship_base_json()
+                import_ship_json_file()
             case "2": #main menu
                 main_menu()
             case _: #match any other entry

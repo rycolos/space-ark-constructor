@@ -8,14 +8,10 @@ Space Ark Constructor is an in-development CLI and Web application to build ship
 
 ## TODO
 ### ShipClass
-* Error handling
-* Input validation
+* 
 ### CLI App
-* Input validation
-* Error handling
 * Multiple ship management
-* ASCII styling for a nicer UI
-* ASCII styling for printable, exportable ship cards
+* database
 ### Build data
 * Consideering moving from dicts in `build_data` to a simple sqlite or duckdb database, which could also be used for ship storage and management rather than json objects
 ### Web App

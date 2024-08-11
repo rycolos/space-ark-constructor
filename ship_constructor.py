@@ -1,10 +1,10 @@
 import build_data
 from ShipClass import ShipClass
 from time import sleep
-import json
+import json, jsonschema
 
-MENU_ERROR = "Invalid selection. Try again."
-import_schema = {}
+MENU_ERROR = 'Invalid selection. Try again.'
+SCHEMA_FILE = 'import_schema.json'
 
 def build_base_ship() -> ShipClass:
     """Instantiate base ship from name and ship class inputs"""
@@ -354,59 +354,71 @@ def import_ship_json_file() -> None:
                 if input("Invalid JSON. Try again... Y/N? ").upper() == 'N':
                     break
             else:
-                try: #temporary error handling
+                error_list = validate_json(loaded_ship_json)
+                if error_list == []:
+                    print('Ship imported successfully!')
                     ship_instance = load_ship_details_json(loaded_ship_json)
                     import_submenu(ship_instance)
-                except Exception as e:
-                    if input(f"Unable to import. ERROR: {e}\nTry again... Y/N? ").upper() == 'N':
+                else: 
+                    print(f"\nIMPORT ERRORS:")
+                    for error in error_list:
+                        print(f"{error.message}")
+                    if input(f"\nTry again... Y/N? ").upper() == 'N':
                         break
     else:
         pass
 
-def load_ship_details_json(json_file: str) -> ShipClass:
+def validate_json(ship_json: str) -> list:
+    with open(SCHEMA_FILE, 'r', encoding='utf-8') as schema_file:
+        schema = json.load(schema_file)
+    validator = jsonschema.Draft7Validator(schema)
+    error_list = list(validator.iter_errors(ship_json))  #get individual validation errors
+    return error_list
+
+def load_ship_details_json(ship_json: str) -> ShipClass:
         #initialize instance
         ship = ShipClass(
-                name = json_file["name"], 
-                sclass = json_file["ship_class"], 
-                size = json_file["size"], 
-                tam = json_file["TAM"], 
-                armor_roll = json_file["armor_roll"], 
-                mdpa = json_file["MDPA"]
+                name = ship_json["name"], 
+                sclass = ship_json["ship_class"], 
+                size = ship_json["size"], 
+                tam = ship_json["TAM"], 
+                armor_roll = ship_json["armor_roll"], 
+                mdpa = ship_json["MDPA"]
             )
         
         #parse details
-        ship.crew_quality_str = json_file["crew_quality"]
-        ship.total_base_pv = json_file["base_pv"]  
-        ship.final_pv = json_file["final_pv"]
-        ship.max_stress = json_file["max_stress"]   
-        ship.outer_hull_mass = json_file["armor"]["outer_hull"]["mass"]  
-        ship.outer_hull_pv = json_file["armor"]["outer_hull"]["pv"]  
-        ship.inner_hull_mass = json_file["armor"]["inner_hull"]["mass"]  
-        ship.inner_hull_pv = json_file["armor"]["inner_hull"]["pv"]  
-        ship.critical_threshold = json_file["armor"]["critical_threshold"]  
-        ship.thrust_points = json_file["propulsion"]["thrust_points"]
-        ship.max_thrust = json_file["propulsion"]["max_thrust"]
-        ship.propulsion_mass = json_file["propulsion"]["propulsion_mass"]
-        ship.propulsion_pv = json_file["propulsion"]["propulsion_pv"]
-        ship.equipment_list = json_file["equipment"]["equipment_items"]
-        ship.total_equipment_mass = json_file["equipment"]["total_equipment_mass"]
-        ship.total_equipment_pv = json_file["equipment"]["total_equipment_pv"]
-        ship.front_arc_weapon_list = json_file["weapons"]["front_arc_weapons"]
-        ship.total_front_arc_mass = json_file["weapons"]["total_front_arc_mass"]
-        ship.total_front_arc_pv = json_file["weapons"]["total_front_arc_pv"]
-        ship.total_front_arc_max_dmg = json_file["weapons"]["total_front_arc_max_dmg"]
-        ship.rear_arc_weapon_list = json_file["weapons"]["rear_arc_weapons"]
-        ship.total_rear_arc_mass = json_file["weapons"]["total_rear_arc_mass"]
-        ship.total_rear_arc_pv = json_file["weapons"]["total_rear_arc_pv"]
-        ship.total_rear_arc_max_dmg = json_file["weapons"]["total_rear_arc_max_dmg"]
-        ship.right_arc_weapon_list = json_file["weapons"]["right_arc_weapons"]
-        ship.total_right_arc_mass = json_file["weapons"]["total_right_arc_mass"]
-        ship.total_right_arc_pv = json_file["weapons"]["total_right_arc_pv"]
-        ship.total_right_arc_max_dmg = json_file["weapons"]["total_right_arc_max_dmg"]
-        ship.left_arc_weapon_list = json_file["weapons"]["left_arc_weapons"]
-        ship.total_left_arc_mass = json_file["weapons"]["total_left_arc_mass"]
-        ship.total_left_arc_pv = json_file["weapons"]["total_left_arc_pv"]
-        ship.total_left_arc_max_dmg = json_file["weapons"]["total_left_arc_max_dmg"]
+        ship.crew_quality_str = ship_json["crew_quality"]
+        ship.total_base_pv = ship_json["base_pv"]  
+        ship.final_pv = ship_json["final_pv"]
+        ship.max_stress = ship_json["max_stress"]   
+        ship.outer_hull_mass = ship_json["armor"]["outer_hull"]["mass"]  
+        ship.outer_hull_pv = ship_json["armor"]["outer_hull"]["pv"]  
+        ship.inner_hull_mass = ship_json["armor"]["inner_hull"]["mass"]  
+        ship.inner_hull_pv = ship_json["armor"]["inner_hull"]["pv"]  
+        ship.critical_threshold = ship_json["armor"]["critical_threshold"]  
+        ship.thrust_points = ship_json["propulsion"]["thrust_points"]
+        ship.max_thrust = ship_json["propulsion"]["max_thrust"]
+        ship.propulsion_mass = ship_json["propulsion"]["propulsion_mass"]
+        ship.propulsion_pv = ship_json["propulsion"]["propulsion_pv"]
+        ship.equipment_list = ship_json["equipment"]["equipment_items"]
+        ship.total_equipment_mass = ship_json["equipment"]["total_equipment_mass"]
+        ship.total_equipment_pv = ship_json["equipment"]["total_equipment_pv"]
+        ship.front_arc_weapon_list = ship_json["weapons"]["front_arc_weapons"]
+        ship.total_front_arc_mass = ship_json["weapons"]["total_front_arc_mass"]
+        ship.total_front_arc_pv = ship_json["weapons"]["total_front_arc_pv"]
+        ship.total_front_arc_max_dmg = ship_json["weapons"]["total_front_arc_max_dmg"]
+        ship.rear_arc_weapon_list = ship_json["weapons"]["rear_arc_weapons"]
+        ship.total_rear_arc_mass = ship_json["weapons"]["total_rear_arc_mass"]
+        ship.total_rear_arc_pv = ship_json["weapons"]["total_rear_arc_pv"]
+        ship.total_rear_arc_max_dmg = ship_json["weapons"]["total_rear_arc_max_dmg"]
+        ship.right_arc_weapon_list = ship_json["weapons"]["right_arc_weapons"]
+        ship.total_right_arc_mass = ship_json["weapons"]["total_right_arc_mass"]
+        ship.total_right_arc_pv = ship_json["weapons"]["total_right_arc_pv"]
+        ship.total_right_arc_max_dmg = ship_json["weapons"]["total_right_arc_max_dmg"]
+        ship.left_arc_weapon_list = ship_json["weapons"]["left_arc_weapons"]
+        ship.total_left_arc_mass = ship_json["weapons"]["total_left_arc_mass"]
+        ship.total_left_arc_pv = ship_json["weapons"]["total_left_arc_pv"]
+        ship.total_left_arc_max_dmg = ship_json["weapons"]["total_left_arc_max_dmg"]
 
         return ship
 

@@ -1,0 +1,171 @@
+{
+"type": "object",
+"properties": {
+    "name": {"type": ["string", "null"]},
+    "ship_class": {"type": "string"},
+    "size": {"type": "string"},
+    "TAM": {"type": "number"},
+    "mass": {"type": "number"},
+    "armor_roll": {"type": "string"},
+    "MDPA": {"type": "number"},
+    "crew_quality": {"type": "string"},
+    "base_pv": {"type": "number"},
+    "final_pv": {"type": "number"},
+    "max_stress": {"type": "number"},
+    "armor": {
+        "type": "object",
+        "properties": {
+            "outer_hull": {
+                "type": "object",
+                "properties": {
+                    "mass": {"type": "number"},
+                    "pv": {"type": "number"}
+                },
+                "required": ["mass", "pv"]
+            },
+            "inner_hull": {
+                "type": "object",
+                "properties": {
+                    "mass": {"type": "number"},
+                    "pv": {"type": "number"}
+                },
+                "required": ["mass", "pv"]
+            },
+            "critical_threshold": {"type": "number"}
+        },
+        "required": ["outer_hull", "inner_hull", "critical_threshold"]
+    },
+    "propulsion": {
+        "type": "object",
+        "properties": {
+            "thrust_points": {"type": "number"},
+            "max_thrust": {"type": "number"},
+            "propulsion_mass": {"type": "number"},
+            "propulsion_pv": {"type": "number"}
+        },
+        "required": ["thrust_points", "max_thrust", "propulsion_mass", "propulsion_pv"]
+    },
+    "equipment": {
+        "type": "object",
+        "properties": {
+        "equipment_items": {
+            "type": "array",
+            "minItems": 0,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "description": {"type": "string"},
+                    "mass": {"type": "integer"},
+                    "pv": {"type": "integer"}
+                },
+                "required": ["name", "description", "mass", "pv"]
+            }
+        },
+        "total_equipment_mass": {"type": "number"},
+        "total_equipment_pv": {"type": "number"}
+        },
+        "required": ["equipment_items"]
+    },
+    "weapons": {
+        "type": "object",
+        "properties": {
+            "front_arc_weapons": {
+                "type": "array",
+                "minItems": 0,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": {"type": "integer"},
+                        "name": {"type": ["string", "null"]},
+                        "max_dmg": {"type": "integer"},
+                        "mass": {"type": "integer"},
+                        "pv": {"type": "integer"},
+                        "attack": {"type": "integer"},
+                        "damage": {"type": "integer"},
+                        "range": {"type": "string"},
+                        "special": {"type": ["string", "null"]}
+                    },
+                    "required": ["id", "name", "max_dmg", "mass", "pv", "attack", "damage", "range", "special"]
+                }
+            },
+            "total_front_arc_mass": {"type": "number"},
+            "total_front_arc_pv": {"type": "number"},
+            "total_front_arc_max_dmg": {"type": "number"},
+            "rear_arc_weapons": {
+                "type": "array",
+                                    "minItems": 0,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": {"type": "integer"},
+                        "name": {"type": ["string", "null"]},
+                        "max_dmg": {"type": "integer"},
+                        "mass": {"type": "integer"},
+                        "pv": {"type": "integer"},
+                        "attack": {"type": "integer"},
+                        "damage": {"type": "integer"},
+                        "range": {"type": "string"},
+                        "special": {"type": ["string", "null"]}
+                    },
+                    "required": ["id", "name", "max_dmg", "mass", "pv", "attack", "damage", "range", "special"]
+                }
+            },
+            "total_rear_arc_mass": {"type": "number"},
+            "total_rear_arc_pv": {"type": "number"},
+            "total_rear_arc_max_dmg": {"type": "number"},
+            "right_arc_weapons": {
+                "type": "array",
+                "minItems": 0,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": {"type": "integer"},
+                        "name": {"type": ["string", "null"]},
+                        "max_dmg": {"type": "integer"},
+                        "mass": {"type": "integer"},
+                        "pv": {"type": "integer"},
+                        "attack": {"type": "integer"},
+                        "damage": {"type": "integer"},
+                        "range": {"type": "string"},
+                        "special": {"type": ["string", "null"]}
+                    },
+                    "required": ["id", "name", "max_dmg", "mass", "pv", "attack", "damage", "range", "special"]
+                }
+            },
+            "total_right_arc_mass": {"type": "number"},
+            "total_right_arc_pv": {"type": "number"},
+            "total_right_arc_max_dmg": {"type": "number"},
+            "left_arc_weapons": {
+                "type": "array",
+                "minItems": 0,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": {"type": "integer"},
+                        "name": {"type": ["string", "null"]},
+                        "max_dmg": {"type": "integer"},
+                        "mass": {"type": "integer"},
+                        "pv": {"type": "integer"},
+                        "attack": {"type": "integer"},
+                        "damage": {"type": "integer"},
+                        "range": {"type": "string"},
+                        "special": {"type": ["string", "null"]}
+                    },
+                    "required": ["id", "name", "max_dmg", "mass", "pv", "attack", "damage", "range", "special"]
+                }
+            },
+            "total_left_arc_mass": {"type": "number"},
+            "total_left_arc_pv": {"type": "number"},
+            "total_left_arc_max_dmg": {"type": "number"}
+        },
+        "required": ["front_arc_weapons", "total_front_arc_mass", "total_front_arc_pv", "total_front_arc_max_dmg",
+                     "rear_arc_weapons", "total_rear_arc_mass", "total_rear_arc_pv", "total_rear_arc_max_dmg",
+                     "right_arc_weapons", "total_right_arc_mass", "total_right_arc_pv", "total_right_arc_max_dmg",
+                     "left_arc_weapons", "total_left_arc_mass", "total_left_arc_pv", "total_left_arc_max_dmg"]
+    }
+},
+"required": ["name", "ship_class", "size", "TAM", "mass", "armor_roll", 
+             "MDPA", "crew_quality", "base_pv", "final_pv", "max_stress",
+             "armor", "propulsion", "equipment", "weapons"]
+}

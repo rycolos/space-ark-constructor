@@ -17,4 +17,4 @@ def build_ship():
     ship_class_int = ship_class.value
     print(ship_name_int, ship_class_int)
 
-ui.run(title='Space Ark Constructor')
+ui.run(title='Space Ark Constructor', host='127.0.0.1', port=8080)

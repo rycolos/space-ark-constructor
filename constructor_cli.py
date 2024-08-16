@@ -1,6 +1,5 @@
 import build_data
 from ShipClass import ShipClass
-from time import sleep
 import json, jsonschema
 
 MENU_ERROR = 'Invalid selection. Try again.'

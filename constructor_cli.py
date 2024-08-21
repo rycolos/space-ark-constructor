@@ -21,7 +21,6 @@ def rename_ship(ship: ShipClass) -> None:
 
 def build_outer_hull(ship: ShipClass) -> None:
     """Calculate outer hull outputs from strength input"""
-    #ohs_input = int(input(f"\nOuter Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): "))
     while True:
         ohs_input = input(f"\nOuter Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): ")
         try: #if no error raised in class, continue

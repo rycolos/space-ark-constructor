@@ -65,6 +65,8 @@ class ShipClass:
         self.max_stress = 0
         self.final_pv = 0
         self.total_mass = 0
+        self.mass_delta = 0
+        self.total_base_pv = 0
 
         self.equipment_list = []
         self.front_arc_weapon_list = []

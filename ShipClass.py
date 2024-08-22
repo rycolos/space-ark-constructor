@@ -28,6 +28,15 @@ class InvalidWeaponError(Exception):
         message = f"ERROR: Weapon item {value} is not a valid selection."
         super().__init__(message)
 
+class InvalidCrewQualityError(Exception):
+    """
+    Raised when crew quality selection does not match possible identifiers
+    """
+    
+    def __init__(self, value):
+        message = f"ERROR: Crew quality value {value} is not a valid selection."
+        super().__init__(message)
+
 class ShipClass:
     """
     Define ship class
@@ -318,16 +327,38 @@ class ShipClass:
         return self.total_equipment_mass, self.total_equipment_pv
     
     #CREW QUALITY
-    def set_quality(self, crew_quality: int) -> tuple[int, int]:
+    """
+    When crew_quality is referenced,
+    setter will test and set private var to value,
+    and property returns private var from public ref 
+    """
+    @property
+    def crew_quality(self):
+        return self._crew_quality
+    
+    @crew_quality.setter     #validate outer hull strength input as int, 1-4
+    def crew_quality(self, cq_input: int):
+        cq_ids = [i['id'] for i in build_data.crew_quality_details]
+        try:
+            self._crew_quality = int(cq_input) #validate integer
+        except ValueError:
+            raise ValueError("Error: Crew Quality value is not an integer")
+        else:
+            try:
+                index = cq_ids.index(int(cq_input)) #if integer, validate valid value
+            except ValueError:
+                raise InvalidCrewQualityError(cq_input)
+
+    def set_quality(self, cq_input: int) -> tuple[int, int]:
         """
         Calculate final PV and retrieve Max Stress from Crew Quality ID input
         """
-        self.crew_quality = crew_quality
-        self.crew_quality_str = [s['name'] for s in build_data.crew_quality_details if s['id'] == crew_quality]
+        self.crew_quality = cq_input
+        self.crew_quality_str = [s['name'] for s in build_data.crew_quality_details if s['id'] == self.crew_quality]
         self.track_base_pv()
-        self.pv_factor = [s['pv_factor'] for s in build_data.crew_quality_details if s['id'] == crew_quality]
+        self.pv_factor = [s['pv_factor'] for s in build_data.crew_quality_details if s['id'] == self.crew_quality]
         self.final_pv = math.ceil(self.total_base_pv * self.pv_factor[0])
-        self.max_stress = [s['max_stress'] for s in build_data.crew_quality_details if s['id'] == crew_quality]
+        self.max_stress = [s['max_stress'] for s in build_data.crew_quality_details if s['id'] == self.crew_quality]
         self.max_stress = self.max_stress[0]
         self.crew_quality_str = self.crew_quality_str[0]
         return self.crew_quality_str, self.final_pv, self.max_stress

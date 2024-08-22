@@ -232,10 +232,15 @@ def build_weapons(ship: ShipClass) -> None:
 
 def build_crew_quality(ship: ShipClass) -> None:
     """
-    Calculate crew quality-driven outputs (final pv, max stress) from input
+    Calculate crew quality-driven outputs (final pv, max stress) from input. Return any errors from class method
     """
-    crew_quality = int(input(f"\nCrew Quality (1-Recruit, 2-Regular, 3-Veteran): "))
-    ship.set_quality(crew_quality)
+    while True:
+        crew_quality = input(f"\nCrew Quality (1-Recruit, 2-Regular, 3-Veteran): ")
+        try: #if no error raised in class, continue
+            ship.set_quality(crew_quality)
+            break
+        except Exception as e:
+            print(e)
 
 def mass_check_ui(ship: ShipClass) -> bool:
     """

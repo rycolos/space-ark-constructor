@@ -2,27 +2,36 @@ import build_data
 import math
 
 class InvalidStrengthError(Exception):
-    """Raised when strength selection does not match possible identifier"""
+    """
+    Raised when strength selection does not match possible identifier
+    """
     
     def __init__(self, value):
         message = f"ERROR: Strength value {value} is not a valid selection."
         super().__init__(message)
 
 class InvalidEquipmentError(Exception):
-    """Raised when equipment selection does not match possible identifiers"""
+    """
+    Raised when equipment selection does not match possible identifiers
+    """
     
     def __init__(self, value):
         message = f"ERROR: Equipment value {value} is not a valid selection."
         super().__init__(message)
 
 class InvalidWeaponError(Exception):
-    """Raised when weapon selection does not match possible identifiers"""
+    """
+    Raised when weapon selection does not match possible identifiers
+    """
     
     def __init__(self, value):
         message = f"ERROR: Weapon item {value} is not a valid selection."
         super().__init__(message)
 
 class ShipClass:
+    """
+    Define ship class
+    """
     def __init__(self, name: str, sclass: str, size: str, tam: int, armor_roll: str, mdpa: int) -> None: 
         
         #init
@@ -77,9 +86,9 @@ class ShipClass:
 
     #OUTER HULL
     """
-    when outer_hull_strength is referenced,
+    When outer_hull_strength is referenced,
     setter will test and set private var to value,
-    `and property returns private var from public ref 
+    and property returns private var from public ref 
     """
     @property
     def outer_hull_strength(self):
@@ -99,7 +108,9 @@ class ShipClass:
                 raise InvalidStrengthError(ohs_input)
             
     def outer_hull(self, ohs_input: int) -> tuple[int, int, int, int]:
-        """Calculate outer hull mass, PV, critical threshold"""
+        """
+        Calculate outer hull mass, PV, critical threshold from strength integer ID selection
+        """
         self.outer_hull_strength = ohs_input
         mass_factor = [s['mass_factor'] for s in build_data.outer_strength_details if s['id'] == self.outer_hull_strength]
         self.outer_hull_mass = math.ceil(self.tam * mass_factor[0])
@@ -108,6 +119,11 @@ class ShipClass:
         return self.outer_hull_strength, self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
 
     #INNER HULL
+    """
+    When inner_hull_strength is referenced,
+    setter will test and set private var to value,
+    and property returns private var from public ref 
+    """
     @property
     def inner_hull_strength(self):
         return self._inner_hull_strength
@@ -126,7 +142,9 @@ class ShipClass:
                 raise InvalidStrengthError(ihs_input)
     
     def inner_hull(self, ihs_input: int) -> tuple[int, int, int, int]:
-        """Calculate inner hull mass, PV"""
+        """
+        Calculate inner hull mass, PV from strength integer ID selection
+        """
         self.inner_hull_strength = ihs_input
         mass_factor = [s['mass_factor'] for s in build_data.inner_strength_details if s['id'] == self.inner_hull_strength]
         self.inner_hull_mass = math.ceil(self.tam * mass_factor[0])
@@ -134,6 +152,11 @@ class ShipClass:
         return self.inner_hull_strength, self.inner_hull_mass, self.inner_hull_pv
 
     #PROPULSION
+    """
+    When thrust_points is referenced,
+    setter will test and set private var to value,
+    and property returns private var from public ref 
+    """
     @property
     def thrust_points(self):
         return self._thrust_points
@@ -146,7 +169,9 @@ class ShipClass:
             raise ValueError("Error: Thrust Points value is not an integer")
     
     def propulsion(self, tp_input: int) -> tuple[int, int, int, int]:
-        """Calculate propulsion mass, pv, max_thrust"""
+        """
+        Calculate propulsion mass, pv, max_thrust from thrust points input
+        """
         self.thrust_points = tp_input
         self.propulsion_mass = math.ceil(self.thrust_points * (self.tam * .07))
         self.propulsion_pv = math.ceil(self.propulsion_mass * 2)
@@ -257,7 +282,7 @@ class ShipClass:
         all_item_pv = []
         items_int = []
 
-        for item in items:
+        for item in items: #catch if input is not an integer
             try:
                 items_int.append(int(item))
             except ValueError:
@@ -294,7 +319,9 @@ class ShipClass:
     
     #CREW QUALITY
     def set_quality(self, crew_quality: int) -> tuple[int, int]:
-        """Calculate final PV and retrieve Max Stress"""
+        """
+        Calculate final PV and retrieve Max Stress from Crew Quality ID input
+        """
         self.crew_quality = crew_quality
         self.crew_quality_str = [s['name'] for s in build_data.crew_quality_details if s['id'] == crew_quality]
         self.track_base_pv()
@@ -307,7 +334,9 @@ class ShipClass:
 
     #HELPER FUNCTIONS
     def track_mass(self) -> tuple[int, int, int]:
-        """Calculate current mass, mass distance from TAM, and bool for if TAM exceeded"""
+        """
+        Calculate current mass, mass distance from TAM, and bool for if TAM exceeded
+        """
         self.total_mass = (self.outer_hull_mass + self.inner_hull_mass + self.propulsion_mass + self.total_equipment_mass
             + self.total_front_arc_mass + self.total_rear_arc_mass + self.total_right_arc_mass + self.total_left_arc_mass)
         self.mass_delta = self.tam - self.total_mass
@@ -315,18 +344,25 @@ class ShipClass:
         return self.total_mass, self.mass_delta, self.tam_exceeded
     
     def track_max_dmg(self, arc_max_dmg: int) -> tuple[int, int, int]:
-        """Calculate max dmg distance from MDPA, and bool for if MDPA exceeded"""
+        """
+        Calculate max dmg distance from MDPA, and bool for if MDPA exceeded
+        """
         self.max_dmg_delta = self.mdpa - arc_max_dmg
         self.mdpa_exceeded = self.max_dmg_delta < 0
         return arc_max_dmg, self.max_dmg_delta, self.mdpa_exceeded
     
     def track_base_pv(self) -> int:
-        """Calculate current base PV"""
+        """
+        Calculate current base PV
+        """
         self.total_base_pv = (self.outer_hull_pv + self.inner_hull_pv + self.propulsion_pv + self.total_equipment_pv
             + self.total_front_arc_pv + self.total_rear_arc_pv + self.total_right_arc_pv + self.total_left_arc_pv)
         return self.total_base_pv
     
     def build_json_objects(self):
+        """
+        Construct JSON object of ship
+        """
         self.ship_json_object = {
             "name": self.name,
             "ship_class": self.sclass,
@@ -382,7 +418,9 @@ class ShipClass:
         }
 
     def reset_all_stats(self) -> None:
-        """Reset all input and calculated stats (except for name, class, and class-contingent stats)"""
+        """
+        Reset all input and calculated stats (except for name, class, and class-contingent stats)
+        """
 
         self.total_front_arc_mass = 0
         self.total_front_arc_pv = 0

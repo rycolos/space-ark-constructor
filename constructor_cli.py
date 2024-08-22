@@ -6,7 +6,9 @@ MENU_ERROR = 'Invalid selection. Try again.'
 SCHEMA_FILE = 'import_schema.json'
 
 def build_base_ship() -> ShipClass:
-    """Instantiate base ship from name and ship class inputs"""
+    """
+    Instantiate base ship from name and ship class inputs
+    """
 
     name = input("Ship Name: ")
     sclass = input(f"\nShip Class (see docs for list): ").upper()
@@ -17,10 +19,15 @@ def build_base_ship() -> ShipClass:
     return ShipClass(name, sclass, size[0], tam[0], armor_roll[0], mdpa[0])
 
 def rename_ship(ship: ShipClass) -> None:
+    """
+    Change ship.name 
+    """
     ship.name = input(f"\nCurrent name: {ship.name}. New name? ")
 
 def build_outer_hull(ship: ShipClass) -> None:
-    """Calculate outer hull outputs from strength input"""
+    """
+    Calculate outer hull outputs from strength input. Return any errors from class method
+    """
     while True:
         ohs_input = input(f"\nOuter Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): ")
         try: #if no error raised in class, continue
@@ -35,7 +42,9 @@ def build_outer_hull(ship: ShipClass) -> None:
             print(e)
 
 def build_inner_hull(ship: ShipClass) -> None:
-    """Calculate inner hull outputs from strength input"""
+    """
+    Calculate inner hull outputs from strength input. Return any errors from class method
+    """
     while True:
         ihs_input = input(f"\nInner Hull Strength (1-Light, 2-Average, 3-Heavy, 4-Ultra Heavy): ")
         try: #if no error raised in class, continue
@@ -50,7 +59,9 @@ def build_inner_hull(ship: ShipClass) -> None:
             print(e)
 
 def build_propulsion(ship: ShipClass) -> None:
-    """Calculate propulsion outputs from thrust points input"""
+    """
+    Calculate propulsion outputs from thrust points input. Return any errors from class method
+    """
     while True:
         tp_input = input(f"\nThrust Points (number): ")
         try: #if no error raised in class, continue
@@ -65,7 +76,9 @@ def build_propulsion(ship: ShipClass) -> None:
             print(e)
 
 def build_equipment(ship: ShipClass) -> None:
-    """Calculate equipment outputs from list input, returns equipment name list from equipment object"""
+    """
+    Calculate equipment outputs from list input. Return any errors from class method
+    """
     while True:
         equipment_list = list(map(str, input("\nEquipment (1-None, 2-Long Range Sensors, 3-Agile Thrusters, 4-Enhanced Engineering, 5-Advanced Fire Control, 6-Target Designator) separated by a comma: ").split(',')))
         try:
@@ -80,7 +93,9 @@ def build_equipment(ship: ShipClass) -> None:
             print(e)
 
 def build_weapons(ship: ShipClass) -> None:
-    """Calculate per-arc weapon outputs from list input"""
+    """
+    Calculate per-arc weapon outputs from list inputs. Return any errors from class methods
+    """
     front_arc_weapon_names = []
     rear_arc_weapon_names = []
     right_arc_weapon_names = []
@@ -216,12 +231,16 @@ def build_weapons(ship: ShipClass) -> None:
                 print(MENU_ERROR)
 
 def build_crew_quality(ship: ShipClass) -> None:
-    """Calculate crew quality-driven outputs (final pv, max stress) from input"""
+    """
+    Calculate crew quality-driven outputs (final pv, max stress) from input
+    """
     crew_quality = int(input(f"\nCrew Quality (1-Recruit, 2-Regular, 3-Veteran): "))
     ship.set_quality(crew_quality)
 
 def mass_check_ui(ship: ShipClass) -> bool:
-    """Check if total mass exceeds Total Available Mass, return bool"""
+    """
+    Check if total mass exceeds Total Available Mass, return bool
+    """
     total_mass, mass_delta, tam_exceeded = ship.track_mass()
     if tam_exceeded == True:
         print(f"Mass exceeded! Mass overage: {mass_delta}")
@@ -230,7 +249,9 @@ def mass_check_ui(ship: ShipClass) -> bool:
     return tam_exceeded
 
 def max_dmg_check_ui(ship: ShipClass, arc: int) -> bool:
-    """Check if total damage in given arc exceeds Max Damage Per Arc, return bool"""
+    """
+    Check if total damage in given arc exceeds Max Damage Per Arc, return bool
+    """
     arc_max_dmg, max_dmg_delta, mdpa_exceeded = ship.track_max_dmg(arc)
     if mdpa_exceeded == True:
         print(f"Arc Max Damage exceeded! Max Damage overage: {max_dmg_delta}")
@@ -239,13 +260,18 @@ def max_dmg_check_ui(ship: ShipClass, arc: int) -> bool:
     return mdpa_exceeded
 
 def reset_stats(ship: ShipClass):
+    """
+    Reset all ship instance stats to init values
+    """
     if input("\nReset all ship stats to class defaults? (Y/N): ").upper() == 'Y':
         ship.reset_all_stats()
     else:
         pass
 
 def build_ship_build_stats(ship: ShipClass) -> None:
-    """Calcualte final mass and final base pv and print ship details"""
+    """
+    Calcualte final mass and final base pv and print ship build-specific details
+    """
     ship.track_mass()
     ship.track_base_pv()
 
@@ -287,7 +313,9 @@ def build_ship_build_stats(ship: ShipClass) -> None:
     return build_stats
 
 def build_ship_game_stats(ship: ShipClass) -> str:
-    """Calcualte final mass and final base pv and print ship details"""
+    """
+    Calcualte final mass and final base pv and print ship gameplay details
+    """
     ship.track_mass()
     ship.track_base_pv()
 
@@ -323,6 +351,9 @@ def build_ship_game_stats(ship: ShipClass) -> str:
     return game_card
 
 def export_ship_txt(ship: ShipClass):
+    """
+    Build ship gameplay txt file
+    """
     game_card = build_ship_game_stats(ship)
     if input("\nExport ship to txt file? (Y/N): ").upper() == 'Y':
         with open(ship.name + '_export' + '.txt', 'w', encoding='utf-8') as f:
@@ -331,6 +362,9 @@ def export_ship_txt(ship: ShipClass):
         pass    
 
 def export_ship_json(ship: ShipClass):
+    """
+    Build ship export json file for later import
+    """
     ship.build_json_objects()
     if input("\nExport ship to JSON? (Y/N): ").upper() == 'Y':
         with open(ship.name + '_export' + '.json', 'w', encoding='utf-8') as f:
@@ -339,6 +373,9 @@ def export_ship_json(ship: ShipClass):
         pass
 
 def import_ship_json_file() -> None:
+    """
+    Import ship from JSON file
+    """
     if input("\nImport ship from JSON? (Y/N): ").upper() == 'Y':
         while True:
             file = input("\nFull file name in local directory: ")
@@ -367,6 +404,9 @@ def import_ship_json_file() -> None:
         pass
 
 def validate_json(ship_json: str) -> list:
+    """
+    Validate ship is valid JSON and validate against schema template
+    """
     with open(SCHEMA_FILE, 'r', encoding='utf-8') as schema_file:
         schema = json.load(schema_file)
     validator = jsonschema.Draft7Validator(schema)
@@ -374,53 +414,59 @@ def validate_json(ship_json: str) -> list:
     return error_list
 
 def load_ship_details_json(ship_json: str) -> ShipClass:
-        #initialize instance
-        ship = ShipClass(
-                name = ship_json["name"], 
-                sclass = ship_json["ship_class"], 
-                size = ship_json["size"], 
-                tam = ship_json["TAM"], 
-                armor_roll = ship_json["armor_roll"], 
-                mdpa = ship_json["MDPA"]
-            )
-        
-        #parse details
-        ship.crew_quality_str = ship_json["crew_quality"]
-        ship.total_base_pv = ship_json["base_pv"]  
-        ship.final_pv = ship_json["final_pv"]
-        ship.max_stress = ship_json["max_stress"]   
-        ship.outer_hull_mass = ship_json["armor"]["outer_hull"]["mass"]  
-        ship.outer_hull_pv = ship_json["armor"]["outer_hull"]["pv"]  
-        ship.inner_hull_mass = ship_json["armor"]["inner_hull"]["mass"]  
-        ship.inner_hull_pv = ship_json["armor"]["inner_hull"]["pv"]  
-        ship.critical_threshold = ship_json["armor"]["critical_threshold"]  
-        ship.thrust_points = ship_json["propulsion"]["thrust_points"]
-        ship.max_thrust = ship_json["propulsion"]["max_thrust"]
-        ship.propulsion_mass = ship_json["propulsion"]["propulsion_mass"]
-        ship.propulsion_pv = ship_json["propulsion"]["propulsion_pv"]
-        ship.equipment_list = ship_json["equipment"]["equipment_items"]
-        ship.total_equipment_mass = ship_json["equipment"]["total_equipment_mass"]
-        ship.total_equipment_pv = ship_json["equipment"]["total_equipment_pv"]
-        ship.front_arc_weapon_list = ship_json["weapons"]["front_arc_weapons"]
-        ship.total_front_arc_mass = ship_json["weapons"]["total_front_arc_mass"]
-        ship.total_front_arc_pv = ship_json["weapons"]["total_front_arc_pv"]
-        ship.total_front_arc_max_dmg = ship_json["weapons"]["total_front_arc_max_dmg"]
-        ship.rear_arc_weapon_list = ship_json["weapons"]["rear_arc_weapons"]
-        ship.total_rear_arc_mass = ship_json["weapons"]["total_rear_arc_mass"]
-        ship.total_rear_arc_pv = ship_json["weapons"]["total_rear_arc_pv"]
-        ship.total_rear_arc_max_dmg = ship_json["weapons"]["total_rear_arc_max_dmg"]
-        ship.right_arc_weapon_list = ship_json["weapons"]["right_arc_weapons"]
-        ship.total_right_arc_mass = ship_json["weapons"]["total_right_arc_mass"]
-        ship.total_right_arc_pv = ship_json["weapons"]["total_right_arc_pv"]
-        ship.total_right_arc_max_dmg = ship_json["weapons"]["total_right_arc_max_dmg"]
-        ship.left_arc_weapon_list = ship_json["weapons"]["left_arc_weapons"]
-        ship.total_left_arc_mass = ship_json["weapons"]["total_left_arc_mass"]
-        ship.total_left_arc_pv = ship_json["weapons"]["total_left_arc_pv"]
-        ship.total_left_arc_max_dmg = ship_json["weapons"]["total_left_arc_max_dmg"]
+    """
+    Parse ship details from JSON file
+    """
+    #initialize instance
+    ship = ShipClass(
+            name = ship_json["name"], 
+            sclass = ship_json["ship_class"], 
+            size = ship_json["size"], 
+            tam = ship_json["TAM"], 
+            armor_roll = ship_json["armor_roll"], 
+            mdpa = ship_json["MDPA"]
+        )
+    
+    #parse details
+    ship.crew_quality_str = ship_json["crew_quality"]
+    ship.total_base_pv = ship_json["base_pv"]  
+    ship.final_pv = ship_json["final_pv"]
+    ship.max_stress = ship_json["max_stress"]   
+    ship.outer_hull_mass = ship_json["armor"]["outer_hull"]["mass"]  
+    ship.outer_hull_pv = ship_json["armor"]["outer_hull"]["pv"]  
+    ship.inner_hull_mass = ship_json["armor"]["inner_hull"]["mass"]  
+    ship.inner_hull_pv = ship_json["armor"]["inner_hull"]["pv"]  
+    ship.critical_threshold = ship_json["armor"]["critical_threshold"]  
+    ship.thrust_points = ship_json["propulsion"]["thrust_points"]
+    ship.max_thrust = ship_json["propulsion"]["max_thrust"]
+    ship.propulsion_mass = ship_json["propulsion"]["propulsion_mass"]
+    ship.propulsion_pv = ship_json["propulsion"]["propulsion_pv"]
+    ship.equipment_list = ship_json["equipment"]["equipment_items"]
+    ship.total_equipment_mass = ship_json["equipment"]["total_equipment_mass"]
+    ship.total_equipment_pv = ship_json["equipment"]["total_equipment_pv"]
+    ship.front_arc_weapon_list = ship_json["weapons"]["front_arc_weapons"]
+    ship.total_front_arc_mass = ship_json["weapons"]["total_front_arc_mass"]
+    ship.total_front_arc_pv = ship_json["weapons"]["total_front_arc_pv"]
+    ship.total_front_arc_max_dmg = ship_json["weapons"]["total_front_arc_max_dmg"]
+    ship.rear_arc_weapon_list = ship_json["weapons"]["rear_arc_weapons"]
+    ship.total_rear_arc_mass = ship_json["weapons"]["total_rear_arc_mass"]
+    ship.total_rear_arc_pv = ship_json["weapons"]["total_rear_arc_pv"]
+    ship.total_rear_arc_max_dmg = ship_json["weapons"]["total_rear_arc_max_dmg"]
+    ship.right_arc_weapon_list = ship_json["weapons"]["right_arc_weapons"]
+    ship.total_right_arc_mass = ship_json["weapons"]["total_right_arc_mass"]
+    ship.total_right_arc_pv = ship_json["weapons"]["total_right_arc_pv"]
+    ship.total_right_arc_max_dmg = ship_json["weapons"]["total_right_arc_max_dmg"]
+    ship.left_arc_weapon_list = ship_json["weapons"]["left_arc_weapons"]
+    ship.total_left_arc_mass = ship_json["weapons"]["total_left_arc_mass"]
+    ship.total_left_arc_pv = ship_json["weapons"]["total_left_arc_pv"]
+    ship.total_left_arc_max_dmg = ship_json["weapons"]["total_left_arc_max_dmg"]
 
-        return ship
+    return ship
 
 def main_menu() -> None:
+    """
+    Run Main Menu
+    """
     run = True
     while run == True:
         command = input("\nCOMMAND (1-Build New Ship, 2-Import Ship, 3-Exit): ")
@@ -436,6 +482,9 @@ def main_menu() -> None:
                 print(MENU_ERROR)
 
 def build_menu(ship: ShipClass) -> None:
+    """
+    Run Build Menu
+    """
     run = True
     while run == True:
         command = input("\nCOMMAND (1-Armor, 2-Propulsion, 3-Equipment, 4-Weapons, 5-Crew Quality, 6-Check Mass, 7-View Build, 8-View Game Card, 9-Export, 10-Rename, 11-Reset, 12-Main Menu): ")
@@ -469,6 +518,9 @@ def build_menu(ship: ShipClass) -> None:
                 print(MENU_ERROR)
 
 def import_menu() -> None:
+    """
+    Run Import Menu
+    """
     run = True
     while run == True:
         command = input("\nCOMMAND (1-Import from JSON, 2-Main Menu: ")
@@ -481,6 +533,9 @@ def import_menu() -> None:
                 print(MENU_ERROR)
 
 def import_submenu(ship: ShipClass) -> None:
+    """
+    Run Import Sub Menu
+    """
     run = True
     while run == True:
         command = input("\nCOMMAND (1-View Build, 2-View Game Stats, 3-Edit, 4-Import New, 5-Main Menu: ")
@@ -499,6 +554,9 @@ def import_submenu(ship: ShipClass) -> None:
                 print(MENU_ERROR)
 
 def export_menu(ship: ShipClass) -> None:
+    """
+    Run Export Menu
+    """
     run = True
     while run == True:
         command = input("\nCOMMAND 1-Game Card (Txt), 2-Save ship (JSON), 3-Back (Build Menu), 4-Main Menu ")

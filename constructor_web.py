@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_option_menu import option_menu
 import build_data
 from ShipClass import ShipClass
 import json, jsonschema
@@ -29,23 +28,14 @@ def configure_page() -> None:
 if __name__ == "__main__":
     configure_page()
 
-main_selected = option_menu(
-    menu_title=None,
-    options=['Build Ship', 'Import Ship', 'Export Ship'],
-    orientation='horizontal'
-)
-
-if main_selected == 'Build Ship':
     build_col1, build_col2, build_col3 = st.columns(3)
-
 
     with build_col1.expander('**Ship Core**', expanded=True):
         name = st.text_input("Ship Name")
         sclass = st.selectbox('Ship Class', [s['sclass'] for s in build_data.sclass_details])
         if sclass:
             ship = build_base_ship(name, sclass)
-            if "ship" not in st.session_state:
-                st.session_state.ship = ship
+            st.session_state.ship = ship
 
     with build_col1.expander('**Armor**', expanded=True):
         ohs_input = st.selectbox('Outer Hull Strength', [s['name'] for s in build_data.outer_strength_details])
@@ -54,6 +44,7 @@ if main_selected == 'Build Ship':
             ship.outer_hull(ohs_int[0])
             ship.track_mass()
             ship.track_base_pv()
+            st.session_state.ship = ship
 
         ihs_input = st.selectbox('Inner Hull Strength', [s['name'] for s in build_data.inner_strength_details])
         if ihs_input:
@@ -61,6 +52,7 @@ if main_selected == 'Build Ship':
             ship.inner_hull(ihs_int[0])
             ship.track_mass()
             ship.track_base_pv()
+            st.session_state.ship = ship
 
     with build_col1.expander('**Propulsion**', expanded=True):
         tp_input = st.number_input('Thrust Points', min_value=0)
@@ -68,6 +60,7 @@ if main_selected == 'Build Ship':
             ship.propulsion(tp_input)
             ship.track_mass()
             ship.track_base_pv()
+            st.session_state.ship = ship
 
     with build_col2.expander('**Weapons**', expanded=True):
         front_arc_input = st.multiselect('Front Arc Weapons', [s['name'] for s in build_data.weapon_details])
@@ -76,6 +69,7 @@ if main_selected == 'Build Ship':
             st.markdown(f'**Total Front Arc Mass:** {ship.total_front_arc_mass}, **Total Front Arc PV:** {ship.total_front_arc_pv}')
             ship.track_mass()
             ship.track_base_pv()
+            st.session_state.ship = ship
 
         rear_arc_input = st.multiselect('Rear Arc Weapons', [s['name'] for s in build_data.weapon_details])
         if rear_arc_input:
@@ -83,6 +77,7 @@ if main_selected == 'Build Ship':
             st.markdown(f'**Total Rear Arc Mass:** {ship.total_rear_arc_mass}, **Total Rear Arc PV:** {ship.total_rear_arc_pv}')
             ship.track_mass()
             ship.track_base_pv()
+            st.session_state.ship = ship
 
         right_arc_input = st.multiselect('Right Arc Weapons', [s['name'] for s in build_data.weapon_details])
         if right_arc_input:
@@ -90,6 +85,7 @@ if main_selected == 'Build Ship':
             st.markdown(f'**Total Right Arc Mass:** {ship.total_right_arc_mass}, **Total Right Arc PV:** {ship.total_right_arc_pv}')
             ship.track_mass()
             ship.track_base_pv()
+            st.session_state.ship = ship
 
         left_arc_input = st.multiselect('Left Arc Weapons', [s['name'] for s in build_data.weapon_details])
         if left_arc_input:
@@ -97,6 +93,7 @@ if main_selected == 'Build Ship':
             st.markdown(f'**Total Left Arc Mass:** {ship.total_left_arc_mass}, **Total Left Arc PV:** {ship.total_left_arc_pv}')
             ship.track_mass()
             ship.track_base_pv()
+            st.session_state.ship = ship
 
     with build_col2.expander('**Equipment**', expanded=True):
         equipment_input = st.multiselect('Equipment', [s['name'] for s in build_data.equipment_details])
@@ -108,12 +105,14 @@ if main_selected == 'Build Ship':
             st.markdown(f'**Total Equipment Mass:** {ship.total_equipment_mass}, **Total Equipment PV:** {ship.total_equipment_pv}')
             ship.track_mass()
             ship.track_base_pv()
+            st.session_state.ship = ship
 
-    with build_col3.expander('**Crew Quality**', expanded=True):
+    with build_col1.expander('**Crew Quality**', expanded=True):
         crew_quality_input = st.selectbox('Crew Quality', [s['name'] for s in build_data.crew_quality_details])
         if crew_quality_input:
             crew_quality_int = [s['id'] for s in build_data.crew_quality_details if s['name'] == crew_quality_input]
             ship.set_quality(crew_quality_int[0])
+            st.session_state.ship = ship
 
     col1, col2, col3, col4 = st.columns(4)
     ship.track_base_pv()
@@ -143,4 +142,39 @@ if main_selected == 'Build Ship':
                 **Left Arc Weapons:** {left_arc_input}  
                 """)
 
-st.write(st.session_state)
+#st.write(st.session_state)
+st.write(st.session_state.ship)
+
+oh_squares = ' □' * ship.outer_hull_mass 
+ih_squares = ' □' * ship.inner_hull_mass
+
+game_card = (f"""
+            #### Ship Name:
+            {ship.name}
+            #### Class:
+            {ship.sclass.capitalize()}    #### Size: {ship.size}    #### Armor: {ship.armor_roll}  
+            """)
+            # *Base PV:* {ship.total_base_pv}    Final PV: {ship.final_pv}    Crew Quality: {ship.crew_quality_str}  
+            # *Max Stress:* {ship.max_stress}    *Critical Threshold:* {ship.critical_threshold}  
+            # f"\nThrust Points: {ship.thrust_points}    Max Thrust: {ship.max_thrust}"  
+            # f"\n\nARMOR:"  
+            # f"\nOuter Hull Mass: {oh_squares} ({ship.outer_hull_mass})"  
+            # f"\nInner Hull Mass: {ih_squares} ({ship.inner_hull_mass})"  
+            # f"\n\nEQUIPMENT:"
+            # f"\n{''.join(f'{item['name']} -- {item['description']}\n' for item in ship.equipment_list)}"
+            # f"\nWEAPONS:"
+            # f"\n***Front Arc***"
+            # f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.front_arc_weapon_list)}"
+            # f"\n***Rear Arc***"
+            # f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.rear_arc_weapon_list)}"
+            # f"\n***Right Arc***"
+            # f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.right_arc_weapon_list)}"
+            # f"\n***Left Arc***"
+            # f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.left_arc_weapon_list)}"
+            # f"\nCRITICAL HITS:"
+            # f"\n□ □ Engineering Hit    □ □ Major Weapon Damage (F/RT/LT/R)"
+            # f"\n□ Targeting Hit    □ □ □ □ Weapon Damage (F/RT/LT/R)"
+            # f"\n□ □ □ Crew Hit    □ □ Side Thruster Damage"
+            # f"\n□ □ □ □ □ Engine Room Damage    □ □ Engines Disabled"
+            # """)
+st.markdown(game_card)

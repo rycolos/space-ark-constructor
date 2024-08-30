@@ -143,38 +143,108 @@ if __name__ == "__main__":
                 """)
 
 #st.write(st.session_state)
-st.write(st.session_state.ship)
+#st.write(st.session_state.ship)
 
 oh_squares = ' □' * ship.outer_hull_mass 
 ih_squares = ' □' * ship.inner_hull_mass
 
-game_card = (f"""
-            #### Ship Name:
-            {ship.name}
-            #### Class:
-            {ship.sclass.capitalize()}    #### Size: {ship.size}    #### Armor: {ship.armor_roll}  
-            """)
-            # *Base PV:* {ship.total_base_pv}    Final PV: {ship.final_pv}    Crew Quality: {ship.crew_quality_str}  
-            # *Max Stress:* {ship.max_stress}    *Critical Threshold:* {ship.critical_threshold}  
-            # f"\nThrust Points: {ship.thrust_points}    Max Thrust: {ship.max_thrust}"  
-            # f"\n\nARMOR:"  
-            # f"\nOuter Hull Mass: {oh_squares} ({ship.outer_hull_mass})"  
-            # f"\nInner Hull Mass: {ih_squares} ({ship.inner_hull_mass})"  
-            # f"\n\nEQUIPMENT:"
-            # f"\n{''.join(f'{item['name']} -- {item['description']}\n' for item in ship.equipment_list)}"
-            # f"\nWEAPONS:"
-            # f"\n***Front Arc***"
-            # f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.front_arc_weapon_list)}"
-            # f"\n***Rear Arc***"
-            # f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.rear_arc_weapon_list)}"
-            # f"\n***Right Arc***"
-            # f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.right_arc_weapon_list)}"
-            # f"\n***Left Arc***"
-            # f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.left_arc_weapon_list)}"
-            # f"\nCRITICAL HITS:"
-            # f"\n□ □ Engineering Hit    □ □ Major Weapon Damage (F/RT/LT/R)"
-            # f"\n□ Targeting Hit    □ □ □ □ Weapon Damage (F/RT/LT/R)"
-            # f"\n□ □ □ Crew Hit    □ □ Side Thruster Damage"
-            # f"\n□ □ □ □ □ Engine Room Damage    □ □ Engines Disabled"
-            # """)
-st.markdown(game_card)
+game_card = f"""
+<table>
+    <tr>
+        <td><b>SHIP NAME</b></td>
+        <td>{ship.name}</td>
+        <td><b>CLASS</b></td>
+        <td>{ship.sclass}</td>
+        <td><b>SIZE</b></td>
+        <td>{ship.size}</td>
+    </tr>
+    <tr>
+        <td><b>ARMOR</b></td>
+        <td>{ship.armor_roll}</td>
+        <td><b>BASE PV</b></td>
+        <td>{ship.total_base_pv}</td>
+        <td><b>FINAL PV</b></td>
+        <td>{ship.final_pv}</td>
+    </tr>
+    <tr>
+        <td><b>CREW QUALITY</b></td>
+        <td>{ship.crew_quality_str}</td>
+        <td><b>MAX STRESS</b></td>
+        <td>{ship.max_stress}</td>
+        <td><b>CRIT THRESH</b></td>
+        <td>{ship.critical_threshold}</td>
+    </tr>
+    <tr>
+        <td><b>THRUST POINTS</b></td>
+        <td>{ship.thrust_points}</td>
+        <td><b>MAX THRUST</b></td>
+        <td>{ship.max_thrust}</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td colspan="6"><b>ARMOR</b></td>
+    </tr>
+    <tr>
+        <td>Outer Hull ({ship.outer_hull_mass})</td>
+        <td colspan="5">{oh_squares}</td>
+    </tr>
+    <tr>
+        <td>Inner Hull ({ship.inner_hull_mass})</td>
+        <td colspan="5">{ih_squares}</td>
+    </tr>
+    <tr>
+        <td colspan="6"><b>EQUIPMENT</b></td>
+    </tr>
+    <tr>
+        <td colspan="6">{''.join(f'{item['name']} -- {item['description']}\n\n' for item in ship.equipment_list)}</td>
+    </tr>
+    <tr>
+        <td colspan="6"><b>WEAPONS</b></td>
+    </tr>
+    <tr>
+        <td colspan="6"><b>Front Arc</b></td>
+    </tr>
+    <tr>
+        <td colspan="6">{''.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}\n\n' for weapon in ship.front_arc_weapon_list)}</td>
+    </tr>
+    <tr>
+        <td colspan="6"><b>Rear Arc</b></td>
+    </tr>
+    <tr>
+        <td colspan="6">{''.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}\n\n' for weapon in ship.rear_arc_weapon_list)}</td>
+    </tr>
+    <tr>
+        <td colspan="6"><b>Right Arc</b></td>
+    </tr>
+    <tr>
+        <td colspan="6">{''.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}\n\n' for weapon in ship.right_arc_weapon_list)}</td>
+    </tr>
+    <tr>
+        <td colspan="6"><b>Left Arc</b></td>
+    </tr>
+    <tr>
+        <td colspan="6">{''.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}\n\n' for weapon in ship.left_arc_weapon_list)}</td>
+    </tr>
+    <tr>
+        <td colspan="6"><b>CRITICAL HITS</b></td>
+    </tr>
+    <tr rowspan="4">
+        <td colspan="3">
+            □ □ Engineering Hit
+            <br>□ Targeting Hit
+            <br>□ □ □ Crew Hit
+            <br>□ □ □ □ □ Engine Room Damage
+        </td>
+        <td colspan="3">
+            □ □ Major Weapon Damage ( F / RT / LT / R )
+            <br>□ □ □ □ Weapon Damage ( F / RT / LT / R )
+            <br>□ □ Side Thruster Damage
+            <br>□ □ Engines Disabled
+        </td>
+    </tr>
+</table>
+"""
+
+st.markdown(game_card, unsafe_allow_html=True)
+

@@ -266,7 +266,7 @@ weapon_details = (
     },
     {
         "id": 7,
-        "name": "LIGHT NAVEL AUTOCANNON",
+        "name": "LIGHT NAVAL AUTOCANNON",
         "max_dmg": 8,
         "mass": 12,
         "pv": 36,
@@ -277,7 +277,7 @@ weapon_details = (
     },
     {
         "id": 8,
-        "name": "MEDIUM NAVEL AUTOCANNON",
+        "name": "MEDIUM NAVAL AUTOCANNON",
         "max_dmg": 12,
         "mass": 15,
         "pv": 45,
@@ -288,7 +288,7 @@ weapon_details = (
     },
     {
         "id": 9,
-        "name": "HEAVY NAVEL AUTOCANNON",
+        "name": "HEAVY NAVAL AUTOCANNON",
         "max_dmg": 16,
         "mass": 18,
         "pv": 54,

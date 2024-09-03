@@ -3,5 +3,6 @@ test__*.py
 __pycache__/*
 *.pyc
 *.json
+*.png
 !import_schema.json
 *_export.txt

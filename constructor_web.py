@@ -4,7 +4,6 @@ from ShipClass import ShipClass
 import json, jsonschema, time
 import markdownify
 from html2image import Html2Image
-hti = Html2Image()
 
 def build_base_ship(name, sclass) -> ShipClass:
     """
@@ -282,14 +281,18 @@ st.download_button(
     data=ship_json,
 )
 
+#download ship image
+hti = Html2Image(output_path='tmp_images')
 hti.browser.flags = ['--default-background-color=ffffff', '--hide-scrollbars']
 image = st.button('Download Image')
 if image:
-    hti.screenshot(html_str=game_card, save_as=ship.name + "_image.png", size=(800, 900))
+    hti.screenshot(html_str=game_card, save_as=ship.name + "_image.png", size=(400, 450), css_str=['body {font-family: verdana;}', 'table {font-size: 5px;}'])
 
-# st.download_button(
-#     label="Download image",
-#     file_name=f"{ship.name}",
-#     mime="image/png",
-#     data=img,
-# )
+# can i use hti to download img to server, quietly, and use download button below to download to user?
+#  with open("flower.png", "rb") as file:
+#     btn = st.download_button(
+#         label="Download image",
+#         data=file,
+#         file_name="flower.png",
+#         mime="image/png",
+#     )

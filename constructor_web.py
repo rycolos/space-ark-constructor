@@ -1,7 +1,8 @@
 import streamlit as st
 import build_data
 from ShipClass import ShipClass
-import json, jsonschema, time
+import json, jsonschema, os
+from datetime import datetime
 import markdownify
 from html2image import Html2Image
 
@@ -149,6 +150,7 @@ if __name__ == "__main__":
     metric_col2.metric(label='Final PV', value=ship.final_pv)
 
     build_col3.write(f"""
+                ### Calculated Stats: 
                 **Ship Size:** {ship.size}  
                 **Total Available Mass:** {ship.tam}  
                 **Max Damage Per Arc:** {ship.mdpa}  
@@ -161,10 +163,11 @@ if __name__ == "__main__":
 #st.write(st.session_state)
 #st.write(st.session_state.ship)
 
+st.header("Ship Card")
 oh_squares = ' □' * ship.outer_hull_mass 
 ih_squares = ' □' * ship.inner_hull_mass
 
-game_card = f"""
+game_card_html = f"""
 <table>
     <tr>
         <td><b>SHIP NAME</b></td>
@@ -213,7 +216,7 @@ game_card = f"""
         <td colspan="6"><b>EQUIPMENT</b></td>
     </tr>
     <tr>
-        <td colspan="6">{''.join(f'{item['name']}\n\n' for item in ship.equipment_list)}</td>
+        <td colspan="6">{''.join(f'{item['name']}<br>' for item in ship.equipment_list)}</td>
     </tr>
     <tr>
         <td colspan="6"><b>WEAPONS</b></td>
@@ -222,25 +225,25 @@ game_card = f"""
         <td colspan="6"><b>Front Arc</b></td>
     </tr>
     <tr>
-        <td colspan="6">{''.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}\n\n' for weapon in ship.front_arc_weapon_list)}</td>
+        <td colspan="6">{''.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}<br>' for weapon in ship.front_arc_weapon_list)}</td>
     </tr>
     <tr>
         <td colspan="6"><b>Rear Arc</b></td>
     </tr>
     <tr>
-        <td colspan="6">{''.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}\n\n' for weapon in ship.rear_arc_weapon_list)}</td>
+        <td colspan="6">{''.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}<br>' for weapon in ship.rear_arc_weapon_list)}</td>
     </tr>
     <tr>
         <td colspan="6"><b>Right Arc</b></td>
     </tr>
     <tr>
-        <td colspan="6">{''.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}\n\n' for weapon in ship.right_arc_weapon_list)}</td>
+        <td colspan="6">{''.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}<br>' for weapon in ship.right_arc_weapon_list)}</td>
     </tr>
     <tr>
         <td colspan="6"><b>Left Arc</b></td>
     </tr>
     <tr>
-        <td colspan="6">{''.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}\n\n' for weapon in ship.left_arc_weapon_list)}</td>
+        <td colspan="6">{''.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}<br>' for weapon in ship.left_arc_weapon_list)}</td>
     </tr>
     <tr>
         <td colspan="6"><b>CRITICAL HITS</b></td>
@@ -262,9 +265,29 @@ game_card = f"""
 </table>
 """
 
-st.markdown(game_card, unsafe_allow_html=True)
+st.markdown(game_card_html, unsafe_allow_html=True)
 
-formatted = markdownify.markdownify(game_card)
+#download ship image
+img_path_server = "tmp_images/"
+hti = Html2Image(output_path=img_path_server)
+hti.browser.flags = ['--default-background-color=ffffff', '--hide-scrollbars']
+img_download_fname = ship.name + "_image_" + datetime.today().strftime('%Y%m%d') + ".png"
+
+ship_image = st.button('Create Ship Card')
+if ship_image:
+    hti.screenshot(html_str=game_card_html, save_as=img_download_fname, size=(400, 450), css_str=['body {font-family: verdana;}', 'table {font-size: 5px;}'])
+
+    with open(img_path_server + img_download_fname, "rb") as file:
+        btn = st.download_button(
+            label="Download Ship Card",
+            data=file,
+            file_name=img_download_fname,
+            mime="image/png",
+        )
+    os.remove(img_path_server + img_download_fname)
+
+#download ship markdown
+formatted = markdownify.markdownify(game_card_html)
 st.download_button(
     label="Download Markdown",
     data=formatted,
@@ -272,6 +295,7 @@ st.download_button(
     mime="text/plain",
 )
 
+#donwload ship json
 ship.build_json_objects()
 ship_json = json.dumps(ship.ship_json_object, indent=4)
 st.download_button(
@@ -280,19 +304,3 @@ st.download_button(
     mime="application/json",
     data=ship_json,
 )
-
-#download ship image
-hti = Html2Image(output_path='tmp_images')
-hti.browser.flags = ['--default-background-color=ffffff', '--hide-scrollbars']
-image = st.button('Download Image')
-if image:
-    hti.screenshot(html_str=game_card, save_as=ship.name + "_image.png", size=(400, 450), css_str=['body {font-family: verdana;}', 'table {font-size: 5px;}'])
-
-# can i use hti to download img to server, quietly, and use download button below to download to user?
-#  with open("flower.png", "rb") as file:
-#     btn = st.download_button(
-#         label="Download image",
-#         data=file,
-#         file_name="flower.png",
-#         mime="image/png",
-#     )

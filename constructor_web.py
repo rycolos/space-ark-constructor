@@ -29,29 +29,29 @@ def configure_page() -> None:
     # st.markdown(hide_st_style, unsafe_allow_html=True)
 
 def front_weapon_stat():
-        if st.session_state.front_arc != []:
-            front_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == st.session_state.front_arc[-1]))
-            build_col3.info(front_weapon_stat, icon=":material/info:")
+    if st.session_state.front_arc != []:
+        front_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == st.session_state.front_arc[-1]))
+        build_col3.info(front_weapon_stat, icon=":material/info:")
 
 def rear_weapon_stat():            
-        if st.session_state.rear_arc != []:
-            rear_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == st.session_state.rear_arc[-1]))
-            build_col3.info(rear_weapon_stat, icon=":material/info:")
+    if st.session_state.rear_arc != []:
+        rear_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == st.session_state.rear_arc[-1]))
+        build_col3.info(rear_weapon_stat, icon=":material/info:")
 
 def right_weapon_stat():
-        if st.session_state.right_arc != []:
-            right_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == st.session_state.right_arc[-1]))
-            build_col3.info(right_weapon_stat, icon=":material/info:")
+    if st.session_state.right_arc != []:
+        right_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == st.session_state.right_arc[-1]))
+        build_col3.info(right_weapon_stat, icon=":material/info:")
 
 def left_weapon_stat():            
-        if st.session_state.left_arc != []:
-            left_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == st.session_state.left_arc[-1]))
-            build_col3.info(left_weapon_stat, icon=":material/info:")
+    if st.session_state.left_arc != []:
+        left_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == st.session_state.left_arc[-1]))
+        build_col3.info(left_weapon_stat, icon=":material/info:")
 
 def equipment_stat():
-        if st.session_state.equipment != []:
-            equipment_stat = (f'{[s['description'] for s in build_data.equipment_details if s['name'] == st.session_state.equipment[-1]][0]}')
-            build_col3.info(equipment_stat, icon=":material/info:")
+    if st.session_state.equipment != []:
+        equipment_stat = (f'{[s['description'] for s in build_data.equipment_details if s['name'] == st.session_state.equipment[-1]][0]}')
+        build_col3.info(equipment_stat, icon=":material/info:")
 
 if __name__ == "__main__":
     configure_page()
@@ -94,7 +94,7 @@ if __name__ == "__main__":
         front_arc_input = st.multiselect(label='Front Arc Weapons', key='front_arc', options=[s['name'] for s in build_data.weapon_details], on_change=front_weapon_stat)
         if front_arc_input:  
             ship.front_arc_weapons(*front_arc_input)
-            st.markdown(f'**Total Front Arc Mass:** {ship.total_front_arc_mass}, **Total Front Arc PV:** {ship.total_front_arc_pv}')
+            st.markdown(f'**Arc Mass:** {ship.total_front_arc_mass} — **Arc PV:** {ship.total_front_arc_pv} — **Arc Damage:** {ship.total_front_arc_max_dmg}')
             ship.track_mass()
             ship.track_base_pv()
             st.session_state.ship = ship
@@ -102,7 +102,7 @@ if __name__ == "__main__":
         rear_arc_input = st.multiselect(label='Rear Arc Weapons', key='rear_arc', options=[s['name'] for s in build_data.weapon_details], help='help me', on_change=rear_weapon_stat)
         if rear_arc_input:
             ship.rear_arc_weapons(*rear_arc_input)
-            st.markdown(f'**Total Rear Arc Mass:** {ship.total_rear_arc_mass}, **Total Rear Arc PV:** {ship.total_rear_arc_pv}')
+            st.markdown(f'**Arc Mass:** {ship.total_rear_arc_mass} — **Arc PV:** {ship.total_rear_arc_pv} — **Arc Damage:** {ship.total_rear_arc_max_dmg}')
             ship.track_mass()
             ship.track_base_pv()
             st.session_state.ship = ship
@@ -110,7 +110,7 @@ if __name__ == "__main__":
         right_arc_input = st.multiselect(label='Right Arc Weapons', key='right_arc', options=[s['name'] for s in build_data.weapon_details], on_change=right_weapon_stat)
         if right_arc_input:
             ship.right_arc_weapons(*right_arc_input)
-            st.markdown(f'**Total Right Arc Mass:** {ship.total_right_arc_mass}, **Total Right Arc PV:** {ship.total_right_arc_pv}')
+            st.markdown(f'**Arc Mass:** {ship.total_right_arc_mass} — **Arc PV:** {ship.total_right_arc_pv} — **Arc Damage:** {ship.total_right_arc_max_dmg}')
             ship.track_mass()
             ship.track_base_pv()
             st.session_state.ship = ship
@@ -118,7 +118,7 @@ if __name__ == "__main__":
         left_arc_input = st.multiselect(label='Left Arc Weapons', key='left_arc', options=[s['name'] for s in build_data.weapon_details], on_change=left_weapon_stat)
         if left_arc_input:
             ship.left_arc_weapons(*left_arc_input)
-            st.markdown(f'**Total Left Arc Mass:** {ship.total_left_arc_mass}, **Total Left Arc PV:** {ship.total_left_arc_pv}')
+            st.markdown(f'**Arc Mass:** {ship.total_left_arc_mass} — **Arc PV:** {ship.total_left_arc_pv} — **Arc Damage:** {ship.total_left_arc_max_dmg}')
             ship.track_mass()
             ship.track_base_pv()
             st.session_state.ship = ship
@@ -144,6 +144,22 @@ if __name__ == "__main__":
     metric_col1, metric_col2 = build_col3.columns(2)
     ship.track_base_pv()
     ship.track_mass()
+
+    if ship.tam_exceeded:
+        build_col3.info(f'Mass overage of {abs(ship.mass_delta)}!', icon=":material/warning:")
+
+    if ship.total_front_arc_max_dmg > ship.mdpa:
+        build_col3.info(f'Front arc damage overage of {abs(ship.mdpa - ship.total_front_arc_max_dmg)}!', icon=":material/warning:")
+    
+    if ship.total_rear_arc_max_dmg > ship.mdpa:
+        build_col3.info(f'Rear arc damage overage of {abs(ship.mdpa - ship.total_rear_arc_max_dmg)}!', icon=":material/warning:")
+    
+    if ship.total_right_arc_max_dmg > ship.mdpa:
+        build_col3.info(f'Right arc damage overage of {abs(ship.mdpa - ship.total_right_arc_max_dmg)}!', icon=":material/warning:")
+    
+    if ship.total_left_arc_max_dmg > ship.mdpa:
+        build_col3.info(f'Left arc damage overage of {abs(ship.mdpa - ship.total_left_arc_max_dmg)}!', icon=":material/warning:")
+
     metric_col1.metric(label='Current Mass', value=ship.total_mass)
     metric_col1.metric(label='Mass Remaining', value=ship.mass_delta)
     metric_col2.metric(label='Base PV', value=ship.total_base_pv)
@@ -160,8 +176,8 @@ if __name__ == "__main__":
                 **Max Stress:** {ship.max_stress}  
                 """)
 
-#st.write(st.session_state)
-#st.write(st.session_state.ship)
+# st.write(st.session_state)
+# st.write(st.session_state.ship)
 
 st.header("Ship Card")
 oh_squares = ' □' * ship.outer_hull_mass 

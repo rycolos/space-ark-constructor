@@ -91,7 +91,7 @@ if __name__ == "__main__":
             st.session_state.ship = ship
 
     with build_col2.expander(label='**Weapons**', expanded=True):
-        front_arc_input = st.multiselect(label='Front Arc Weapons', key='front_arc', options=[s['name'] for s in build_data.weapon_details], on_change=front_weapon_stat)
+        front_arc_input = st.multiselect(label='Front Arc Weapons', key='front_arc', options=[s['name'] for s in build_data.weapon_details for i in range(4)], on_change=front_weapon_stat)
         if front_arc_input:  
             ship.front_arc_weapons(*front_arc_input)
             st.markdown(f'**Arc Mass:** {ship.total_front_arc_mass} — **Arc PV:** {ship.total_front_arc_pv} — **Arc Damage:** {ship.total_front_arc_max_dmg}')
@@ -99,7 +99,7 @@ if __name__ == "__main__":
             ship.track_base_pv()
             st.session_state.ship = ship
 
-        rear_arc_input = st.multiselect(label='Rear Arc Weapons', key='rear_arc', options=[s['name'] for s in build_data.weapon_details], help='help me', on_change=rear_weapon_stat)
+        rear_arc_input = st.multiselect(label='Rear Arc Weapons', key='rear_arc', options=[s['name'] for s in build_data.weapon_details for i in range(4)], on_change=rear_weapon_stat)
         if rear_arc_input:
             ship.rear_arc_weapons(*rear_arc_input)
             st.markdown(f'**Arc Mass:** {ship.total_rear_arc_mass} — **Arc PV:** {ship.total_rear_arc_pv} — **Arc Damage:** {ship.total_rear_arc_max_dmg}')
@@ -107,7 +107,7 @@ if __name__ == "__main__":
             ship.track_base_pv()
             st.session_state.ship = ship
 
-        right_arc_input = st.multiselect(label='Right Arc Weapons', key='right_arc', options=[s['name'] for s in build_data.weapon_details], on_change=right_weapon_stat)
+        right_arc_input = st.multiselect(label='Right Arc Weapons', key='right_arc', options=[s['name'] for s in build_data.weapon_details for i in range(4)], on_change=right_weapon_stat)
         if right_arc_input:
             ship.right_arc_weapons(*right_arc_input)
             st.markdown(f'**Arc Mass:** {ship.total_right_arc_mass} — **Arc PV:** {ship.total_right_arc_pv} — **Arc Damage:** {ship.total_right_arc_max_dmg}')
@@ -115,7 +115,7 @@ if __name__ == "__main__":
             ship.track_base_pv()
             st.session_state.ship = ship
 
-        left_arc_input = st.multiselect(label='Left Arc Weapons', key='left_arc', options=[s['name'] for s in build_data.weapon_details], on_change=left_weapon_stat)
+        left_arc_input = st.multiselect(label='Left Arc Weapons', key='left_arc', options=[s['name'] for s in build_data.weapon_details for i in range(4)], on_change=left_weapon_stat)
         if left_arc_input:
             ship.left_arc_weapons(*left_arc_input)
             st.markdown(f'**Arc Mass:** {ship.total_left_arc_mass} — **Arc PV:** {ship.total_left_arc_pv} — **Arc Damage:** {ship.total_left_arc_max_dmg}')
@@ -176,8 +176,8 @@ if __name__ == "__main__":
                 **Max Stress:** {ship.max_stress}  
                 """)
 
-# st.write(st.session_state)
-# st.write(st.session_state.ship)
+#st.write(st.session_state)
+#st.write(st.session_state.ship)
 
 st.header("Ship Card")
 oh_squares = ' □' * ship.outer_hull_mass 
@@ -283,31 +283,57 @@ game_card_html = f"""
 
 st.markdown(game_card_html, unsafe_allow_html=True)
 
+game_card_txt = (f"\nSHIP NAME: {ship.name}"
+                f"\nClass: {ship.sclass.capitalize()}    Size: {ship.size}    Armor: {ship.armor_roll}"
+                f"\nBase PV: {ship.total_base_pv}    Final PV: {ship.final_pv}    Crew Quality: {ship.crew_quality_str}"
+                f"\nMax Stress: {ship.max_stress}    Critical Threshold: {ship.critical_threshold}"
+                f"\nThrust Points: {ship.thrust_points}    Max Thrust: {ship.max_thrust}"
+                f"\n\nARMOR:"
+                f"\nOuter Hull Mass: {oh_squares} ({ship.outer_hull_mass})"
+                f"\nInner Hull Mass: {ih_squares} ({ship.inner_hull_mass})"
+                f"\n\nEQUIPMENT:"
+                f"\n{''.join(f'{item['name']} -- {item['description']}\n' for item in ship.equipment_list)}"
+                f"\nWEAPONS:"
+                f"\n***Front Arc***"
+                f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.front_arc_weapon_list)}"
+                f"\n***Rear Arc***"
+                f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.rear_arc_weapon_list)}"
+                f"\n***Right Arc***"
+                f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.right_arc_weapon_list)}"
+                f"\n***Left Arc***"
+                f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in ship.left_arc_weapon_list)}"
+                f"\nCRITICAL HITS:"
+                f"\n□ □ Engineering Hit    □ □ Major Weapon Damage (F/RT/LT/R)"
+                f"\n□ Targeting Hit    □ □ □ □ Weapon Damage (F/RT/LT/R)"
+                f"\n□ □ □ Crew Hit    □ □ Side Thruster Damage"
+                f"\n□ □ □ □ □ Engine Room Damage    □ □ Engines Disabled"
+                )
+
 #download ship image
 img_path_server = "tmp_images/"
 hti = Html2Image(output_path=img_path_server)
 hti.browser.flags = ['--default-background-color=ffffff', '--hide-scrollbars']
-img_download_fname = ship.name + "_image_" + datetime.today().strftime('%Y%m%d') + ".png"
+img_download_fname = f"{ship.name}_image_{datetime.today().strftime('%Y%m%d')}.png"
 
-ship_image = st.button('Create Ship Card')
+ship_image = st.button('Create Ship Card Image')
 if ship_image:
     hti.screenshot(html_str=game_card_html, save_as=img_download_fname, size=(400, 450), css_str=['body {font-family: verdana;}', 'table {font-size: 5px;}'])
 
     with open(img_path_server + img_download_fname, "rb") as file:
         btn = st.download_button(
-            label="Download Ship Card",
+            label="Download Ship Card Image",
             data=file,
             file_name=img_download_fname,
             mime="image/png",
         )
     os.remove(img_path_server + img_download_fname)
 
-#download ship markdown
-formatted = markdownify.markdownify(game_card_html)
+#download ship txt
+txt_download_fname = f"{ship.name}_txt_{datetime.today().strftime('%Y%m%d')}"
 st.download_button(
-    label="Download Markdown",
-    data=formatted,
-    file_name=f"{ship.name}_game_card",
+    label="Download Ship Card (Text Only)",
+    data=game_card_txt,
+    file_name=txt_download_fname,
     mime="text/plain",
 )
 
@@ -315,7 +341,7 @@ st.download_button(
 ship.build_json_objects()
 ship_json = json.dumps(ship.ship_json_object, indent=4)
 st.download_button(
-    label="Download JSON",
+    label="Download JSON (For Import)",
     file_name=f"{ship.name}.json",
     mime="application/json",
     data=ship_json,

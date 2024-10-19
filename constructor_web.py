@@ -27,45 +27,45 @@ def configure_page() -> None:
     construct_ship, import_ship = st.tabs(["Construct Ship", "Import Ship"])
     return construct_ship, import_ship
 
-def front_weapon_stat():
-    """
-    Display weapon stat for live view
-    """ 
-    if st.session_state.front_arc != []:
-        front_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == st.session_state.front_arc[-1]))
-        build_col3.info(front_weapon_stat, icon=":material/info:")
+# def front_weapon_stat(weap_key):
+#     """
+#     Display weapon stat for live view
+#     """ 
+#     if weap_key != []:
+#         front_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == weap_key[-1]))
+#         build_col3.info(front_weapon_stat, icon=":material/info:")
 
-def rear_weapon_stat():   
-    """
-    Display weapon stat for live view
-    """          
-    if st.session_state.rear_arc != []:
-        rear_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == st.session_state.rear_arc[-1]))
-        build_col3.info(rear_weapon_stat, icon=":material/info:")
+# def rear_weapon_stat(weap_key):   
+#     """
+#     Display weapon stat for live view
+#     """          
+#     if weap_key != []:
+#         rear_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == weap_key[-1]))
+#         build_col3.info(rear_weapon_stat, icon=":material/info:")
 
-def right_weapon_stat():
-    """
-    Display weapon stat for live view
-    """ 
-    if st.session_state.right_arc != []:
-        right_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == st.session_state.right_arc[-1]))
-        build_col3.info(right_weapon_stat, icon=":material/info:")
+# def right_weapon_stat(weap_key):
+#     """
+#     Display weapon stat for live view
+#     """ 
+#     if weap_key != []:
+#         right_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == weap_key[-1]))
+#         build_col3.info(right_weapon_stat, icon=":material/info:")
 
-def left_weapon_stat(): 
-    """
-    Display weapon stat for live view
-    """           
-    if st.session_state.left_arc != []:
-        left_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == st.session_state.left_arc[-1]))
-        build_col3.info(left_weapon_stat, icon=":material/info:")
+# def left_weapon_stat(weap_key): 
+#     """
+#     Display weapon stat for live view
+#     """           
+#     if weap_key != []:
+#         left_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == weap_key[-1]))
+#         build_col3.info(left_weapon_stat, icon=":material/info:")
 
-def equipment_stat():
-    """
-    Display equipment stat for live view
-    """
-    if st.session_state.equipment != []:
-        equipment_stat = (f'{[s['description'] for s in build_data.equipment_details if s['name'] == st.session_state.equipment[-1]][0]}')
-        build_col3.info(equipment_stat, icon=":material/info:")
+# def equipment_stat(equip_key):
+#     """
+#     Display equipment stat for live view
+#     """
+#     if equip_key != []:
+#         equipment_stat = (f'{[s['description'] for s in build_data.equipment_details if s['name'] == equip_key[-1]][0]}')
+#         build_col3.info(equipment_stat, icon=":material/info:")
 
 def validate_json(ship_json: str) -> list:
     """
@@ -95,9 +95,11 @@ def load_ship_details_json(ship_json: str) -> ShipClass:
     ship.crew_quality_str = ship_json["crew_quality"]
     ship.total_base_pv = ship_json["base_pv"]  
     ship.final_pv = ship_json["final_pv"]
-    ship.max_stress = ship_json["max_stress"]   
+    ship.max_stress = ship_json["max_stress"]
+    ship.outer_hull_strength_str = ship_json["armor"]["outer_hull"]["strength"]  
     ship.outer_hull_mass = ship_json["armor"]["outer_hull"]["mass"]  
     ship.outer_hull_pv = ship_json["armor"]["outer_hull"]["pv"]  
+    ship.inner_hull_strength_str = ship_json["armor"]["inner_hull"]["strength"]  
     ship.inner_hull_mass = ship_json["armor"]["inner_hull"]["mass"]  
     ship.inner_hull_pv = ship_json["armor"]["inner_hull"]["pv"]  
     ship.critical_threshold = ship_json["armor"]["critical_threshold"]  
@@ -154,26 +156,26 @@ def armor(st_element, ohs_key, ihs_key, ohs_loaded_value, ihs_loaded_value, st_s
             local_ship.track_base_pv()
             st_ship = local_ship
 
-def propulsion(st_element, st_ship, local_ship):
+def propulsion(st_element, tp_key, tp_loaded_value, st_ship, local_ship):
     with st_element.expander(label='**Propulsion**', expanded=True):
-        tp_input = st.number_input(label='Thrust Points', key='thrust_points', min_value=0)
+        tp_input = st.number_input(label='Thrust Points', key=tp_key, value=tp_loaded_value, min_value=0)
         if tp_input:
             local_ship.propulsion(tp_input)
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
 
-def crew_quality(st_element, st_ship, local_ship):
+def crew_quality(st_element, cq_key, cq_loaded_value, st_ship, local_ship):
     with st_element.expander(label='**Crew Quality**', expanded=True):
-        crew_quality_input = st.selectbox(label='Crew Quality', key='crew_quality', options=[s['name'] for s in build_data.crew_quality_details])
+        crew_quality_input = st.selectbox(label='Crew Quality', key=cq_key, index=cq_loaded_value, options=[s['name'] for s in build_data.crew_quality_details])
         if crew_quality_input:
             crew_quality_int = [s['id'] for s in build_data.crew_quality_details if s['name'] == crew_quality_input]
             local_ship.set_quality(crew_quality_int[0])
             st_ship = local_ship
 
-def equipment(st_element, st_ship, local_ship):
+def equipment(st_element, equip_key, equip_loaded_value, st_ship, local_ship):
     with st_element.expander(label='**Equipment**', expanded=True):
-        equipment_input = st.multiselect(label='Equipment', key='equipment', options=[s['name'] for s in build_data.equipment_details], on_change=equipment_stat)
+        equipment_input = st.multiselect(label='Equipment', key=equip_key, default=equip_loaded_value, options=[s['name'] for s in build_data.equipment_details])
         if equipment_input:            
             equipment_name_to_id = {item["name"]: item["id"] for item in build_data.equipment_details}
             equip_int_list = [equipment_name_to_id[name] for name in equipment_input]
@@ -183,9 +185,9 @@ def equipment(st_element, st_ship, local_ship):
             local_ship.track_base_pv()
             st_ship = local_ship
 
-def weapons(st_element, st_ship, local_ship):
+def weapons(st_element, weap_key, weap_loaded_value, st_ship, local_ship):
     with st_element.expander(label='**Weapons**', expanded=True):
-        front_arc_input = st.multiselect(label='Front Arc Weapons', key='front_arc', options=[s['name'] for s in build_data.weapon_details for i in range(4)], on_change=front_weapon_stat)
+        front_arc_input = st.multiselect(label='Front Arc Weapons', key=weap_key+'-front-arc', default=weap_loaded_value[0], options=[s['name'] for s in build_data.weapon_details for i in range(4)])
         if front_arc_input:  
             local_ship.front_arc_weapons(*front_arc_input)
             st.markdown(f'**Arc Mass:** {local_ship.total_front_arc_mass} — **Arc PV:** {local_ship.total_front_arc_pv} — **Arc Damage:** {local_ship.total_front_arc_max_dmg}')
@@ -193,7 +195,7 @@ def weapons(st_element, st_ship, local_ship):
             local_ship.track_base_pv()
             st_ship = local_ship
 
-        rear_arc_input = st.multiselect(label='Rear Arc Weapons', key='rear_arc', options=[s['name'] for s in build_data.weapon_details for i in range(4)], on_change=rear_weapon_stat)
+        rear_arc_input = st.multiselect(label='Rear Arc Weapons', key=weap_key+'-rear-arc', default=weap_loaded_value[1], options=[s['name'] for s in build_data.weapon_details for i in range(4)])
         if rear_arc_input:
             local_ship.rear_arc_weapons(*rear_arc_input)
             st.markdown(f'**Arc Mass:** {local_ship.total_rear_arc_mass} — **Arc PV:** {local_ship.total_rear_arc_pv} — **Arc Damage:** {local_ship.total_rear_arc_max_dmg}')
@@ -201,7 +203,7 @@ def weapons(st_element, st_ship, local_ship):
             local_ship.track_base_pv()
             st_ship = local_ship
 
-        right_arc_input = st.multiselect(label='Right Arc Weapons', key='right_arc', options=[s['name'] for s in build_data.weapon_details for i in range(4)], on_change=right_weapon_stat)
+        right_arc_input = st.multiselect(label='Right Arc Weapons', key=weap_key+'-right-arc', default=weap_loaded_value[2], options=[s['name'] for s in build_data.weapon_details for i in range(4)])
         if right_arc_input:
             local_ship.right_arc_weapons(*right_arc_input)
             st.markdown(f'**Arc Mass:** {local_ship.total_right_arc_mass} — **Arc PV:** {local_ship.total_right_arc_pv} — **Arc Damage:** {local_ship.total_right_arc_max_dmg}')
@@ -209,7 +211,7 @@ def weapons(st_element, st_ship, local_ship):
             local_ship.track_base_pv()
             st_ship = local_ship
 
-        left_arc_input = st.multiselect(label='Left Arc Weapons', key='left_arc', options=[s['name'] for s in build_data.weapon_details for i in range(4)], on_change=left_weapon_stat)
+        left_arc_input = st.multiselect(label='Left Arc Weapons', key=weap_key+'-left-arc', default=weap_loaded_value[3], options=[s['name'] for s in build_data.weapon_details for i in range(4)])
         if left_arc_input:
             local_ship.left_arc_weapons(*left_arc_input)
             st.markdown(f'**Arc Mass:** {local_ship.total_left_arc_mass} — **Arc PV:** {local_ship.total_left_arc_pv} — **Arc Damage:** {local_ship.total_left_arc_max_dmg}')
@@ -362,13 +364,23 @@ if __name__ == "__main__":
     with construct_ship:
         build_col1, build_col2, build_col3 = st.columns(3)
 
-        constructed_ship_local = ship_core(st_element=build_col1, name_key='construct-name', sclass_key='construct-sclass', name_loaded_value=None, sclass_loaded_value=0)
+        constructed_ship_local = ship_core(st_element=build_col1, name_key='construct-name', 
+            sclass_key='construct-sclass', name_loaded_value=None, sclass_loaded_value=0)
 
-        armor(build_col1, 'construct-ohs', 'construct-ihs', None, None, st.session_state.constructed_ship_state, constructed_ship_local)
-        propulsion(build_col1, st.session_state.constructed_ship_state, constructed_ship_local)
-        weapons(build_col2, st.session_state.constructed_ship_state, constructed_ship_local)
-        equipment(build_col2, st.session_state.constructed_ship_state, constructed_ship_local)
-        crew_quality(build_col3, st.session_state.constructed_ship_state, constructed_ship_local)
+        armor(st_element=build_col1, ohs_key='construct-ohs', ihs_key='construct-ihs', ohs_loaded_value=None, 
+            ihs_loaded_value=None, st_ship=st.session_state.constructed_ship_state, local_ship=constructed_ship_local)
+        
+        propulsion(st_element=build_col1, tp_key='construct-tp', tp_loaded_value=0,
+            st_ship=st.session_state.constructed_ship_state, local_ship=constructed_ship_local)
+        
+        weapons(st_element=build_col2, weap_key='construct-weap', weap_loaded_value=[None, None, None, None], 
+            st_ship=st.session_state.constructed_ship_state, local_ship=constructed_ship_local)
+        
+        equipment(st_element=build_col2, equip_key='construct-equip', equip_loaded_value=None, 
+            st_ship=st.session_state.constructed_ship_state, local_ship=constructed_ship_local)
+        
+        crew_quality(st_element=build_col3, cq_key='construct-cq', cq_loaded_value=None,
+            st_ship=st.session_state.constructed_ship_state, local_ship=constructed_ship_local)
 
         #real-time metrics, errors, calculated stats
         metric_col1, metric_col2 = build_col3.columns(2)
@@ -453,16 +465,18 @@ if __name__ == "__main__":
 
 with import_ship:
     #import ship
+    ship_loaded = False
+
     json_upload_f = st.file_uploader("Upload ship JSON file for import:")
     if json_upload_f is not None:
         try:
             loaded_ship_json = json.load(json_upload_f)
-            st.write(loaded_ship_json)
         except json.decoder.JSONDecodeError:
             st.write("Invalid JSON. Try again.")
         else:
             error_list = validate_json(loaded_ship_json)
             if error_list == []:
+                ship_loaded = True #for edit display
                 st.write('Ship imported successfully!')
                 imported_ship_instance = load_ship_details_json(loaded_ship_json)
                 st.session_state.imported_ship_state = imported_ship_instance
@@ -471,14 +485,44 @@ with import_ship:
                 for error in error_list:
                     st.write(f"{error.message}")
     
-    #need to get INDEXES for selectbox inputs (0 in functions below)
-    imported_ship_local = ship_core(st, 'import-name', 'import-sclass', imported_ship_instance.name, 0)
+    import_col1, import_col2, import_col3 = st.columns(3)
     
-    armor(st, 'import-ohs', 'import-ihs', None, None, st.session_state.imported_ship_edit_state, imported_ship_local)
-        #not saving state because it re-runs with None again...UGH...mabye??
-    #st.session_state.imported_ship_edit_state = imported_ship_local
+    if ship_loaded:
+        imported_ship_local = ship_core(st_element=import_col1, name_key='import-name', sclass_key='import-sclass',
+            name_loaded_value=imported_ship_instance.name,
+            sclass_loaded_value=[sclass['id'] for sclass in build_data.sclass_details if sclass['sclass'] == imported_ship_instance.sclass][0])
+        
+        armor(st_element=import_col1, ohs_key='import-ohs', ihs_key='import-ihs',
+            ohs_loaded_value=[strength['id'] for strength in build_data.outer_strength_details if strength['name'] == imported_ship_instance.outer_hull_strength_str][0],
+            ihs_loaded_value=[strength['id'] for strength in build_data.inner_strength_details if strength['name'] == imported_ship_instance.inner_hull_strength_str][0],
+            st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
+        
+        propulsion(st_element=import_col1, tp_key='import-tp', tp_loaded_value=imported_ship_instance.thrust_points,
+                st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
+        
+        weapons(st_element=import_col2, weap_key='import-weap',
+            weap_loaded_value=[list(weapon["name"] for weapon in imported_ship_instance.front_arc_weapon_list),
+                    list(weapon["name"] for weapon in imported_ship_instance.rear_arc_weapon_list),
+                    list(weapon["name"] for weapon in imported_ship_instance.right_arc_weapon_list),
+                    list(weapon["name"] for weapon in imported_ship_instance.left_arc_weapon_list)], 
+            st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
+        
+        equipment(st_element=import_col2, equip_key='import-equip',
+            equip_loaded_value=list(equipment["name"] for equipment in imported_ship_instance.equipment_list), 
+            st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
 
-    #need to allow changes to take precedence over import; every time it re-runs, the import overwrites
-    st.write(imported_ship_local)
-    st.write(st.session_state.imported_ship_state)
-    st.write(st.session_state.imported_ship_edit_state)
+        crew_quality(st_element=import_col3, cq_key='import-cq',
+            cq_loaded_value=[cq['id'] for cq in build_data.crew_quality_details if cq['name'] == imported_ship_instance.crew_quality_str][0],
+            st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
+
+        st.session_state.imported_ship_edit_state = imported_ship_local
+
+        #DEBUG
+        st.write(loaded_ship_json)
+        st.write(st.session_state)
+        st.write(imported_ship_instance)
+        st.write(imported_ship_local)
+        st.write(st.session_state.imported_ship_state)
+        st.write(st.session_state.imported_ship_edit_state)
+
+

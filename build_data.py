@@ -1,5 +1,6 @@
 sclass_details = (
     {
+        "id": 0,
         "sclass": "FRIGATE",
         "size": "Small",
         "tam": 30,
@@ -7,6 +8,7 @@ sclass_details = (
         "mdpa": 9
     },
     {
+        "id": 1,
         "sclass": "DESTROYER",
         "size": "Small",
         "tam": 40,
@@ -14,6 +16,7 @@ sclass_details = (
         "mdpa": 12
     },
     {
+        "id": 2,
         "sclass": "HEAVY DESTROYER",
         "size": "Medium",
         "tam": 50,
@@ -21,6 +24,7 @@ sclass_details = (
         "mdpa": 15
     },
     {
+        "id": 3,
         "sclass": "LIGHT CRUISER",
         "size": "Medium",
         "tam": 60,
@@ -28,6 +32,7 @@ sclass_details = (
         "mdpa": 18
     },
     {
+        "id": 4,
         "sclass": "CRUISER",
         "size": "Large",
         "tam": 70,
@@ -35,6 +40,7 @@ sclass_details = (
         "mdpa": 21
     },
     {
+        "id": 5,
         "sclass": "BATTLECRUISER",
         "size": "Large",
         "tam": 90,
@@ -42,6 +48,7 @@ sclass_details = (
         "mdpa": 27
     },
     {
+        "id": 6,
         "sclass": "BATTLESHIP",
         "size": "Large",
         "tam": 110,
@@ -49,6 +56,7 @@ sclass_details = (
         "mdpa": 33
     },
     {
+        "id": 7,
         "sclass": "DREADNOUGHT",
         "size": "Large",
         "tam": 130,
@@ -56,6 +64,7 @@ sclass_details = (
         "mdpa": 39
     },
     {
+        "id": 8,
         "sclass": "SUPER DREADNOUGHT",
         "size": "Large",
         "tam": 150,
@@ -167,19 +176,19 @@ inner_strength_details = (
 
 crew_quality_details = (
     {
-        "id": 1,
+        "id": 0,
         "name": "Recruit",
         "pv_factor": .8,
         "max_stress": 6 
     },
     {
-        "id": 2,
+        "id": 1,
         "name": "Regular",
         "pv_factor": 1,
         "max_stress": 7 
     },
     {
-        "id": 3,
+        "id": 2,
         "name": "Veteran",
         "pv_factor": 1.2,
         "max_stress": 8 

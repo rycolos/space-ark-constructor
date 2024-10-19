@@ -73,6 +73,8 @@ class ShipClass:
         self.total_left_arc_pv = 0
         self.total_left_arc_max_dmg = 0
         self.crew_quality_str = None
+        self.outer_hull_strength_str = None
+        self.inner_hull_strength_str = None
         self.outer_hull_pv = 0
         self.critical_threshold = 0
         self.inner_hull_pv = 0
@@ -121,11 +123,12 @@ class ShipClass:
         Calculate outer hull mass, PV, critical threshold from strength integer ID selection
         """
         self.outer_hull_strength = ohs_input
+        self.outer_hull_strength_str = [s['name'] for s in build_data.outer_strength_details if s['id'] == self.outer_hull_strength]
         mass_factor = [s['mass_factor'] for s in build_data.outer_strength_details if s['id'] == self.outer_hull_strength]
         self.outer_hull_mass = math.ceil(self.tam * mass_factor[0])
         self.outer_hull_pv = math.ceil(self.outer_hull_mass * 3)
         self.critical_threshold = math.ceil(self.outer_hull_mass * .3)
-        return self.outer_hull_strength, self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
+        return self.outer_hull_strength, self.outer_hull_strength_str, self.outer_hull_mass, self.outer_hull_pv, self.critical_threshold
 
     #INNER HULL
     """
@@ -155,10 +158,11 @@ class ShipClass:
         Calculate inner hull mass, PV from strength integer ID selection
         """
         self.inner_hull_strength = ihs_input
+        self.inner_hull_strength_str = [s['name'] for s in build_data.inner_strength_details if s['id'] == self.inner_hull_strength]
         mass_factor = [s['mass_factor'] for s in build_data.inner_strength_details if s['id'] == self.inner_hull_strength]
         self.inner_hull_mass = math.ceil(self.tam * mass_factor[0])
         self.inner_hull_pv = math.ceil(self.outer_hull_mass * 3)
-        return self.inner_hull_strength, self.inner_hull_mass, self.inner_hull_pv
+        return self.inner_hull_strength_str, self.inner_hull_strength, self.inner_hull_mass, self.inner_hull_pv
 
     #PROPULSION
     """
@@ -408,10 +412,12 @@ class ShipClass:
             "max_stress": self.max_stress,
             "armor": {
                 "outer_hull": {
+                    "strength": self.outer_hull_strength_str,
                     "mass": self.outer_hull_mass,
                     "pv": self.outer_hull_pv
                 },
                 "inner_hull": {
+                    "strength": self.inner_hull_strength_str,
                     "mass": self.inner_hull_mass,
                     "pv": self.inner_hull_pv
                 },

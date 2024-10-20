@@ -357,13 +357,26 @@ def init_session():
     if 'imported_ship_edit_state' not in st.session_state:
         st.session_state.imported_ship_edit_state = ShipClass
 
+def error_tam_exceeded(st_element, local_ship):
+    if local_ship.tam_exceeded:
+        st_element.info(f'Mass overage of {abs(local_ship.mass_delta)}!', icon=":material/warning:")
+
+def error_mdpa_exceeded(st_element, local_ship):
+    arc_names = ['front', 'rear', 'right', 'left']
+    for arc in arc_names:
+        total_dmg = getattr(local_ship, f'total_{arc}_arc_max_dmg')
+        if total_dmg > local_ship.mdpa:
+            st_element.info(f'{arc.capitalize()} arc damage overage of {abs(local_ship.mdpa - total_dmg)}!', icon=":material/warning:")
+
 if __name__ == "__main__":
     construct_ship, import_ship = configure_page()
     init_session()
     
     with construct_ship:
         build_col1, build_col2, build_col3 = st.columns(3)
+        construct_metric_col1, construct_metric_col2 = build_col3.columns(2)
 
+        #Build Fields
         constructed_ship_local = ship_core(st_element=build_col1, name_key='construct-name', 
             sclass_key='construct-sclass', name_loaded_value=None, sclass_loaded_value=0)
 
@@ -383,29 +396,17 @@ if __name__ == "__main__":
             st_ship=st.session_state.constructed_ship_state, local_ship=constructed_ship_local)
 
         #real-time metrics, errors, calculated stats
-        metric_col1, metric_col2 = build_col3.columns(2)
         constructed_ship_local.track_base_pv()
         constructed_ship_local.track_mass()
 
-        if constructed_ship_local.tam_exceeded:
-            build_col3.info(f'Mass overage of {abs(constructed_ship_local.mass_delta)}!', icon=":material/warning:")
+        error_tam_exceeded(st_element=build_col3, local_ship=constructed_ship_local)
 
-        if constructed_ship_local.total_front_arc_max_dmg > constructed_ship_local.mdpa:
-            build_col3.info(f'Front arc damage overage of {abs(constructed_ship_local.mdpa - constructed_ship_local.total_front_arc_max_dmg)}!', icon=":material/warning:")
-        
-        if constructed_ship_local.total_rear_arc_max_dmg > constructed_ship_local.mdpa:
-            build_col3.info(f'Rear arc damage overage of {abs(constructed_ship_local.mdpa - constructed_ship_local.total_rear_arc_max_dmg)}!', icon=":material/warning:")
-        
-        if constructed_ship_local.total_right_arc_max_dmg > constructed_ship_local.mdpa:
-            build_col3.info(f'Right arc damage overage of {abs(constructed_ship_local.mdpa - constructed_ship_local.total_right_arc_max_dmg)}!', icon=":material/warning:")
-        
-        if constructed_ship_local.total_left_arc_max_dmg > constructed_ship_local.mdpa:
-            build_col3.info(f'Left arc damage overage of {abs(constructed_ship_local.mdpa - constructed_ship_local.total_left_arc_max_dmg)}!', icon=":material/warning:")
+        error_mdpa_exceeded(st_element=build_col3, local_ship=constructed_ship_local)
 
-        metric_col1.metric(label='Current Mass', value=constructed_ship_local.total_mass)
-        metric_col1.metric(label='Mass Remaining', value=constructed_ship_local.mass_delta)
-        metric_col2.metric(label='Base PV', value=constructed_ship_local.total_base_pv)
-        metric_col2.metric(label='Final PV', value=constructed_ship_local.final_pv)
+        construct_metric_col1.metric(label='Current Mass', value=constructed_ship_local.total_mass)
+        construct_metric_col1.metric(label='Mass Remaining', value=constructed_ship_local.mass_delta)
+        construct_metric_col2.metric(label='Base PV', value=constructed_ship_local.total_base_pv)
+        construct_metric_col2.metric(label='Final PV', value=constructed_ship_local.final_pv)
 
         build_col3.write(f"""
                     ### Calculated Stats: 

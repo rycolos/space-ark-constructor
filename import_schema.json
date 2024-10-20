@@ -18,18 +18,20 @@
             "outer_hull": {
                 "type": "object",
                 "properties": {
+                    "strength": {"type": "string"},
                     "mass": {"type": "number"},
                     "pv": {"type": "number"}
                 },
-                "required": ["mass", "pv"]
+                "required": ["strength", "mass", "pv"]
             },
             "inner_hull": {
                 "type": "object",
                 "properties": {
+                    "strength": {"type": "string"},
                     "mass": {"type": "number"},
                     "pv": {"type": "number"}
                 },
-                "required": ["mass", "pv"]
+                "required": ["strength", "mass", "pv"]
             },
             "critical_threshold": {"type": "number"}
         },

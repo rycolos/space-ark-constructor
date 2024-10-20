@@ -24,48 +24,8 @@ def configure_page() -> None:
     title = 'Space Ark Constructor'
     st.set_page_config(page_title=title, page_icon=':ringed_planet:', layout='wide')
     st.title(title)
-    construct_ship, import_ship = st.tabs(["Construct Ship", "Import Ship"])
-    return construct_ship, import_ship
-
-# def front_weapon_stat(weap_key):
-#     """
-#     Display weapon stat for live view
-#     """ 
-#     if weap_key != []:
-#         front_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == weap_key[-1]))
-#         build_col3.info(front_weapon_stat, icon=":material/info:")
-
-# def rear_weapon_stat(weap_key):   
-#     """
-#     Display weapon stat for live view
-#     """          
-#     if weap_key != []:
-#         rear_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == weap_key[-1]))
-#         build_col3.info(rear_weapon_stat, icon=":material/info:")
-
-# def right_weapon_stat(weap_key):
-#     """
-#     Display weapon stat for live view
-#     """ 
-#     if weap_key != []:
-#         right_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == weap_key[-1]))
-#         build_col3.info(right_weapon_stat, icon=":material/info:")
-
-# def left_weapon_stat(weap_key): 
-#     """
-#     Display weapon stat for live view
-#     """           
-#     if weap_key != []:
-#         left_weapon_stat = ('/n'.join(f'{weapon["name"]} -- A/D: {weapon["attack"]}/{weapon["damage"]} -- R: {weapon["range"]} -- S: {weapon["special"]}' for weapon in build_data.weapon_details if weapon['name'] == weap_key[-1]))
-#         build_col3.info(left_weapon_stat, icon=":material/info:")
-
-# def equipment_stat(equip_key):
-#     """
-#     Display equipment stat for live view
-#     """
-#     if equip_key != []:
-#         equipment_stat = (f'{[s['description'] for s in build_data.equipment_details if s['name'] == equip_key[-1]][0]}')
-#         build_col3.info(equipment_stat, icon=":material/info:")
+    construct_ship, import_ship, view_ship = st.tabs(["Construct Ship", "Import Ship", 'View Ship'])
+    return construct_ship, import_ship, view_ship
 
 def validate_json(ship_json: str) -> list:
     """
@@ -135,6 +95,7 @@ def ship_core(st_element, name_key, sclass_key, name_loaded_value, sclass_loaded
         sclass = st.selectbox(label='Ship Class', key=sclass_key, index=sclass_loaded_value, options=[s['sclass'] for s in build_data.sclass_details])
         if sclass:
             constructed_ship_local = build_base_ship(name, sclass)
+            st.write(f'*Armor Roll —* {constructed_ship_local.armor_roll}')
             st.session_state.constructed_ship_state = constructed_ship_local
     return constructed_ship_local
 
@@ -144,6 +105,7 @@ def armor(st_element, ohs_key, ihs_key, ohs_loaded_value, ihs_loaded_value, st_s
         if ohs_input:
             ohs_int = [s['id'] for s in build_data.outer_strength_details if s['name'] == ohs_input]
             local_ship.outer_hull(ohs_int[0])
+            st.write(f'*Critical Threshold —* {local_ship.critical_threshold}\n\n*Mass —* {local_ship.outer_hull_mass}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
@@ -152,6 +114,7 @@ def armor(st_element, ohs_key, ihs_key, ohs_loaded_value, ihs_loaded_value, st_s
         if ihs_input:
             ihs_int = [s['id'] for s in build_data.inner_strength_details if s['name'] == ihs_input]
             local_ship.inner_hull(ihs_int[0])
+            st.write(f'*Mass —* {local_ship.inner_hull_mass}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
@@ -161,6 +124,7 @@ def propulsion(st_element, tp_key, tp_loaded_value, st_ship, local_ship):
         tp_input = st.number_input(label='Thrust Points', key=tp_key, value=tp_loaded_value, min_value=0)
         if tp_input:
             local_ship.propulsion(tp_input)
+            st.write(f'*Max Thrust —* {local_ship.max_thrust}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
@@ -171,6 +135,7 @@ def crew_quality(st_element, cq_key, cq_loaded_value, st_ship, local_ship):
         if crew_quality_input:
             crew_quality_int = [s['id'] for s in build_data.crew_quality_details if s['name'] == crew_quality_input]
             local_ship.set_quality(crew_quality_int[0])
+            st.write(f'*Max Stress —* {local_ship.max_stress}')
             st_ship = local_ship
 
 def equipment(st_element, equip_key, equip_loaded_value, st_ship, local_ship):
@@ -187,6 +152,7 @@ def equipment(st_element, equip_key, equip_loaded_value, st_ship, local_ship):
 
 def weapons(st_element, weap_key, weap_loaded_value, st_ship, local_ship):
     with st_element.expander(label='**Weapons**', expanded=True):
+        st.write(f'*Max Damage Per Arc —* {local_ship.mdpa}')
         front_arc_input = st.multiselect(label='Front Arc Weapons', key=weap_key+'-front-arc', default=weap_loaded_value[0], options=[s['name'] for s in build_data.weapon_details for i in range(4)])
         if front_arc_input:  
             local_ship.front_arc_weapons(*front_arc_input)
@@ -368,13 +334,67 @@ def error_mdpa_exceeded(st_element, local_ship):
         if total_dmg > local_ship.mdpa:
             st_element.info(f'{arc.capitalize()} arc damage overage of {abs(local_ship.mdpa - total_dmg)}!', icon=":material/warning:")
 
+def live_metrics(st_element, local_ship):
+    
+    #MASS
+    mass_container = st_element.container(border=True)
+    mass_container.write("### Ship Mass")
+    mass_metric_col1, mass_metric_col2, mass_metric_col3 = mass_container.columns(3)
+    mass_metric_col1.metric(label='Current', value=local_ship.total_mass)
+    mass_metric_col2.metric(label='Available', value=local_ship.mass_delta)
+    mass_metric_col3.metric(label='TAM', value=local_ship.tam)
+    
+    #PV
+    pv_container = st_element.container(border=True)
+    pv_container.write("### Point value")
+    pv_metric_col1, pv_metric_col2 = pv_container.columns(2)
+    pv_metric_col1.metric(label='Base PV', value=local_ship.total_base_pv)
+    pv_metric_col2.metric(label='Final PV', value=local_ship.final_pv)
+
+def download_json(ship_local):
+    ship_local.build_json_objects()
+    ship_json = json.dumps(ship_local.ship_json_object, indent=4)
+    st.download_button(
+        label="Download JSON (For Import)",
+        file_name=f"{ship_local.name}.json",
+        mime="application/json",
+        data=ship_json,
+    )
+
+def download_text(ship_local):
+    txt_download_fname = f"{ship_local.name}_txt_{datetime.today().strftime('%Y%m%d')}"
+    st.download_button(
+        label="Download Ship Card (Text Only)",
+        data=game_card_txt,
+        file_name=txt_download_fname,
+        mime="text/plain",
+    )
+
+def download_image(ship_local):
+    img_path_server = "tmp_images/"
+    hti = Html2Image(output_path=img_path_server)
+    hti.browser.flags = ['--default-background-color=ffffff', '--hide-scrollbars']
+    img_download_fname = f"{ship_local.name}_image_{datetime.today().strftime('%Y%m%d')}.png"
+
+    ship_image = st.button('Create Ship Card Image')
+    if ship_image:
+        hti.screenshot(html_str=game_card_html, save_as=img_download_fname, size=(400, 450), css_str=['body {font-family: verdana;}', 'table {font-size: 5px;}'])
+
+        with open(img_path_server + img_download_fname, "rb") as file:
+            btn = st.download_button(
+                label="Download Ship Card Image",
+                data=file,
+                file_name=img_download_fname,
+                mime="image/png",
+            )
+        os.remove(img_path_server + img_download_fname)
+
 if __name__ == "__main__":
-    construct_ship, import_ship = configure_page()
+    construct_ship, import_ship, view_ship = configure_page()
     init_session()
     
     with construct_ship:
         build_col1, build_col2, build_col3 = st.columns(3)
-        construct_metric_col1, construct_metric_col2 = build_col3.columns(2)
 
         #Build Fields
         constructed_ship_local = ship_core(st_element=build_col1, name_key='construct-name', 
@@ -392,138 +412,109 @@ if __name__ == "__main__":
         equipment(st_element=build_col2, equip_key='construct-equip', equip_loaded_value=None, 
             st_ship=st.session_state.constructed_ship_state, local_ship=constructed_ship_local)
         
-        crew_quality(st_element=build_col3, cq_key='construct-cq', cq_loaded_value=None,
+        crew_quality(st_element=build_col3, cq_key='construct-cq', cq_loaded_value=1,
             st_ship=st.session_state.constructed_ship_state, local_ship=constructed_ship_local)
 
-        #real-time metrics, errors, calculated stats
+        #Metrics/Stats
         constructed_ship_local.track_base_pv()
         constructed_ship_local.track_mass()
-
         error_tam_exceeded(st_element=build_col3, local_ship=constructed_ship_local)
-
         error_mdpa_exceeded(st_element=build_col3, local_ship=constructed_ship_local)
+        live_metrics(build_col3, constructed_ship_local)
 
-        construct_metric_col1.metric(label='Current Mass', value=constructed_ship_local.total_mass)
-        construct_metric_col1.metric(label='Mass Remaining', value=constructed_ship_local.mass_delta)
-        construct_metric_col2.metric(label='Base PV', value=constructed_ship_local.total_base_pv)
-        construct_metric_col2.metric(label='Final PV', value=constructed_ship_local.final_pv)
+    with import_ship:
+        #Import
+        ship_loaded = False
 
-        build_col3.write(f"""
-                    ### Calculated Stats: 
-                    **Ship Size:** {constructed_ship_local.size}  
-                    **Total Available Mass:** {constructed_ship_local.tam}  
-                    **Max Damage Per Arc:** {constructed_ship_local.mdpa}  
-                    **Armor Roll:** {constructed_ship_local.armor_roll}  
-                    **Critical Threshold:** {constructed_ship_local.critical_threshold}  
-                    **Max Thrust:** {constructed_ship_local.max_thrust}  
-                    **Max Stress:** {constructed_ship_local.max_stress}  
-                    """)
-
-        #ship cards, export functions
-        st.header("Ship Card")
-        game_card_html, game_card_txt = build_game_cards(constructed_ship_local)
-        st.markdown(game_card_html, unsafe_allow_html=True)
+        json_upload_f = st.file_uploader("Upload ship JSON file for import:")
+        if json_upload_f is not None:
+            try:
+                loaded_ship_json = json.load(json_upload_f)
+            except json.decoder.JSONDecodeError:
+                st.write("Invalid JSON. Try again.")
+            else:
+                error_list = validate_json(loaded_ship_json)
+                if error_list == []:
+                    ship_loaded = True #for edit display
+                    st.write('Ship imported successfully!')
+                    imported_ship_instance = load_ship_details_json(loaded_ship_json)
+                    st.session_state.imported_ship_state = imported_ship_instance
+                else: 
+                    st.write(f"\nIMPORT ERRORS:")
+                    for error in error_list:
+                        st.write(f"{error.message}")
         
-        #download ship image
-        img_path_server = "tmp_images/"
-        hti = Html2Image(output_path=img_path_server)
-        hti.browser.flags = ['--default-background-color=ffffff', '--hide-scrollbars']
-        img_download_fname = f"{constructed_ship_local.name}_image_{datetime.today().strftime('%Y%m%d')}.png"
-
-        ship_image = st.button('Create Ship Card Image')
-        if ship_image:
-            hti.screenshot(html_str=game_card_html, save_as=img_download_fname, size=(400, 450), css_str=['body {font-family: verdana;}', 'table {font-size: 5px;}'])
-
-            with open(img_path_server + img_download_fname, "rb") as file:
-                btn = st.download_button(
-                    label="Download Ship Card Image",
-                    data=file,
-                    file_name=img_download_fname,
-                    mime="image/png",
-                )
-            os.remove(img_path_server + img_download_fname)
-
-        #download ship txt
-        txt_download_fname = f"{constructed_ship_local.name}_txt_{datetime.today().strftime('%Y%m%d')}"
-        st.download_button(
-            label="Download Ship Card (Text Only)",
-            data=game_card_txt,
-            file_name=txt_download_fname,
-            mime="text/plain",
-        )
-
-        #download ship json
-        constructed_ship_local.build_json_objects()
-        ship_json = json.dumps(constructed_ship_local.ship_json_object, indent=4)
-        st.download_button(
-            label="Download JSON (For Import)",
-            file_name=f"{constructed_ship_local.name}.json",
-            mime="application/json",
-            data=ship_json,
-        )
-
-        st.write(st.session_state.constructed_ship_state)
-
-with import_ship:
-    #import ship
-    ship_loaded = False
-
-    json_upload_f = st.file_uploader("Upload ship JSON file for import:")
-    if json_upload_f is not None:
-        try:
-            loaded_ship_json = json.load(json_upload_f)
-        except json.decoder.JSONDecodeError:
-            st.write("Invalid JSON. Try again.")
-        else:
-            error_list = validate_json(loaded_ship_json)
-            if error_list == []:
-                ship_loaded = True #for edit display
-                st.write('Ship imported successfully!')
-                imported_ship_instance = load_ship_details_json(loaded_ship_json)
-                st.session_state.imported_ship_state = imported_ship_instance
-            else: 
-                st.write(f"\nIMPORT ERRORS:")
-                for error in error_list:
-                    st.write(f"{error.message}")
-    
-    import_col1, import_col2, import_col3 = st.columns(3)
-    
-    if ship_loaded:
-        imported_ship_local = ship_core(st_element=import_col1, name_key='import-name', sclass_key='import-sclass',
-            name_loaded_value=imported_ship_instance.name,
-            sclass_loaded_value=[sclass['id'] for sclass in build_data.sclass_details if sclass['sclass'] == imported_ship_instance.sclass][0])
+        import_col1, import_col2, import_col3 = st.columns(3)
         
-        armor(st_element=import_col1, ohs_key='import-ohs', ihs_key='import-ihs',
-            ohs_loaded_value=[strength['id'] for strength in build_data.outer_strength_details if strength['name'] == imported_ship_instance.outer_hull_strength_str][0],
-            ihs_loaded_value=[strength['id'] for strength in build_data.inner_strength_details if strength['name'] == imported_ship_instance.inner_hull_strength_str][0],
-            st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
-        
-        propulsion(st_element=import_col1, tp_key='import-tp', tp_loaded_value=imported_ship_instance.thrust_points,
+        if ship_loaded:
+            #Ship Fields
+            imported_ship_local = ship_core(st_element=import_col1, name_key='import-name', sclass_key='import-sclass',
+                name_loaded_value=imported_ship_instance.name,
+                sclass_loaded_value=[sclass['id'] for sclass in build_data.sclass_details if sclass['sclass'] == imported_ship_instance.sclass][0])
+            
+            armor(st_element=import_col1, ohs_key='import-ohs', ihs_key='import-ihs',
+                ohs_loaded_value=[strength['id'] for strength in build_data.outer_strength_details if strength['name'] == imported_ship_instance.outer_hull_strength_str][0],
+                ihs_loaded_value=[strength['id'] for strength in build_data.inner_strength_details if strength['name'] == imported_ship_instance.inner_hull_strength_str][0],
                 st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
-        
-        weapons(st_element=import_col2, weap_key='import-weap',
-            weap_loaded_value=[list(weapon["name"] for weapon in imported_ship_instance.front_arc_weapon_list),
-                    list(weapon["name"] for weapon in imported_ship_instance.rear_arc_weapon_list),
-                    list(weapon["name"] for weapon in imported_ship_instance.right_arc_weapon_list),
-                    list(weapon["name"] for weapon in imported_ship_instance.left_arc_weapon_list)], 
-            st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
-        
-        equipment(st_element=import_col2, equip_key='import-equip',
-            equip_loaded_value=list(equipment["name"] for equipment in imported_ship_instance.equipment_list), 
-            st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
+            
+            propulsion(st_element=import_col1, tp_key='import-tp', tp_loaded_value=imported_ship_instance.thrust_points,
+                    st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
+            
+            weapons(st_element=import_col2, weap_key='import-weap',
+                weap_loaded_value=[list(weapon["name"] for weapon in imported_ship_instance.front_arc_weapon_list),
+                        list(weapon["name"] for weapon in imported_ship_instance.rear_arc_weapon_list),
+                        list(weapon["name"] for weapon in imported_ship_instance.right_arc_weapon_list),
+                        list(weapon["name"] for weapon in imported_ship_instance.left_arc_weapon_list)], 
+                st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
+            
+            equipment(st_element=import_col2, equip_key='import-equip',
+                equip_loaded_value=list(equipment["name"] for equipment in imported_ship_instance.equipment_list), 
+                st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
 
-        crew_quality(st_element=import_col3, cq_key='import-cq',
-            cq_loaded_value=[cq['id'] for cq in build_data.crew_quality_details if cq['name'] == imported_ship_instance.crew_quality_str][0],
-            st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
+            crew_quality(st_element=import_col3, cq_key='import-cq',
+                cq_loaded_value=[cq['id'] for cq in build_data.crew_quality_details if cq['name'] == imported_ship_instance.crew_quality_str][0],
+                st_ship=st.session_state.imported_ship_edit_state, local_ship=imported_ship_local)
 
-        st.session_state.imported_ship_edit_state = imported_ship_local
+            st.session_state.imported_ship_edit_state = imported_ship_local
 
-        #DEBUG
-        st.write(loaded_ship_json)
-        st.write(st.session_state)
-        st.write(imported_ship_instance)
-        st.write(imported_ship_local)
-        st.write(st.session_state.imported_ship_state)
-        st.write(st.session_state.imported_ship_edit_state)
+            #Metrics/Stats
+            imported_ship_local.track_base_pv()
+            imported_ship_local.track_mass()
+            error_tam_exceeded(st_element=import_col3, local_ship=imported_ship_local)
+            error_mdpa_exceeded(st_element=import_col3, local_ship=imported_ship_local)
+            live_metrics(import_col3, imported_ship_local)
+
+            #DEBUG
+            st.write(loaded_ship_json)
+            st.write(st.session_state)
+            st.write(imported_ship_instance)
+            st.write(imported_ship_local)
+            st.write(st.session_state.imported_ship_state)
+            st.write(st.session_state.imported_ship_edit_state)
 
 
+    with view_ship:
+
+        #disable ship_view_selector if no ship is imported
+        ship_view_selector_disabled = True
+        if ship_loaded == True:
+            ship_view_selector_disabled = False
+
+        ship_view_selector = st.radio("Which ship do you want to view?", ['Constructed Ship', 'Imported Ship'], index=0, disabled=ship_view_selector_disabled)
+    
+        match ship_view_selector:
+            case 'Constructed Ship':
+                #st.write(st.session_state.constructed_ship_state)
+                game_card_html, game_card_txt = build_game_cards(constructed_ship_local)
+                st.markdown(game_card_html, unsafe_allow_html=True)
+                download_image(constructed_ship_local)
+                download_text(constructed_ship_local)
+                download_json(constructed_ship_local)
+            
+            case 'Imported Ship':
+                #st.write(st.session_state.imported_ship_edit_state)
+                game_card_html, game_card_txt = build_game_cards(imported_ship_local)
+                st.markdown(game_card_html, unsafe_allow_html=True)
+                download_image(imported_ship_local)
+                download_text(imported_ship_local)
+                download_json(imported_ship_local)

@@ -123,7 +123,7 @@ class ShipClass:
         Calculate outer hull mass, PV, critical threshold from strength integer ID selection
         """
         self.outer_hull_strength = ohs_input
-        self.outer_hull_strength_str = [s['name'] for s in build_data.outer_strength_details if s['id'] == self.outer_hull_strength]
+        self.outer_hull_strength_str = [s['name'] for s in build_data.outer_strength_details if s['id'] == self.outer_hull_strength][0]
         mass_factor = [s['mass_factor'] for s in build_data.outer_strength_details if s['id'] == self.outer_hull_strength]
         self.outer_hull_mass = math.ceil(self.tam * mass_factor[0])
         self.outer_hull_pv = math.ceil(self.outer_hull_mass * 3)
@@ -158,7 +158,7 @@ class ShipClass:
         Calculate inner hull mass, PV from strength integer ID selection
         """
         self.inner_hull_strength = ihs_input
-        self.inner_hull_strength_str = [s['name'] for s in build_data.inner_strength_details if s['id'] == self.inner_hull_strength]
+        self.inner_hull_strength_str = [s['name'] for s in build_data.inner_strength_details if s['id'] == self.inner_hull_strength][0]
         mass_factor = [s['mass_factor'] for s in build_data.inner_strength_details if s['id'] == self.inner_hull_strength]
         self.inner_hull_mass = math.ceil(self.tam * mass_factor[0])
         self.inner_hull_pv = math.ceil(self.outer_hull_mass * 3)

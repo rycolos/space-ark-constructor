@@ -7,16 +7,7 @@ from html2image import Html2Image
 
 SCHEMA_FILE = 'import_schema.json'
 
-def build_base_ship(name: str, sclass: str) -> ShipClass:
-    """
-    Instantiate base ship from name and ship class inputs
-    """
-    size = [s['size'] for s in build_data.sclass_details if s['sclass'] == sclass]
-    tam = [s['tam'] for s in build_data.sclass_details if s['sclass'] == sclass]
-    armor_roll = [s['armor_roll'] for s in build_data.sclass_details if s['sclass'] == sclass]
-    mdpa = [s['mdpa'] for s in build_data.sclass_details if s['sclass'] == sclass]
-    return ShipClass(name, sclass, size[0], tam[0], armor_roll[0], mdpa[0])
-
+#INITIALIZE PAGE, SESSION
 def configure_page() -> None:
     """
     Apply basic page configuration
@@ -27,68 +18,29 @@ def configure_page() -> None:
     construct_ship, import_ship, view_ship = st.tabs(["Construct Ship", "Import Ship", 'View Ship'])
     return construct_ship, import_ship, view_ship
 
-def validate_json(ship_json: str) -> list:
+def init_session() -> None:
     """
-    Validate ship is valid JSON and validate against schema template
+    Initialize st session_state keys to empty ShipClass instances
     """
-    with open(SCHEMA_FILE, 'r', encoding='utf-8') as schema_file:
-        schema = json.load(schema_file)
-    validator = jsonschema.Draft7Validator(schema)
-    error_list = list(validator.iter_errors(ship_json))  #get individual validation errors
-    return error_list
+    if 'constructed_ship_state' not in st.session_state:
+        st.session_state.constructed_ship_state = ShipClass
+    if 'imported_ship_state' not in st.session_state:
+        st.session_state.imported_ship_state = ShipClass
+    if 'imported_ship_edit_state' not in st.session_state:
+        st.session_state.imported_ship_edit_state = ShipClass
 
-def load_ship_details_json(ship_json: str) -> ShipClass:
+#ShipClass INSTANCE
+def build_base_ship(name: str, sclass: str) -> ShipClass:
     """
-    Parse ship details from JSON file
+    Instantiate base ship from name and ship class inputs
     """
-    #initialize instance
-    ship = ShipClass(
-            name = ship_json["name"], 
-            sclass = ship_json["ship_class"], 
-            size = ship_json["size"], 
-            tam = ship_json["TAM"], 
-            armor_roll = ship_json["armor_roll"], 
-            mdpa = ship_json["MDPA"]
-        )
-    
-    #parse details
-    ship.crew_quality_str = ship_json["crew_quality"]
-    ship.total_base_pv = ship_json["base_pv"]  
-    ship.final_pv = ship_json["final_pv"]
-    ship.max_stress = ship_json["max_stress"]
-    ship.outer_hull_strength_str = ship_json["armor"]["outer_hull"]["strength"]  
-    ship.outer_hull_mass = ship_json["armor"]["outer_hull"]["mass"]  
-    ship.outer_hull_pv = ship_json["armor"]["outer_hull"]["pv"]  
-    ship.inner_hull_strength_str = ship_json["armor"]["inner_hull"]["strength"]  
-    ship.inner_hull_mass = ship_json["armor"]["inner_hull"]["mass"]  
-    ship.inner_hull_pv = ship_json["armor"]["inner_hull"]["pv"]  
-    ship.critical_threshold = ship_json["armor"]["critical_threshold"]  
-    ship.thrust_points = ship_json["propulsion"]["thrust_points"]
-    ship.max_thrust = ship_json["propulsion"]["max_thrust"]
-    ship.propulsion_mass = ship_json["propulsion"]["propulsion_mass"]
-    ship.propulsion_pv = ship_json["propulsion"]["propulsion_pv"]
-    ship.equipment_list = ship_json["equipment"]["equipment_items"]
-    ship.total_equipment_mass = ship_json["equipment"]["total_equipment_mass"]
-    ship.total_equipment_pv = ship_json["equipment"]["total_equipment_pv"]
-    ship.front_arc_weapon_list = ship_json["weapons"]["front_arc_weapons"]
-    ship.total_front_arc_mass = ship_json["weapons"]["total_front_arc_mass"]
-    ship.total_front_arc_pv = ship_json["weapons"]["total_front_arc_pv"]
-    ship.total_front_arc_max_dmg = ship_json["weapons"]["total_front_arc_max_dmg"]
-    ship.rear_arc_weapon_list = ship_json["weapons"]["rear_arc_weapons"]
-    ship.total_rear_arc_mass = ship_json["weapons"]["total_rear_arc_mass"]
-    ship.total_rear_arc_pv = ship_json["weapons"]["total_rear_arc_pv"]
-    ship.total_rear_arc_max_dmg = ship_json["weapons"]["total_rear_arc_max_dmg"]
-    ship.right_arc_weapon_list = ship_json["weapons"]["right_arc_weapons"]
-    ship.total_right_arc_mass = ship_json["weapons"]["total_right_arc_mass"]
-    ship.total_right_arc_pv = ship_json["weapons"]["total_right_arc_pv"]
-    ship.total_right_arc_max_dmg = ship_json["weapons"]["total_right_arc_max_dmg"]
-    ship.left_arc_weapon_list = ship_json["weapons"]["left_arc_weapons"]
-    ship.total_left_arc_mass = ship_json["weapons"]["total_left_arc_mass"]
-    ship.total_left_arc_pv = ship_json["weapons"]["total_left_arc_pv"]
-    ship.total_left_arc_max_dmg = ship_json["weapons"]["total_left_arc_max_dmg"]
+    size = [s['size'] for s in build_data.sclass_details if s['sclass'] == sclass]
+    tam = [s['tam'] for s in build_data.sclass_details if s['sclass'] == sclass]
+    armor_roll = [s['armor_roll'] for s in build_data.sclass_details if s['sclass'] == sclass]
+    mdpa = [s['mdpa'] for s in build_data.sclass_details if s['sclass'] == sclass]
+    return ShipClass(name, sclass, size[0], tam[0], armor_roll[0], mdpa[0])
 
-    return ship
-
+#BUILD UI
 def ship_core(st_element: str, name_key: str, sclass_key: str, name_loaded_value: str, sclass_loaded_value: int) -> ShipClass:
     """
     Build UI for Ship Name, Class. Builds ShipClass instance constructed_ship_local
@@ -207,6 +159,43 @@ def weapons(st_element: str, weap_key: str, weap_loaded_value: str, st_ship: Shi
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
+
+#BUILD STAT DISPLAY, ERROR
+def error_tam_exceeded(st_element: str, local_ship: ShipClass) -> None:
+    """
+    UI error message if TAM exceeded
+    """
+    if local_ship.tam_exceeded:
+        st_element.info(f'Mass overage of {abs(local_ship.mass_delta)}!', icon=":material/warning:")
+
+def error_mdpa_exceeded(st_element: str, local_ship: ShipClass) -> None:
+    """
+    UI error message if MDPA exceeded
+    """
+    arc_names = ['front', 'rear', 'right', 'left']
+    for arc in arc_names:
+        total_dmg = getattr(local_ship, f'total_{arc}_arc_max_dmg')
+        if total_dmg > local_ship.mdpa:
+            st_element.info(f'{arc.capitalize()} arc damage overage of {abs(local_ship.mdpa - total_dmg)}!', icon=":material/warning:")
+
+def live_metrics(st_element: str, local_ship: ShipClass) -> None:
+    """
+    UI display metrics for Mass and PV calculations
+    """
+    #MASS
+    mass_container = st_element.container(border=True)
+    mass_container.write("### Ship Mass")
+    mass_metric_col1, mass_metric_col2, mass_metric_col3 = mass_container.columns(3)
+    mass_metric_col1.metric(label='Current', value=local_ship.total_mass)
+    mass_metric_col2.metric(label='Available', value=local_ship.mass_delta)
+    mass_metric_col3.metric(label='TAM', value=local_ship.tam)
+    
+    #PV
+    pv_container = st_element.container(border=True)
+    pv_container.write("### Point value")
+    pv_metric_col1, pv_metric_col2 = pv_container.columns(2)
+    pv_metric_col1.metric(label='Base PV', value=local_ship.total_base_pv)
+    pv_metric_col2.metric(label='Final PV', value=local_ship.final_pv)
 
 def build_game_cards(local_ship: ShipClass) -> tuple[str, str]:
     """
@@ -341,53 +330,7 @@ def build_game_cards(local_ship: ShipClass) -> tuple[str, str]:
 
     return game_card_html, game_card_txt
 
-def init_session() -> None:
-    """
-    Initialize st session_state keys to empty ShipClass instances
-    """
-    if 'constructed_ship_state' not in st.session_state:
-        st.session_state.constructed_ship_state = ShipClass
-    if 'imported_ship_state' not in st.session_state:
-        st.session_state.imported_ship_state = ShipClass
-    if 'imported_ship_edit_state' not in st.session_state:
-        st.session_state.imported_ship_edit_state = ShipClass
-
-def error_tam_exceeded(st_element: str, local_ship: ShipClass) -> None:
-    """
-    UI error message if TAM exceeded
-    """
-    if local_ship.tam_exceeded:
-        st_element.info(f'Mass overage of {abs(local_ship.mass_delta)}!', icon=":material/warning:")
-
-def error_mdpa_exceeded(st_element: str, local_ship: ShipClass) -> None:
-    """
-    UI error message if MDPA exceeded
-    """
-    arc_names = ['front', 'rear', 'right', 'left']
-    for arc in arc_names:
-        total_dmg = getattr(local_ship, f'total_{arc}_arc_max_dmg')
-        if total_dmg > local_ship.mdpa:
-            st_element.info(f'{arc.capitalize()} arc damage overage of {abs(local_ship.mdpa - total_dmg)}!', icon=":material/warning:")
-
-def live_metrics(st_element: str, local_ship: ShipClass) -> None:
-    """
-    UI display metrics for Mass and PV calculations
-    """
-    #MASS
-    mass_container = st_element.container(border=True)
-    mass_container.write("### Ship Mass")
-    mass_metric_col1, mass_metric_col2, mass_metric_col3 = mass_container.columns(3)
-    mass_metric_col1.metric(label='Current', value=local_ship.total_mass)
-    mass_metric_col2.metric(label='Available', value=local_ship.mass_delta)
-    mass_metric_col3.metric(label='TAM', value=local_ship.tam)
-    
-    #PV
-    pv_container = st_element.container(border=True)
-    pv_container.write("### Point value")
-    pv_metric_col1, pv_metric_col2 = pv_container.columns(2)
-    pv_metric_col1.metric(label='Base PV', value=local_ship.total_base_pv)
-    pv_metric_col2.metric(label='Final PV', value=local_ship.final_pv)
-
+#EXPORT SHIP
 def download_json(local_ship: ShipClass) -> None:
     """
     Build and export JSON of ship
@@ -434,6 +377,70 @@ def download_image(local_ship: ShipClass) -> None:
                 mime="image/png",
             )
         os.remove(img_path_server + img_download_fname)
+
+#IMPORT SHIP
+def load_ship_details_json(ship_json: str) -> ShipClass:
+    """
+    Parse ship details from JSON file
+    """
+    #initialize instance
+    ship = ShipClass(
+            name = ship_json["name"], 
+            sclass = ship_json["ship_class"], 
+            size = ship_json["size"], 
+            tam = ship_json["TAM"], 
+            armor_roll = ship_json["armor_roll"], 
+            mdpa = ship_json["MDPA"]
+        )
+    
+    #parse details
+    ship.crew_quality_str = ship_json["crew_quality"]
+    ship.total_base_pv = ship_json["base_pv"]  
+    ship.final_pv = ship_json["final_pv"]
+    ship.max_stress = ship_json["max_stress"]
+    ship.outer_hull_strength_str = ship_json["armor"]["outer_hull"]["strength"]  
+    ship.outer_hull_mass = ship_json["armor"]["outer_hull"]["mass"]  
+    ship.outer_hull_pv = ship_json["armor"]["outer_hull"]["pv"]  
+    ship.inner_hull_strength_str = ship_json["armor"]["inner_hull"]["strength"]  
+    ship.inner_hull_mass = ship_json["armor"]["inner_hull"]["mass"]  
+    ship.inner_hull_pv = ship_json["armor"]["inner_hull"]["pv"]  
+    ship.critical_threshold = ship_json["armor"]["critical_threshold"]  
+    ship.thrust_points = ship_json["propulsion"]["thrust_points"]
+    ship.max_thrust = ship_json["propulsion"]["max_thrust"]
+    ship.propulsion_mass = ship_json["propulsion"]["propulsion_mass"]
+    ship.propulsion_pv = ship_json["propulsion"]["propulsion_pv"]
+    ship.equipment_list = ship_json["equipment"]["equipment_items"]
+    ship.total_equipment_mass = ship_json["equipment"]["total_equipment_mass"]
+    ship.total_equipment_pv = ship_json["equipment"]["total_equipment_pv"]
+    ship.front_arc_weapon_list = ship_json["weapons"]["front_arc_weapons"]
+    ship.total_front_arc_mass = ship_json["weapons"]["total_front_arc_mass"]
+    ship.total_front_arc_pv = ship_json["weapons"]["total_front_arc_pv"]
+    ship.total_front_arc_max_dmg = ship_json["weapons"]["total_front_arc_max_dmg"]
+    ship.rear_arc_weapon_list = ship_json["weapons"]["rear_arc_weapons"]
+    ship.total_rear_arc_mass = ship_json["weapons"]["total_rear_arc_mass"]
+    ship.total_rear_arc_pv = ship_json["weapons"]["total_rear_arc_pv"]
+    ship.total_rear_arc_max_dmg = ship_json["weapons"]["total_rear_arc_max_dmg"]
+    ship.right_arc_weapon_list = ship_json["weapons"]["right_arc_weapons"]
+    ship.total_right_arc_mass = ship_json["weapons"]["total_right_arc_mass"]
+    ship.total_right_arc_pv = ship_json["weapons"]["total_right_arc_pv"]
+    ship.total_right_arc_max_dmg = ship_json["weapons"]["total_right_arc_max_dmg"]
+    ship.left_arc_weapon_list = ship_json["weapons"]["left_arc_weapons"]
+    ship.total_left_arc_mass = ship_json["weapons"]["total_left_arc_mass"]
+    ship.total_left_arc_pv = ship_json["weapons"]["total_left_arc_pv"]
+    ship.total_left_arc_max_dmg = ship_json["weapons"]["total_left_arc_max_dmg"]
+
+    return ship
+
+def validate_json(ship_json: str) -> list:
+    """
+    Validate ship is valid JSON and validate against schema template
+    """
+    with open(SCHEMA_FILE, 'r', encoding='utf-8') as schema_file:
+        schema = json.load(schema_file)
+    validator = jsonschema.Draft7Validator(schema)
+    error_list = list(validator.iter_errors(ship_json))  #get individual validation errors
+    return error_list
+
 
 if __name__ == "__main__":
     construct_ship, import_ship, view_ship = configure_page()

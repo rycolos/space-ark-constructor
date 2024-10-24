@@ -15,8 +15,8 @@ def configure_page() -> None:
     title = 'Space Ark Constructor'
     st.set_page_config(page_title=title, page_icon=':ringed_planet:', layout='wide')
     st.title(title)
-    construct_ship, import_ship, view_ship = st.tabs(["Construct Ship", "Import Ship", 'View Ship'])
-    return construct_ship, import_ship, view_ship
+    construct_ship, import_ship, view_ship, help = st.tabs(["Construct Ship", "Import Ship", 'View Ship', 'Help'])
+    return construct_ship, import_ship, view_ship, help
 
 def init_session() -> None:
     """
@@ -46,7 +46,7 @@ def ship_core(st_element: str, name_key: str, sclass_key: str, name_loaded_value
     Build UI for Ship Name, Class. Builds ShipClass instance constructed_ship_local
     """
     with st_element.expander(label='**Ship Core**', expanded=True):
-        name = st.text_input(label="Ship Name", value=name_loaded_value)
+        name = st.text_input(label="Ship Name", value=name_loaded_value, max_chars=32)
         sclass = st.selectbox(label='Ship Class', key=sclass_key, index=sclass_loaded_value, options=[s['sclass'] for s in build_data.sclass_details])
         if sclass:
             constructed_ship_local = build_base_ship(name, sclass)
@@ -335,11 +335,12 @@ def download_json(local_ship: ShipClass) -> None:
     """
     Build and export JSON of ship
     """
+    json_download_fname = f"{local_ship.name}_json_{datetime.today().strftime('%Y%m%d')}.json"
     local_ship.build_json_objects()
     ship_json = json.dumps(local_ship.ship_json_object, indent=4)
     st.download_button(
         label="Download JSON (For Import)",
-        file_name=f"{local_ship.name}.json",
+        file_name=json_download_fname,
         mime="application/json",
         data=ship_json,
     )
@@ -379,6 +380,22 @@ def download_image(local_ship: ShipClass) -> None:
         os.remove(img_path_server + img_download_fname)
 
 #IMPORT SHIP
+def validate_json(ship_json: str) -> list:
+    """
+    Validate ship is valid JSON and validate against schema template
+    """
+    error_list = []
+    with open(SCHEMA_FILE, 'r', encoding='utf-8') as schema_file:
+        try:
+            schema = json.load(schema_file)
+        except json.decoder.JSONDecodeError:
+            st.write("Invalid JSON schema validation file.")
+            error_list = ['error validating schema']
+        else:
+            validator = jsonschema.Draft7Validator(schema)
+            error_list = list(validator.iter_errors(ship_json))  #get individual validation errors
+    return error_list
+
 def load_ship_details_json(ship_json: str) -> ShipClass:
     """
     Parse ship details from JSON file
@@ -431,19 +448,9 @@ def load_ship_details_json(ship_json: str) -> ShipClass:
 
     return ship
 
-def validate_json(ship_json: str) -> list:
-    """
-    Validate ship is valid JSON and validate against schema template
-    """
-    with open(SCHEMA_FILE, 'r', encoding='utf-8') as schema_file:
-        schema = json.load(schema_file)
-    validator = jsonschema.Draft7Validator(schema)
-    error_list = list(validator.iter_errors(ship_json))  #get individual validation errors
-    return error_list
-
 
 if __name__ == "__main__":
-    construct_ship, import_ship, view_ship = configure_page()
+    construct_ship, import_ship, view_ship, help = configure_page()
     init_session()
 
     with construct_ship:
@@ -474,7 +481,7 @@ if __name__ == "__main__":
         error_tam_exceeded(st_element=build_col3, local_ship=constructed_ship_local)
         error_mdpa_exceeded(st_element=build_col3, local_ship=constructed_ship_local)
         live_metrics(build_col3, constructed_ship_local)
-
+    
     with import_ship:
         #Import
         ship_loaded = False
@@ -489,13 +496,15 @@ if __name__ == "__main__":
                 error_list = validate_json(loaded_ship_json)
                 if error_list == []:
                     ship_loaded = True #for edit display
-                    st.write('Ship imported successfully!')
                     imported_ship_instance = load_ship_details_json(loaded_ship_json)
+                    st.write('Ship imported successfully!')
                     st.session_state.imported_ship_state = imported_ship_instance
-                else: 
+                elif error_list != ['error validating schema']: 
                     st.write(f"\nERRORS FOUND WHILE IMPORTING SHIP:")
                     for error in error_list:
                         st.write(f"{error.message}")
+                else:
+                    st.write(f"\nScehma validation error. Cannot import without error checking.")
         
         import_col1, import_col2, import_col3 = st.columns(3)
         
@@ -545,14 +554,19 @@ if __name__ == "__main__":
             # st.write(st.session_state.imported_ship_state)
             # st.write(st.session_state.imported_ship_edit_state)
 
-
     with view_ship:
         #disable ship_view_selector if no ship is imported
         ship_view_selector_disabled = True
+        
         if ship_loaded == True:
             ship_view_selector_disabled = False
+        
+        #if constructed ship hasn't been named and ship has been imported, default to view import ship
+        selector_index = 0
+        if ship_loaded == True and constructed_ship_local.name == '':
+            selector_index = 1
 
-        ship_view_selector = st.radio("Which ship do you want to view?", ['Constructed Ship', 'Imported Ship'], index=0, disabled=ship_view_selector_disabled)
+        ship_view_selector = st.radio("Which ship do you want to view?", ['Constructed Ship', 'Imported Ship'], index=selector_index, disabled=ship_view_selector_disabled)
     
         match ship_view_selector:
             case 'Constructed Ship':
@@ -570,3 +584,46 @@ if __name__ == "__main__":
                 download_image(imported_ship_local)
                 download_text(imported_ship_local)
                 download_json(imported_ship_local)
+
+    with help:
+        help_col1, help_col2, help_col3 = st.columns(3)
+        help_col1.markdown("""
+            ### SPACE ARK
+            *Space Ark is a game of space warship combat, pitting force against
+            force in war of attrition for command of the frontier*  
+            
+            This ship constructor is meant to be used alongside the rulebook (sec. `SHIP DESIGN` and `WEAPONS AND EQUIPMENT`).  
+            
+            [Download the rulebook for free](https://ryanlaliberty.itch.io/space-ark)
+            
+            [Space Ark Constructor on GitHub](https://github.com/rycolos/space-ark-constructor)
+            
+            SPACE ARK and SPACE ARK CONSTRUCTOR are hobby projects and are thus mostly unsupported. If you encounter issues, please reach out via Itch
+            or GitHub and I'll do my best to rectify as soon as I'm able.
+            
+            ### Construct a Ship
+            You can use Space Ark Constructor to construct a brand new ship or import a ship previously exported via Space Ark Constructor.  
+            
+            Setting your ship Name and Class will dictate Total Available Mass to spend on Ship Design.  
+            
+            Reference the italicized text below the various Ship Design steps to see calculated statistics like Critical Threshold.    
+            """)
+        
+        help_col2.markdown("""
+            ### View/Export a Ship
+            Once you've built (or imported) a ship and are ready to play, use the View Ship tab to see and export your ship's Stat Sheet.
+            It shows your Constructed Ship by default, but you can select Imported Ship to see the Stat Sheet for your currently imported ship. 
+
+            This screen displays your ship's Stat Sheet and allows export as an image or text file for gameplay purposes.
+
+            If you want to import this ship later for further editing, export to JSON. This is the only way to save ships at this time.                
+            """)
+        
+        help_col3.markdown("""
+            ### Import a Ship
+            Importing a ship requires a JSON file exported from the View Ship screen. Drag your file into the box or tap the box to browse for a file.
+            
+            Your file will be verified and then your ship loaded for editing below. Use the View Ship tab to view and export any changes to your Imported Ship.                  
+            """)
+        
+

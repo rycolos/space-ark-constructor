@@ -161,7 +161,7 @@ class ShipClass:
         self.inner_hull_strength_str = [s['name'] for s in build_data.inner_strength_details if s['id'] == self.inner_hull_strength][0]
         mass_factor = [s['mass_factor'] for s in build_data.inner_strength_details if s['id'] == self.inner_hull_strength]
         self.inner_hull_mass = math.ceil(self.tam * mass_factor[0])
-        self.inner_hull_pv = math.ceil(self.outer_hull_mass * 3)
+        self.inner_hull_pv = math.ceil(self.inner_hull_mass * 3)
         return self.inner_hull_strength_str, self.inner_hull_strength, self.inner_hull_mass, self.inner_hull_pv
 
     #PROPULSION

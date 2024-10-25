@@ -50,7 +50,7 @@ def ship_core(st_element: str, name_key: str, sclass_key: str, name_loaded_value
         sclass = st.selectbox(label='Ship Class', key=sclass_key, index=sclass_loaded_value, options=[s['sclass'] for s in build_data.sclass_details])
         if sclass:
             constructed_ship_local = build_base_ship(name, sclass)
-            st.write(f'*Armor Roll —* {constructed_ship_local.armor_roll}')
+            st.write(f'**Armor Roll:** {constructed_ship_local.armor_roll}')
             st.session_state.constructed_ship_state = constructed_ship_local
     return constructed_ship_local
 
@@ -64,7 +64,7 @@ def armor(st_element: str, ohs_key: str, ihs_key: str, ohs_loaded_value: int, ih
         if ohs_input:
             ohs_int = [s['id'] for s in build_data.outer_strength_details if s['name'] == ohs_input]
             local_ship.outer_hull(ohs_int[0])
-            st.write(f'*Critical Threshold —* {local_ship.critical_threshold}\n\n*Mass —* {local_ship.outer_hull_mass}')
+            st.write(f'**Mass:** {local_ship.outer_hull_mass} — **PV:** {local_ship.outer_hull_pv} — **Critical Threshold:** {local_ship.critical_threshold}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
@@ -73,7 +73,7 @@ def armor(st_element: str, ohs_key: str, ihs_key: str, ohs_loaded_value: int, ih
         if ihs_input:
             ihs_int = [s['id'] for s in build_data.inner_strength_details if s['name'] == ihs_input]
             local_ship.inner_hull(ihs_int[0])
-            st.write(f'*Mass —* {local_ship.inner_hull_mass}')
+            st.write(f'**Mass:** {local_ship.inner_hull_mass} — **PV:** {local_ship.inner_hull_pv}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
@@ -87,7 +87,7 @@ def propulsion(st_element: str, tp_key: str, tp_loaded_value: str, st_ship: Ship
         tp_input = st.number_input(label='Thrust Points', key=tp_key, value=tp_loaded_value, min_value=0)
         if tp_input:
             local_ship.propulsion(tp_input)
-            st.write(f'*Max Thrust —* {local_ship.max_thrust}')
+            st.write(f'**Mass:** {local_ship.propulsion_mass} — **PV:** {local_ship.propulsion_pv} — **Max Thrust:** {local_ship.max_thrust}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
@@ -116,7 +116,7 @@ def equipment(st_element: str, equip_key: str, equip_loaded_value: str, st_ship:
             equipment_name_to_id = {item["name"]: item["id"] for item in build_data.equipment_details}
             equip_int_list = [equipment_name_to_id[name] for name in equipment_input]
             local_ship.equipment(*equip_int_list)
-            st.markdown(f'**Total Equipment Mass:** {local_ship.total_equipment_mass}, **Total Equipment PV:** {local_ship.total_equipment_pv}')
+            st.markdown(f'**Total Equipment Mass:** {local_ship.total_equipment_mass} — **Total Equipment PV:** {local_ship.total_equipment_pv}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship

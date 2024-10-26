@@ -3,7 +3,6 @@ import build_data
 from ShipClass import ShipClass
 import json, jsonschema, os
 from datetime import datetime
-from html2image import Html2Image
 
 SCHEMA_FILE = 'import_schema.json'
 
@@ -314,13 +313,13 @@ def build_game_cards(local_ship: ShipClass) -> tuple[str, str]:
                     f"\n{''.join(f'{item['name']} -- {item['description']}\n' for item in local_ship.equipment_list)}"
                     f"\nWEAPONS:"
                     f"\n***Front Arc***"
-                    f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in local_ship.front_arc_weapon_list)}"
+                    f"\n{''.join(f'{weapon["name"]} — A/D: {weapon["attack"]}/{weapon["damage"]} — R: {weapon["range"]} — S: {weapon["special"]}\n' for weapon in local_ship.front_arc_weapon_list)}"
                     f"\n***Rear Arc***"
-                    f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in local_ship.rear_arc_weapon_list)}"
+                    f"\n{''.join(f'{weapon["name"]} — A/D: {weapon["attack"]}/{weapon["damage"]} — R: {weapon["range"]} — S: {weapon["special"]}\n' for weapon in local_ship.rear_arc_weapon_list)}"
                     f"\n***Right Arc***"
-                    f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in local_ship.right_arc_weapon_list)}"
+                    f"\n{''.join(f'{weapon["name"]} — A/D: {weapon["attack"]}/{weapon["damage"]} — R: {weapon["range"]} — S: {weapon["special"]}\n' for weapon in local_ship.right_arc_weapon_list)}"
                     f"\n***Left Arc***"
-                    f"\n{''.join(f'Name: {weapon["name"]}\nAttack/Damage: {weapon["attack"]}/{weapon["damage"]}\nRange: {weapon["range"]}\nSpecial: {weapon["special"]}\n\n' for weapon in local_ship.left_arc_weapon_list)}"
+                    f"\n{''.join(f'{weapon["name"]} — A/D: {weapon["attack"]}/{weapon["damage"]} — R: {weapon["range"]} — S: {weapon["special"]}\n' for weapon in local_ship.left_arc_weapon_list)}"
                     f"\nCRITICAL HITS:"
                     f"\n□ □ Engineering Hit    □ □ Major Weapon Damage (F/RT/LT/R)"
                     f"\n□ Targeting Hit    □ □ □ □ Weapon Damage (F/RT/LT/R)"
@@ -351,33 +350,11 @@ def download_text(local_ship: ShipClass) -> None:
     """
     txt_download_fname = f"{local_ship.name}_txt_{datetime.today().strftime('%Y%m%d')}"
     st.download_button(
-        label="Download Ship Card (Text Only)",
+        label="Download Ship Card (Txt)",
         data=game_card_txt,
         file_name=txt_download_fname,
         mime="text/plain",
     )
-
-def download_image(local_ship: ShipClass) -> None:
-    """
-    Build and export png screenshot of ship. Remove local server file after storing for download.
-    """
-    img_path_server = "tmp_images/"
-    hti = Html2Image(output_path=img_path_server, browser='chrome')
-    hti.browser.flags = ['--default-background-color=ffffff', '--hide-scrollbars']
-    img_download_fname = f"{local_ship.name}_image_{datetime.today().strftime('%Y%m%d')}.png"
-
-    ship_image = st.button('Create Ship Card Image')
-    if ship_image:
-        hti.screenshot(html_str=game_card_html, save_as=img_download_fname, size=(800, 900), css_str=['body {font-family: verdana;}', 'table {font-size: 5px;}'])
-
-        with open(img_path_server + img_download_fname, "rb") as file:
-            btn = st.download_button(
-                label="Download Ship Card Image",
-                data=file,
-                file_name=img_download_fname,
-                mime="image/png",
-            )
-        os.remove(img_path_server + img_download_fname)
 
 #IMPORT SHIP
 def validate_json(ship_json: str) -> list:
@@ -572,16 +549,14 @@ if __name__ == "__main__":
             case 'Constructed Ship':
                 #st.write(st.session_state.constructed_ship_state)
                 game_card_html, game_card_txt = build_game_cards(constructed_ship_local)
-                st.markdown(game_card_html, unsafe_allow_html=True)
-                download_image(constructed_ship_local)
+                st.code(game_card_txt)
                 download_text(constructed_ship_local)
                 download_json(constructed_ship_local)
             
             case 'Imported Ship':
                 #st.write(st.session_state.imported_ship_edit_state)
                 game_card_html, game_card_txt = build_game_cards(imported_ship_local)
-                st.markdown(game_card_html, unsafe_allow_html=True)
-                download_image(imported_ship_local)
+                st.code(game_card_txt)
                 download_text(imported_ship_local)
                 download_json(imported_ship_local)
 

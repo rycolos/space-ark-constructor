@@ -362,13 +362,13 @@ def download_image(local_ship: ShipClass) -> None:
     Build and export png screenshot of ship. Remove local server file after storing for download.
     """
     img_path_server = "tmp_images/"
-    hti = Html2Image(output_path=img_path_server)
+    hti = Html2Image(output_path=img_path_server, browser='chrome')
     hti.browser.flags = ['--default-background-color=ffffff', '--hide-scrollbars']
     img_download_fname = f"{local_ship.name}_image_{datetime.today().strftime('%Y%m%d')}.png"
 
     ship_image = st.button('Create Ship Card Image')
     if ship_image:
-        hti.screenshot(html_str=game_card_html, save_as=img_download_fname, size=(400, 450), css_str=['body {font-family: verdana;}', 'table {font-size: 5px;}'])
+        hti.screenshot(html_str=game_card_html, save_as=img_download_fname, size=(800, 900), css_str=['body {font-family: verdana;}', 'table {font-size: 5px;}'])
 
         with open(img_path_server + img_download_fname, "rb") as file:
             btn = st.download_button(

@@ -540,7 +540,7 @@ if __name__ == "__main__":
         
         #if constructed ship hasn't been named and ship has been imported, default to view import ship
         selector_index = 0
-        if ship_loaded == True and constructed_ship_local.name == '':
+        if ship_loaded == True and constructed_ship_local.name == None:
             selector_index = 1
 
         ship_view_selector = st.radio("Which ship do you want to view?", ['Constructed Ship', 'Imported Ship'], index=selector_index, disabled=ship_view_selector_disabled)

@@ -15,6 +15,11 @@ def configure_page() -> None:
     st.set_page_config(page_title=title, page_icon=':ringed_planet:', layout='wide')
     st.title(title)
     construct_ship, import_ship, view_ship, help = st.tabs(["Construct Ship", "Import Ship", 'View Ship', 'Help'])
+    
+    #load and apply style for custom expander label size
+    with open('style.css') as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
     return construct_ship, import_ship, view_ship, help
 
 def init_session() -> None:
@@ -49,7 +54,7 @@ def ship_core(st_element: str, name_key: str, sclass_key: str, name_loaded_value
         sclass = st.selectbox(label='Ship Class', key=sclass_key, index=sclass_loaded_value, options=[s['sclass'] for s in build_data.sclass_details])
         if sclass:
             constructed_ship_local = build_base_ship(name, sclass)
-            st.write(f'**Armor Roll:** {constructed_ship_local.armor_roll}')
+            st.write(f'Armor Roll :green[{constructed_ship_local.armor_roll}]')
             st.session_state.constructed_ship_state = constructed_ship_local
     return constructed_ship_local
 
@@ -63,19 +68,21 @@ def armor(st_element: str, ohs_key: str, ihs_key: str, ohs_loaded_value: int, ih
         if ohs_input:
             ohs_int = [s['id'] for s in build_data.outer_strength_details if s['name'] == ohs_input]
             local_ship.outer_hull(ohs_int[0])
-            st.write(f'**Mass:** {local_ship.outer_hull_mass} — **PV:** {local_ship.outer_hull_pv} — **Critical Threshold:** {local_ship.critical_threshold}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
+        st.write(f'Mass :green[{local_ship.outer_hull_mass}] — PV :green[{local_ship.outer_hull_pv}] — Critical Threshold :green[{local_ship.critical_threshold}]')
 
         ihs_input = st.selectbox(label='Inner Hull Strength', key=ihs_key, index=ihs_loaded_value, options=[s['name'] for s in build_data.inner_strength_details])
         if ihs_input:
             ihs_int = [s['id'] for s in build_data.inner_strength_details if s['name'] == ihs_input]
             local_ship.inner_hull(ihs_int[0])
-            st.write(f'**Mass:** {local_ship.inner_hull_mass} — **PV:** {local_ship.inner_hull_pv}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
+        st.write(f'Mass :green[{local_ship.inner_hull_mass}] — PV :green[{local_ship.inner_hull_pv}]')
+        st.divider()
+        st.write(f'Total Armor Mass :green[{local_ship.outer_hull_mass + local_ship.inner_hull_mass}] — Total Armor PV :green[{local_ship.outer_hull_pv + local_ship.inner_hull_pv}]')
 
 def propulsion(st_element: str, tp_key: str, tp_loaded_value: str, st_ship: ShipClass, local_ship: ShipClass) -> None:
     """
@@ -86,10 +93,10 @@ def propulsion(st_element: str, tp_key: str, tp_loaded_value: str, st_ship: Ship
         tp_input = st.number_input(label='Thrust Points', key=tp_key, value=tp_loaded_value, min_value=0)
         if tp_input:
             local_ship.propulsion(tp_input)
-            st.write(f'**Mass:** {local_ship.propulsion_mass} — **PV:** {local_ship.propulsion_pv} — **Max Thrust:** {local_ship.max_thrust}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
+        st.write(f'Mass :green[{local_ship.propulsion_mass}] — PV :green[{local_ship.propulsion_pv}] — Max Thrust :green[{local_ship.max_thrust}]')
 
 def crew_quality(st_element: str, cq_key: str, cq_loaded_value: int, st_ship: ShipClass, local_ship: ShipClass) -> None:
     """
@@ -101,8 +108,8 @@ def crew_quality(st_element: str, cq_key: str, cq_loaded_value: int, st_ship: Sh
         if crew_quality_input:
             crew_quality_int = [s['id'] for s in build_data.crew_quality_details if s['name'] == crew_quality_input]
             local_ship.set_quality(crew_quality_int[0])
-            st.write(f'*Max Stress —* {local_ship.max_stress}')
             st_ship = local_ship
+        st.write(f'Max Stress :green[{local_ship.max_stress}]')
 
 def equipment(st_element: str, equip_key: str, equip_loaded_value: str, st_ship: ShipClass, local_ship: ShipClass) -> None:
     """
@@ -115,10 +122,10 @@ def equipment(st_element: str, equip_key: str, equip_loaded_value: str, st_ship:
             equipment_name_to_id = {item["name"]: item["id"] for item in build_data.equipment_details}
             equip_int_list = [equipment_name_to_id[name] for name in equipment_input]
             local_ship.equipment(*equip_int_list)
-            st.markdown(f'**Total Equipment Mass:** {local_ship.total_equipment_mass} — **Total Equipment PV:** {local_ship.total_equipment_pv}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
+        st.write(f'Total Equipment Mass :green[{local_ship.total_equipment_mass}] — Total Equipment PV :green[{local_ship.total_equipment_pv}]')
 
 def weapons(st_element: str, weap_key: str, weap_loaded_value: str, st_ship: ShipClass, local_ship: ShipClass) -> None:
     """
@@ -126,38 +133,42 @@ def weapons(st_element: str, weap_key: str, weap_loaded_value: str, st_ship: Shi
     st_ship should be st session_state ShipClass instance of constructed_ship_local ShipClass instance
     """
     with st_element.expander(label='**Weapons**', expanded=True):
-        st.write(f'*Max Damage Per Arc —* {local_ship.mdpa}')
+        weapon_helper = f'<span style="font-size: .9em;">A weapon can be duplicated in a firing arc up to 4 times. Arc damage cannot exceed Max Damage Per Arc (:green[{local_ship.mdpa}]).</span>'
+        st.markdown(weapon_helper, unsafe_allow_html=True)
+        
         front_arc_input = st.multiselect(label='Front Arc Weapons', key=weap_key+'-front-arc', default=weap_loaded_value[0], options=[s['name'] for s in build_data.weapon_details for i in range(4)])
         if front_arc_input:  
             local_ship.front_arc_weapons(*front_arc_input)
-            st.markdown(f'**Arc Mass:** {local_ship.total_front_arc_mass} — **Arc PV:** {local_ship.total_front_arc_pv} — **Arc Damage:** {local_ship.total_front_arc_max_dmg}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
+        st.write(f'Arc Mass :green[{local_ship.total_front_arc_mass}] — Arc PV :green[{local_ship.total_front_arc_pv}] — Arc Damage :green[{local_ship.total_front_arc_max_dmg}]')
 
         rear_arc_input = st.multiselect(label='Rear Arc Weapons', key=weap_key+'-rear-arc', default=weap_loaded_value[1], options=[s['name'] for s in build_data.weapon_details for i in range(4)])
         if rear_arc_input:
             local_ship.rear_arc_weapons(*rear_arc_input)
-            st.markdown(f'**Arc Mass:** {local_ship.total_rear_arc_mass} — **Arc PV:** {local_ship.total_rear_arc_pv} — **Arc Damage:** {local_ship.total_rear_arc_max_dmg}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
+        st.write(f'Arc Mass :green[{local_ship.total_rear_arc_mass}] — Arc PV :green[{local_ship.total_rear_arc_pv}] — Arc Damage :green[{local_ship.total_rear_arc_max_dmg}]')
 
         right_arc_input = st.multiselect(label='Right Arc Weapons', key=weap_key+'-right-arc', default=weap_loaded_value[2], options=[s['name'] for s in build_data.weapon_details for i in range(4)])
         if right_arc_input:
             local_ship.right_arc_weapons(*right_arc_input)
-            st.markdown(f'**Arc Mass:** {local_ship.total_right_arc_mass} — **Arc PV:** {local_ship.total_right_arc_pv} — **Arc Damage:** {local_ship.total_right_arc_max_dmg}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
+        st.write(f'Arc Mass :green[{local_ship.total_right_arc_mass}] — Arc PV :green[{local_ship.total_right_arc_pv}] — Arc Damage :green[{local_ship.total_right_arc_max_dmg}]')
 
         left_arc_input = st.multiselect(label='Left Arc Weapons', key=weap_key+'-left-arc', default=weap_loaded_value[3], options=[s['name'] for s in build_data.weapon_details for i in range(4)])
         if left_arc_input:
             local_ship.left_arc_weapons(*left_arc_input)
-            st.markdown(f'**Arc Mass:** {local_ship.total_left_arc_mass} — **Arc PV:** {local_ship.total_left_arc_pv} — **Arc Damage:** {local_ship.total_left_arc_max_dmg}')
             local_ship.track_mass()
             local_ship.track_base_pv()
             st_ship = local_ship
+        st.write(f'Arc Mass :green[{local_ship.total_left_arc_mass}] — Arc PV :green[{local_ship.total_left_arc_pv}] — Arc Damage :green[{local_ship.total_left_arc_max_dmg}]')
+        st.divider()
+        st.write(f'Total Weapon Mass :green[{local_ship.total_front_arc_mass + local_ship.total_rear_arc_mass + local_ship.total_right_arc_mass + local_ship.total_left_arc_mass}] — Total Weapon PV :green[{local_ship.total_front_arc_pv + local_ship.total_rear_arc_pv + local_ship.total_right_arc_pv + local_ship.total_left_arc_pv}]')
 
 #BUILD STAT DISPLAY, ERROR
 def error_tam_exceeded(st_element: str, local_ship: ShipClass) -> None:
@@ -165,7 +176,7 @@ def error_tam_exceeded(st_element: str, local_ship: ShipClass) -> None:
     UI error message if TAM exceeded
     """
     if local_ship.tam_exceeded:
-        st_element.info(f'Mass overage of {abs(local_ship.mass_delta)}!', icon=":material/warning:")
+        st_element.error(f'Mass overage of {abs(local_ship.mass_delta)}!', icon=":material/warning:")
 
 def error_mdpa_exceeded(st_element: str, local_ship: ShipClass) -> None:
     """
@@ -175,7 +186,7 @@ def error_mdpa_exceeded(st_element: str, local_ship: ShipClass) -> None:
     for arc in arc_names:
         total_dmg = getattr(local_ship, f'total_{arc}_arc_max_dmg')
         if total_dmg > local_ship.mdpa:
-            st_element.info(f'{arc.capitalize()} arc damage overage of {abs(local_ship.mdpa - total_dmg)}!', icon=":material/warning:")
+            st_element.error(f'{arc.capitalize()} Arc damage overage of {abs(local_ship.mdpa - total_dmg)}!', icon=":material/warning:")
 
 def live_metrics(st_element: str, local_ship: ShipClass) -> None:
     """

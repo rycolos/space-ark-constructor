@@ -1,0 +1,23 @@
+div[data-testid="stExpander"] details summary p{
+    font-size: 1.7rem;
+}
+
+div[data-testid="stMultiSelect"] p{
+    font-size: 1rem;
+}
+
+div[data-testid="stTextInput"] p{
+    font-size: 1rem;
+}
+
+div[data-testid="stSelectbox"] p{
+    font-size: 1rem;
+}
+
+div[data-testid="stNumberInput"] p{
+    font-size: 1rem;
+}
+
+div[data-testid="stInfo"] p{
+    background-color: red;
+}

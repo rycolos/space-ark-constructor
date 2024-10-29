@@ -1,7 +1,7 @@
 import streamlit as st
 import build_data
 from ShipClass import ShipClass
-import json, jsonschema, os
+import json, jsonschema
 from datetime import datetime
 
 SCHEMA_FILE = 'import_schema.json'
@@ -16,10 +16,10 @@ def configure_page() -> None:
     st.title(title)
     construct_ship, import_ship, view_ship, help = st.tabs(["Construct Ship", "Import Ship", 'View Ship', 'Help'])
     
-    #load and apply style for custom expander label size
+    #load and apply style for custom label sizes, custom header
     with open('style.css') as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
+    
     return construct_ship, import_ship, view_ship, help
 
 def init_session() -> None:
@@ -600,9 +600,9 @@ if __name__ == "__main__":
             Once you've built (or imported) a ship and are ready to play, use the View Ship tab to see and export your ship's Stat Sheet.
             It shows your Constructed Ship by default, but you can select Imported Ship to see the Stat Sheet for your currently imported ship. 
 
-            This screen displays your ship's Stat Sheet and allows export as an image or text file for gameplay purposes.
+            This screen displays your ship's Stat Sheet and allows export as a text file for gameplay purposes.
 
-            If you want to import this ship later for further editing, export to JSON. This is the only way to save ships at this time.                
+            If you want to import this ship later for further editing, export to JSON. This is the only way to save ships at this time!                
             """)
         
         help_col3.markdown("""

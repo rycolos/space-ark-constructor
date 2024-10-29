@@ -6,3 +6,4 @@ __pycache__/*
 *.png
 !import_schema.json
 *_export.txt
+space-ark-con-v/*

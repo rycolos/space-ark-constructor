@@ -21,3 +21,12 @@ div[data-testid="stNumberInput"] p{
 div[data-testid="stInfo"] p{
     background-color: red;
 }
+
+header {visibility: hidden;}
+
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    padding-left: 5rem;
+    padding-right: 5rem;
+}
